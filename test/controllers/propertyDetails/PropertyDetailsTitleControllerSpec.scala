@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityHasValueChangedController
 import models._
@@ -52,8 +52,8 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
   val mockMcc: MessagesControllerComponents                                              = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService                                 = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector                                         = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService                                   = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService                                         = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService                                   = mock[BackLinkCacheService]
   val mockEditLiabilityHasValueChangedController: EditLiabilityHasValueChangedController = mock[EditLiabilityHasValueChangedController]
   val mockPropertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController     = mock[PropertyDetailsOwnedBeforeController]
   val messagesApi: MessagesApi                                                           = app.injector.instanceOf[MessagesApi]
@@ -77,8 +77,8 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       mockPropertyDetailsOwnedBeforeController,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -96,11 +96,11 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -122,7 +122,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
@@ -226,7 +226,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         "for invalid data, return BAD_REQUEST" in new Setup {
 
           val inputJson: JsValue = Json.parse("""{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", inputJson) { result =>
             status(result) must be(BAD_REQUEST)
           }
@@ -235,7 +235,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         "for invalid data that is too long, return BAD_REQUEST" in new Setup {
 
           val inputJson: PropertyDetailsTitle = PropertyDetailsTitle("a" * 41)
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(inputJson)) { result =>
             status(result) must be(BAD_REQUEST)
           }
@@ -243,7 +243,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
         "for valid data with no id, return OK" in new Setup {
           val propertyDetails = PropertyDetailsTitle("new Title")
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propertyDetails)) { result =>
             status(result) must be(SEE_OTHER)
@@ -252,7 +252,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
         "for valid data, forward onto the acquisition page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propDetails.title)) { result =>
             status(result) must be(SEE_OTHER)
@@ -261,7 +261,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         }
         "for valid data when editing a previous return, forward onto the value page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propDetails.title), Some("editSubmitted")) { result =>
             status(result) must be(SEE_OTHER)

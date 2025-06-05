@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -47,9 +47,9 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
   implicit val mockAppConfig: ApplicationConfig          = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier                    = HeaderCarrier()
   val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService   = mock[BackLinkCacheService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService         = mock[DataCacheService]
   val messagesApi: MessagesApi                           = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl               = MessagesImpl(Lang("en-GB"), messagesApi)
   val mockServiceInfoService: ServiceInfoService         = mock[ServiceInfoService]
@@ -68,8 +68,8 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
       mockAuthAction,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -90,24 +90,24 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlFormat.empty))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
-        mockDataCacheConnector.fetchAndGetData[DateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))(
+        mockDataCacheService.fetchAndGetData[DateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))(
           ArgumentMatchers.any(),
           ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupiedKnown(None))))
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
         mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

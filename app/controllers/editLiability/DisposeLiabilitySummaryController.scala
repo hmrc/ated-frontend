@@ -17,8 +17,8 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,11 +33,11 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
                                                   authAction: AuthAction,
                                                   disposeLiabilityDeclarationController: DisposeLiabilityDeclarationController,
                                                   serviceInfoService: ServiceInfoService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheService,
+                                                  val dataCacheService: DataCacheService,
+                                                  val backLinkCacheService: BackLinkCacheService,
                                                   template: views.html.editLiability.disposeLiabilitySummary)
                                                  (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

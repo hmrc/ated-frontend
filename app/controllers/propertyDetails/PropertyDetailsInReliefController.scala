@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityDatesLiableController
 import forms.PropertyDetailsForms._
@@ -38,8 +38,8 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                                                   editLiabilityDatesLiableController: EditLiabilityDatesLiableController,
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheService,
+                                                  val dataCacheService: DataCacheService,
+                                                  val backLinkCacheService: BackLinkCacheService,
                                                   template: views.html.propertyDetails.propertyDetailsInRelief)
                                                  (implicit val appConfig: ApplicationConfig)
 
@@ -57,7 +57,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink)
                   )

@@ -17,7 +17,7 @@
 package controllers.auth
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import models.StandardAuthRetrievals
 import play.api.Logging
 import play.api.i18n.Messages
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait ClientHelper extends Logging {
 
-  val dataCacheConnector: DataCacheConnector
+  val dataCacheService: DataCacheService
   val appConfig: ApplicationConfig
 
   def ensureClientContext(result: Future[Result])(implicit
@@ -41,7 +41,7 @@ trait ClientHelper extends Logging {
       ec: ExecutionContext,
       messages: Messages,
       appConfig: ApplicationConfig): Future[Result] = {
-    dataCacheConnector.fetchAndGetData[String](DelegatedClientAtedRefNumber) flatMap {
+    dataCacheService.fetchAndGetData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
       case _ =>
         logger.warn(s"[ClientHelper][compareClient] - Client different from context")

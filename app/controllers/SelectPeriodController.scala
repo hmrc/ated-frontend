@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms._
 import javax.inject.Inject
@@ -34,12 +34,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction,
                                        serviceInfoService: ServiceInfoService,
-                                       val backLinkCacheConnector: BackLinkCacheService,
-                                       val dataCacheConnector: DataCacheConnector,
+                                       val backLinkCacheService: BackLinkCacheService,
+                                       val dataCacheService: DataCacheService,
                                        template: views.html.selectPeriod)
                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec : ExecutionContext = mcc.executionContext
   val controllerId = "SelectPeriodController"
@@ -53,7 +53,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val peakStartYear = PeriodUtils.calculatePeakStartYear(currentDate)
           val periods = PeriodUtils.getPeriods(peakStartYear)
-          dataCacheConnector.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId) map {
+          dataCacheService.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId) map {
             case Some(data) => Ok(template(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
             case _ => Ok(template(selectPeriodForm, periods, serviceInfoContent, getBackLink()))
           }
@@ -71,7 +71,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
           selectPeriodForm.bindFromRequest().fold(
             formWithError => Future.successful(BadRequest(template(formWithError, periods, serviceInfoContent, getBackLink()))),
             periodData => {
-              dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
+              dataCacheService.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
               redirectWithBackLink(
                 returnTypeControllerId,
                 controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),

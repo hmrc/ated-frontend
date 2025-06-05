@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -36,8 +36,8 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                                                   propertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController,
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheService,
+                                                  val dataCacheService: DataCacheService,
+                                                  val backLinkCacheService: BackLinkCacheService,
                                                   template: views.html.propertyDetails.propertyDetailsNewBuild)
                                                  (implicit val appConfig: ApplicationConfig)
 
@@ -53,7 +53,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
                   )
                   Future.successful(Ok(template(id,

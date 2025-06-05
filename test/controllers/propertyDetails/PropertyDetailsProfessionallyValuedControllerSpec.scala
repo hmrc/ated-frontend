@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -56,8 +56,8 @@ class PropertyDetailsProfessionallyValuedControllerSpec
 
   val mockMcc: MessagesControllerComponents                                          = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService                             = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector                                     = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService                               = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService                                     = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService                               = mock[BackLinkCacheService]
   val mockPropertyDetailsAcquisitionController: PropertyDetailsAcquisitionController = mock[PropertyDetailsAcquisitionController]
   val messagesApi: MessagesApi                                                       = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl                                           = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -80,8 +80,8 @@ class PropertyDetailsProfessionallyValuedControllerSpec
         mockPropertyDetailsAcquisitionController,
         mockServiceInfoService,
         mockPropertyDetailsService,
-        mockDataCacheConnector,
-        mockBackLinkCacheConnector,
+        mockDataCacheService,
+        mockBackLinkCacheService,
         injectedViewInstance
       )
 
@@ -99,12 +99,12 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("http://backlink")))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -117,11 +117,11 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -145,7 +145,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       val authMock       = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
@@ -224,14 +224,14 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       "Authorised users" must {
 
         "for invalid data, return BAD_REQUEST" in new Setup {
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsProfessionallyValued(None))) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
 
         "When the data is valid forward to the Period Page" in new Setup {
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsProfessionallyValued(Some(false)))) { result =>
             status(result) must be(SEE_OTHER)

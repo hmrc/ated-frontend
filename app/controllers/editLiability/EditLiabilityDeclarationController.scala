@@ -17,9 +17,9 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.{BackLinkService, ControllerIds}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
@@ -31,11 +31,11 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
                                                    changeLiabilityReturnService: ChangeLiabilityReturnService,
                                                    authAction: AuthAction,
                                                    serviceInfoService: ServiceInfoService,
-                                                   val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheService,
+                                                   val dataCacheService: DataCacheService,
+                                                   val backLinkCacheService: BackLinkCacheService,
                                                    template: views.html.editLiability.editLiabilityDeclaration)
                                                   (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = editLiabilityDeclarationId

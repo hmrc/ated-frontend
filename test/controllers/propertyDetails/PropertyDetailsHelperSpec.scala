@@ -50,7 +50,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
    val delegationService: DelegationService = mockDelegationService
     val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
     override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheService = mockBackLinkCache
+    override val backLinkCacheService: BackLinkCacheService = mockBackLinkCache
   }
 
   "PropertyDetailsHelpers" must {

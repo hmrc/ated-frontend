@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.returnTypeForm
 import javax.inject.Inject
@@ -33,12 +33,12 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      authAction: AuthAction,
                                      summaryReturnService: SummaryReturnsService,
                                      serviceInfoService: ServiceInfoService,
-                                     val dataCacheConnector: DataCacheConnector,
-                                     val backLinkCacheConnector: BackLinkCacheService,
+                                     val dataCacheService: DataCacheService,
+                                     val backLinkCacheService: BackLinkCacheService,
                                      template: views.html.returnType)
                                     (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   val controllerId: String = "ReturnTypeController"
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -48,7 +48,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(backLink =>
-            dataCacheConnector.fetchAndGetData[ReturnType](RetrieveReturnTypeFormId) map {
+            dataCacheService.fetchAndGetData[ReturnType](RetrieveReturnTypeFormId) map {
               case Some(data) => Ok(template(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
               case _ => Ok(template(periodKey, returnTypeForm, serviceInfoContent, backLink))
             }
@@ -68,7 +68,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                 BadRequest(template(periodKey, formWithError, serviceInfoContent, backLink))
               ),
             returnTypeData => {
-              dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
+              dataCacheService.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
               val returnUrl = Some(routes.ReturnTypeController.view(periodKey).url)
               summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
                 (returnTypeData.returnType, pastReturns) match {

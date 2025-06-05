@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilitySummaryController
 import models._
@@ -58,8 +58,8 @@ class PropertyDetailsSupportingInfoControllerSpec
 
   val mockMcc: MessagesControllerComponents                                  = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService                     = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector                             = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService                       = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService                             = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService                       = mock[BackLinkCacheService]
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController     = mock[EditLiabilitySummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val messagesApi: MessagesApi                                               = app.injector.instanceOf[MessagesApi]
@@ -86,8 +86,8 @@ class PropertyDetailsSupportingInfoControllerSpec
       mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance,
       injectedViewInstanceError
     )
@@ -108,13 +108,13 @@ class PropertyDetailsSupportingInfoControllerSpec
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
 
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
 
@@ -130,7 +130,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -154,7 +154,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
@@ -180,7 +180,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
@@ -206,11 +206,11 @@ class PropertyDetailsSupportingInfoControllerSpec
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[Boolean](ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(true)))
       when(
@@ -236,11 +236,11 @@ class PropertyDetailsSupportingInfoControllerSpec
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[Boolean](ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(
@@ -360,7 +360,7 @@ class PropertyDetailsSupportingInfoControllerSpec
 
           val invalidData: String = "a" * 201
           val inputJson: JsValue  = Json.toJson(PropertyDetailsSupportingInfo(invalidData))
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(inputJson, None) { result =>
             status(result) must be(BAD_REQUEST)
           }
@@ -368,7 +368,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for valid data, return Forward to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode"))
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(inputJson, Some(propertyDetails)) { result =>
             status(result) must be(SEE_OTHER)
@@ -379,7 +379,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for valid edit liability data forward to the Edit Liability Summary Page" in new Setup {
           val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUserEdit(inputJson, Some(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED)) { result =>
             status(result) must be(SEE_OTHER)
@@ -390,7 +390,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for invalid agent, throw BAD_REQUEST" in new Setup {
           val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithInvalidAgent(inputJson, Some(propertyDetails)) { result =>
             status(result) must be(BAD_REQUEST)
@@ -400,7 +400,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for unknown status, throw INTERNAL_SERVER_ERROR" in new Setup {
           val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithUnknownResponse(inputJson, Some(propertyDetails)) { result =>
             status(result) must be(INTERNAL_SERVER_ERROR)
@@ -410,7 +410,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for valid data with no line items, return forward to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode")).copy(period = None)
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(inputJson, Some(propertyDetails)) { result =>
             status(result) must be(SEE_OTHER)

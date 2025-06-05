@@ -16,7 +16,7 @@
 
 package controllers.propertyDetails
 
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import models.PropertyDetailsNewBuildDates
 import play.api.mvc.MessagesControllerComponents
 import services._
@@ -28,14 +28,14 @@ import play.api.Logging
 trait StoreNewBuildDates extends Logging {
   val mcc: MessagesControllerComponents
   val propertyDetailsService: PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector
+  val dataCacheService: DataCacheService
   implicit val ec: ExecutionContext
 
   def storeNewBuildDatesFromCache(id: String)
                                  (implicit hc: uk.gov.hmrc.http.HeaderCarrier, authContext: models.StandardAuthRetrievals): Future[Int] = {
 
-    dataCacheConnector.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).flatMap{ firstOccupied =>
-      dataCacheConnector.fetchAndGetData[DateCouncilRegistered](NewBuildCouncilRegisteredDate).flatMap{ councilRegistered =>
+    dataCacheService.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).flatMap{ firstOccupied =>
+      dataCacheService.fetchAndGetData[DateCouncilRegistered](NewBuildCouncilRegisteredDate).flatMap{ councilRegistered =>
         logger.info(s"Storing new build dates, firstOccupied: $firstOccupied, councilRegistered: $councilRegistered")
         propertyDetailsService.saveDraftPropertyDetailsNewBuildDates(
           id,

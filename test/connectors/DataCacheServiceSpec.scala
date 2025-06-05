@@ -31,7 +31,7 @@ import uk.gov.hmrc.mongo.cache.DataKey
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
+class DataCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
 
   implicit val hc: HeaderCarrier                   = HeaderCarrier(sessionId = Some(SessionId("test")))
   implicit val ec: ExecutionContext                = inject[ExecutionContext]
@@ -41,7 +41,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
   class Setup extends ConnectorTest {
 
-    val testDataCacheConnector: DataCacheConnector = new DataCacheConnector(
+    val testDataCacheService: DataCacheService = new DataCacheService(
       mockSessionCacheRepo
     )
 
@@ -49,7 +49,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
   val returnType = ReturnType(Some("CR"))
 
-  "DataCacheConnector" must {
+  "DataCacheService" must {
 
     "saveFormData" must {
       "save form data in keystore" in new Setup {
@@ -58,9 +58,9 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
             .putSession[ReturnType](DataKey(any), ReturnType(any()))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(returnType))
 
-        await(testDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
+        await(testDataCacheService.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
 
-        val result: Future[ReturnType] = testDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)
+        val result: Future[ReturnType] = testDataCacheService.saveFormData[ReturnType]("form-id", returnType)
         await(result) must be(returnType)
       }
     }
@@ -72,7 +72,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
             .getFromSession[ReturnType](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(returnType)))
 
-        await(testDataCacheConnector.fetchAndGetData[ReturnType]("form-id")) must be(Some(returnType))
+        await(testDataCacheService.fetchAndGetData[ReturnType]("form-id")) must be(Some(returnType))
       }
     }
 
@@ -83,7 +83,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
             .deleteFromSession(ArgumentMatchers.any()))
           .thenReturn(Future.successful(()))
 
-        val result: Future[Unit] = testDataCacheConnector.clearCache()
+        val result: Future[Unit] = testDataCacheService.clearCache()
         await(result) must be(())
       }
     }
@@ -95,7 +95,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
             .getFromSession[String](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some("XN1200000100001")))
 
-        val result: Future[Option[String]] = testDataCacheConnector.fetchAndGetData[String]("form-id")
+        val result: Future[Option[String]] = testDataCacheService.fetchAndGetData[String]("form-id")
         await(result) must be(Some("XN1200000100001"))
       }
     }

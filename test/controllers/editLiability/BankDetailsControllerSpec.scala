@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.{BankDetailsModel, PropertyDetails}
 import org.jsoup.Jsoup
@@ -49,7 +49,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockBackLinkCache: BackLinkCacheService = mock[BackLinkCacheService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController = mock[EditLiabilitySummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -71,7 +71,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       mockChangeLiabilityReturnService,
       mockAuthAction,
       mockServiceInfoService,
-      mockDataCacheConnector,
+      mockDataCacheService,
       mockBackLinkCache,
       injectedViewInstance
     )
@@ -83,7 +83,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
       (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -97,7 +97,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
       when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnBank

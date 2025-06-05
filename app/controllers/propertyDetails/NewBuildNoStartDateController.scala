@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,8 +33,8 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
                                               serviceInfoService: ServiceInfoService,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val dataCacheConnector: DataCacheConnector,
-                                              val backLinkCacheConnector: BackLinkCacheService,
+                                              val dataCacheService: DataCacheService,
+                                              val backLinkCacheService: BackLinkCacheService,
                                               view: views.html.propertyDetails.newBuildNoStartDate)
                                              (implicit val appConfig: ApplicationConfig)
 
@@ -49,7 +49,7 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 currentBackLink.map(backLink =>
                   Ok(view(id, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
                 )

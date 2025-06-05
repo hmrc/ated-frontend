@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityHasValueChangedController
@@ -38,8 +38,8 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                                                propertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController,
                                                serviceInfoService: ServiceInfoService,
                                                val propertyDetailsService: PropertyDetailsService,
-                                               val dataCacheConnector: DataCacheConnector,
-                                               val backLinkCacheConnector: BackLinkCacheService,
+                                               val dataCacheService: DataCacheService,
+                                               val backLinkCacheService: BackLinkCacheService,
                                                template: views.html.propertyDetails.propertyDetailsTitle)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
@@ -54,7 +54,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
                   Ok(template(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent,
@@ -73,7 +73,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+            dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
               Future.successful(
                 Ok(template(

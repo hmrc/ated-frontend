@@ -35,8 +35,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     mockServiceInfoService,
     injectedViewInstance,
     mockPropertyDetailsService,
-    mockBackLinkCacheConnector,
-    mockDataCacheConnector,
+    mockBackLinkCacheService,
+    mockDataCacheService,
     mockIsFullTaxPeriodController
   )
 
@@ -80,7 +80,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj("day" -> 1, "month" -> 4, "year" -> 2020)
         )
-        setupDataCacheConnectorExpectations(
+        setupDataCacheServiceExpectations(
           newValuation = Some(BigDecimal.valueOf(1000000)),
           hasPropertyBeenRevalued = Some(true),
           dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
@@ -92,7 +92,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
 
         verifyPropertyDetailsService(Some(true), Some(1000000), Some(LocalDate.of(2020, 4, 1)), Some(LocalDate.of(2021, 6, 15)))
-        verifyDataCacheConnectorRetursHasBeenRevalued(HasPropertyBeenRevalued)
+        verifyDataCacheServiceRetursHasBeenRevalued(HasPropertyBeenRevalued)
         verifySaveBackLinkIsCalled
       }
     }

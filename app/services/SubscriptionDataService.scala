@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 
 import javax.inject.Inject
 import models._
@@ -25,13 +25,13 @@ import utils.AtedConstants._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
+class SubscriptionDataService @Inject()(dataCacheService: DataCacheService,
                                         subscriptionDataAdapterService: SubscriptionDataAdapterService,
                                         detailsService: DetailsService)
                                        (implicit ec: ExecutionContext){
 
   private def retrieveCachedData(implicit hc: HeaderCarrier): Future[Option[CachedData]] = {
-    dataCacheConnector.fetchAndGetData[CachedData](RetrieveSubscriptionDataId)
+    dataCacheService.fetchAndGetData[CachedData](RetrieveSubscriptionDataId)
   }
 
   private def retrieveAndCacheData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
@@ -56,7 +56,7 @@ class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
     } yield {
       subscriptionData.map { data =>
         val dataToCache = CachedData(data, registrationDetails)
-        dataCacheConnector.saveFormData[CachedData](RetrieveSubscriptionDataId, dataToCache)
+        dataCacheService.saveFormData[CachedData](RetrieveSubscriptionDataId, dataToCache)
         dataToCache
       }
     }
@@ -134,7 +134,7 @@ class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
         }
       }
       _ <- updatedDataResponse match {
-        case Some(x) => dataCacheConnector.clearCache().flatMap(r => Future.successful(r))
+        case Some(x) => dataCacheService.clearCache().flatMap(r => Future.successful(r))
         case None => Future.successful(None)
       }
     } yield {

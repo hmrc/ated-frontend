@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsNewValuationForm
 import models.PropertyDetailsNewValuation
@@ -35,8 +35,8 @@ import scala.concurrent.ExecutionContext
 class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
-                                                      val backLinkCacheConnector: BackLinkCacheService,
-                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheService: BackLinkCacheService,
+                                                      val dataCacheService: DataCacheService,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       propertyDetailsDateOfRevalueController: PropertyDetailsDateOfRevalueController,
                                                       template: views.html.propertyDetails.propertyDetailsNewValuation)
@@ -55,8 +55,8 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
                     val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
                     Ok(template(id,
                       propertyDetails.periodKey,
@@ -84,7 +84,7 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, mode, formWithErrors, backLink, serviceInfoContent)))
             },
             revaluedValue => {
-              dataCacheConnector.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
+              dataCacheService.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
               redirectWithBackLink(
                 propertyDetailsDateOfRevalueController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id),

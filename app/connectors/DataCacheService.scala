@@ -24,7 +24,7 @@ import uk.gov.hmrc.mongo.cache.DataKey
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCacheConnector @Inject() (sessionCache: CacheRepository)(implicit ec: ExecutionContext) {
+class DataCacheService @Inject()(sessionCache: CacheRepository)(implicit ec: ExecutionContext) {
 
   def dataKey[T](formId: String): DataKey[T] = DataKey[T](s"$formId")
 

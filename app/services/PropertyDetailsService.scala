@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{DataCacheConnector, PropertyDetailsConnector}
+import connectors.{DataCacheService, PropertyDetailsConnector}
 
 import javax.inject.Inject
 import models._
@@ -38,7 +38,7 @@ case object PropertyDetailsCacheNotFoundResponse extends PropertyDetailsCacheRes
 case object PropertyDetailsCacheErrorResponse extends PropertyDetailsCacheResponse
 
 class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetailsConnector,
-                                       dataCacheConnector: DataCacheConnector)
+                                       dataCacheService: DataCacheService)
                                       (implicit val ec: ExecutionContext) extends Logging {
 
 
@@ -439,7 +439,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   def storeChosenRelief(chosenRelief: PeriodChooseRelief)
                        (implicit headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
     for {
-      result <- dataCacheConnector.saveFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID, chosenRelief)
+      result <- dataCacheService.saveFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID, chosenRelief)
     } yield {
       result
     }
@@ -448,7 +448,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   def addDraftPropertyDetailsDatesInRelief(id: String, propertyDetails: PropertyDetailsDatesInRelief)
                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      chosenRelief <- dataCacheConnector.fetchAndGetData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
+      chosenRelief <- dataCacheService.fetchAndGetData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
       propertyDetailsResponse <- propertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails.copy(description = chosenRelief.map(_.reliefDescription)))
     } yield {
       propertyDetailsResponse.status match {
@@ -480,8 +480,8 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
                                 (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     for {
       httpResponse <- propertyDetailsConnector.submitDraftPropertyDetails(id)
-      _ <- dataCacheConnector.clearCache()
-      _ <- dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
+      _ <- dataCacheService.clearCache()
+      _ <- dataCacheService.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
     } yield {
       httpResponse
     }

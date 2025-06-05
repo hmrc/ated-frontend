@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.YesNoQuestionExistingReturnsForm
 import javax.inject.Inject
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
                                                  authAction: AuthAction,
                                                  serviceInfoService: ServiceInfoService,
-                                                 val dataCacheConnector: DataCacheConnector,
+                                                 val dataCacheService: DataCacheService,
                                                  template: views.html.confirmPastReturn)
                                                 (implicit val appConfig: ApplicationConfig)
 
@@ -63,7 +63,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
+          dataCacheService.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
           val form = new YesNoQuestionExistingReturnsForm
           form.yesNoQuestionForm.bindFromRequest().fold(
             formWithError =>

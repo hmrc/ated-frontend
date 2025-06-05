@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.viewhelper.EditLiability._
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             serviceInfoService: ServiceInfoService,
                                             val delegationService: DelegationService,
-                                            val dataCacheConnector: DataCacheConnector,
+                                            val dataCacheService: DataCacheService,
                                             template: views.html.editLiability.editLiabilitySent)
                                            (implicit val appConfig: ApplicationConfig)
 
@@ -46,7 +46,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
           : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+        dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(resp) =>
@@ -70,7 +70,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
 
         for {
-          submittedResponse <- dataCacheConnector.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+          submittedResponse <- dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
           organisationName <- subscriptionDataService.getOrganisationName
         } yield {
           val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)

@@ -17,8 +17,8 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.AddressLookupController
 import forms.AtedForms.editReliefForm
@@ -35,12 +35,12 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              addressLookupController: AddressLookupController,
                                              serviceInfoService: ServiceInfoService,
                                              val reliefsService: ReliefsService,
-                                             val dataCacheConnector: DataCacheConnector,
-                                             val backLinkCacheConnector: BackLinkCacheService,
+                                             val dataCacheService: DataCacheService,
+                                             val backLinkCacheService: BackLinkCacheService,
                                              template: views.html.reliefs.changeReliefReturn)
                                             (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "ChangeReliefReturnController"

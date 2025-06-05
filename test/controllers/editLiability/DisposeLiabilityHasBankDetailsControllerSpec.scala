@@ -19,7 +19,7 @@ package controllers.editLiability
 import java.util.UUID
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.{BankDetailsModel, DisposeLiabilityReturn, HasBankDetails}
 import org.jsoup.Jsoup
@@ -52,8 +52,8 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController = mock[DisposeLiabilityBankDetailsController]
   val mockDisposeLiabilitySummaryController: DisposeLiabilitySummaryController = mock[DisposeLiabilitySummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -77,8 +77,8 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       mockDisposeLiabilityBankDetailsController,
       mockDisposeLiabilitySummaryController,
       mockServiceInfoService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -87,11 +87,11 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("http://backlink")))
       val result = testDisposeLiabilityHasBankDetailsController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -103,7 +103,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
@@ -118,7 +118,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnHasBankDetails(
         ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -196,7 +196,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
 
       "for invalid data, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse( """{"hasBankDetails": "2"}""")
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -209,7 +209,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
         val bankDetails: HasBankDetails = HasBankDetails(Some(true))
         val inputJson: JsValue = Json.toJson(bankDetails)
         val disposeLiabilityReturn: Option[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
           result =>
@@ -224,7 +224,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
         val bankDetails: HasBankDetails = HasBankDetails(Some(false))
         val inputJson: JsValue = Json.toJson(bankDetails)
         val disposeLiabilityReturn: Option[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
           result =>
@@ -237,7 +237,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       "for invalid, redirect to account summary page" in new Setup {
         val bankDetails: HasBankDetails = HasBankDetails(Some(true))
         val inputJson: JsValue = Json.toJson(bankDetails)
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson, None) {
           result =>

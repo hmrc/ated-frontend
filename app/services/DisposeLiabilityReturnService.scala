@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.{AtedConnector, DataCacheService}
 
 import javax.inject.Inject
 import models._
@@ -29,7 +29,7 @@ import utils.AtedConstants._
 import scala.concurrent.{ExecutionContext, Future}
 
 class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
-                                              dataCacheConnector: DataCacheConnector)(implicit val ec: ExecutionContext) extends Logging {
+                                              dataCacheService: DataCacheService)(implicit val ec: ExecutionContext) extends Logging {
 
   def retrieveLiabilityReturn(oldFormBundleNo: String)
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
@@ -87,8 +87,8 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.submitDraftDisposeLiabilityReturn(oldFormBundleNo) flatMap {
       disposeLiabilityResponse => disposeLiabilityResponse.status match {
         case OK =>
-          dataCacheConnector.clearCache() flatMap { response =>
-            dataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
+          dataCacheService.clearCache() flatMap { response =>
+            dataCacheService.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
               data = disposeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
         case status => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))

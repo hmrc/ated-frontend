@@ -31,7 +31,7 @@ class BackLinkCacheService @Inject()(
 
   val sourceId: String = "ATED_Back_Link"
 
-  def dataKey(pageId: String): DataKey[BackLinkModel] = DataKey[BackLinkModel](s"${sourceId}_$pageId")
+  def dataKey(pageId: String): DataKey[BackLinkModel] = DataKey[BackLinkModel](s"$sourceId$pageId")
 
   def fetchAndGetBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     sessionCache.getFromSession[BackLinkModel](dataKey(pageId)).map(_.flatMap(_.backLink))

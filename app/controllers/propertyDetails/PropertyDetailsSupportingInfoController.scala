@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms._
@@ -38,8 +38,8 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                                                         propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                         serviceInfoService: ServiceInfoService,
                                                         val propertyDetailsService: PropertyDetailsService,
-                                                        val dataCacheConnector: DataCacheConnector,
-                                                        val backLinkCacheConnector: BackLinkCacheService,
+                                                        val dataCacheService: DataCacheService,
+                                                        val backLinkCacheService: BackLinkCacheService,
                                                         template: views.html.propertyDetails.propertyDetailsSupportingInfo,
                                                         templateError: views.html.global_error)
                                                        (implicit val appConfig: ApplicationConfig)
@@ -60,7 +60,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 case _ => propertyDetailsSupportingInfoForm
               }
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
                 }
@@ -77,7 +77,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
                   case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
                   case _ => propertyDetailsSupportingInfoForm
@@ -106,7 +106,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 propertyDetails => {
                   val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
                   for {
-                    cachedData <- dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn)
+                    cachedData <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
                     _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
                     _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
                     result <-

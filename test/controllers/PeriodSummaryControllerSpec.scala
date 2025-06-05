@@ -50,7 +50,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockReturnTypeController: ReturnTypeController = mock[ReturnTypeController]
   val mockReliefsSummaryController: ReliefsSummaryController = mock[ReliefsSummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
@@ -81,14 +81,14 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       mockSummaryReturnsService,
       mockSubscriptionDataService,
       mockServiceInfoService,
-      mockBackLinkCacheConnector,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
     def createReturnWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.PeriodSummaryController.view(periodKey).url)))(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.PeriodSummaryController.view(periodKey).url)))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
       val result = testPeriodSummaryController.createReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -99,10 +99,10 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view.url)))(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view.url)))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodSummaryController.createReturn(periodKey, fromAccountSummary = true).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -157,7 +157,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodSummaryController.viewReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -166,8 +166,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
       val result = testPeriodSummaryController.viewChargeable(periodKey, "1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -176,8 +176,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
       val result = testPeriodSummaryController.viewChargeableEdit(periodKey, "1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -186,14 +186,14 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodSummaryController.viewDisposal(periodKey, "1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockBackLinkCacheConnector)
+    reset(mockBackLinkCacheService)
   }
 
   "PeriodSummaryController" must {

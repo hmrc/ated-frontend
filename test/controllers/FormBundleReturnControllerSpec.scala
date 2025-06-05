@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.AuthAction
 import models._
 import java.time.LocalDate
@@ -47,7 +47,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]

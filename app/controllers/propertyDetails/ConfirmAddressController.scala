@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
@@ -34,9 +34,9 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          changeLiabilityReturnService: ChangeLiabilityReturnService,
                                          serviceInfoService: ServiceInfoService,
-                                         val backLinkCacheConnector: BackLinkCacheService,
+                                         val backLinkCacheService: BackLinkCacheService,
                                          val propertyDetailsService: PropertyDetailsService,
-                                         val dataCacheConnector: DataCacheConnector,
+                                         val dataCacheService: DataCacheService,
                                          template: views.html.propertyDetails.confirmAddress,
                                          templateError: views.html.global_error)
                                         (implicit val appConfig: ApplicationConfig)
@@ -81,8 +81,8 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
-          answer <- dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn)
-          periodKey <- dataCacheConnector.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId)
+          answer <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
+          periodKey <- dataCacheService.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId)
           changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
           serviceInfoContent <- serviceInfoService.getPartial
           backLink <- currentBackLink

@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,8 +34,8 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
                                                  authAction: AuthAction,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
-                                                 val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheService,
+                                                 val dataCacheService: DataCacheService,
+                                                 val backLinkCacheService: BackLinkCacheService,
                                                  view: views.html.propertyDetails.earliestStartDateInUse)
                                                 (implicit val appConfig: ApplicationConfig)
 
@@ -50,7 +50,7 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())
                 val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
                 val dynamicDate = AtedUtils.getEarliestDate(newBuildDate, localRegDate)

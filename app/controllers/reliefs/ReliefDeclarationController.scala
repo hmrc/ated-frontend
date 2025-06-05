@@ -17,8 +17,8 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.Logging
@@ -35,13 +35,13 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             serviceInfoService: ServiceInfoService,
                                             val reliefsService: ReliefsService,
                                             val delegationService: DelegationService,
-                                            val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheService,
+                                            val dataCacheService: DataCacheService,
+                                            val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.reliefs.reliefDeclaration,
                                             templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding with Logging {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "ReliefDeclarationController"

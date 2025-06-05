@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import org.jsoup.Jsoup
@@ -53,8 +53,8 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val fakeDisposePropertyRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
@@ -79,8 +79,8 @@ class Setup {
     mockAuthAction,
     mockDisposePropertyController,
     mockServiceInfoService,
-    mockDataCacheConnector,
-    mockBackLinkCacheConnector,
+    mockDataCacheService,
+    mockBackLinkCacheService,
     injectedViewInstance
   )
 
@@ -91,7 +91,7 @@ class Setup {
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
         .apply(SessionBuilder.buildRequestWithSession(userId, queryParams))
@@ -103,7 +103,7 @@ class Setup {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testEditLiabilityTypeController.continue("12345678901", periodKey, editAllowed = true)
         .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
@@ -116,8 +116,8 @@ class Setup {
     reset(mockPropertyDetailsAddressController)
     reset(mockAddressLookupController)
     reset(mockDelegationService)
-    reset(mockDataCacheConnector)
-    reset(mockBackLinkCacheConnector)
+    reset(mockDataCacheService)
+    reset(mockBackLinkCacheService)
     reset(mockDisposePropertyController)
   }
 
@@ -171,16 +171,16 @@ class Setup {
     "continue" must {
       "if user doesn't select any radio button, show form error with bad_request" in new Setup {
         val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType": ""}"""))
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(BAD_REQUEST)
         }
       }
       "if user select 'change return' any radio button, redirect to edit return page" in new Setup {
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
+        when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
         continueWithAuthorisedUser(fakeChangeReturnRequest) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -188,7 +188,7 @@ class Setup {
         }
       }
       "if user select 'dispose property' any radio button, redirect to dispose property page" in new Setup {
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeDisposePropertyRequest) {
           result =>
@@ -198,7 +198,7 @@ class Setup {
       }
       "for anything else, redirect to edit liability page" in new Setup {
         val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"X"}"""))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>

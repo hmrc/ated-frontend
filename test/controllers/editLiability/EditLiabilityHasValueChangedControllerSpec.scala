@@ -19,7 +19,7 @@ package controllers.editLiability
 import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceSchemeController}
 import models.{HasValueChanged, PropertyDetails}
@@ -58,8 +58,8 @@ class EditLiabilityHasValueChangedControllerSpec
   val mockPropertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController         = mock[PropertyDetailsOwnedBeforeController]
   val mockIsFullTaxPeriodController: IsFullTaxPeriodController                               = mock[IsFullTaxPeriodController]
   val mockPropertyDetailsService: PropertyDetailsService                                     = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector                                             = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService                                       = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService                                             = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService                                       = mock[BackLinkCacheService]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController = mock[PropertyDetailsTaxAvoidanceSchemeController]
   val messagesApi: MessagesApi                                                               = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl                                                   = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -82,8 +82,8 @@ class EditLiabilityHasValueChangedControllerSpec
       mockAuthAction,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -94,15 +94,15 @@ class EditLiabilityHasValueChangedControllerSpec
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
 
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testEditLiabilityHasValueChangedController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -111,10 +111,10 @@ class EditLiabilityHasValueChangedControllerSpec
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -132,10 +132,10 @@ class EditLiabilityHasValueChangedControllerSpec
       propertyDetails.map(propVal =>
         when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propVal))))
-      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(
@@ -156,8 +156,8 @@ class EditLiabilityHasValueChangedControllerSpec
     reset(mockIsFullTaxPeriodController)
     reset(mockPropertyDetailsService)
     reset(mockDelegationService)
-    reset(mockDataCacheConnector)
-    reset(mockBackLinkCacheConnector)
+    reset(mockDataCacheService)
+    reset(mockBackLinkCacheService)
   }
 
   "EditLiabilityHasValueChangedController" must {
@@ -195,7 +195,7 @@ class EditLiabilityHasValueChangedControllerSpec
       "for invalid data, return BAD_REQUEST" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
         val inputJson: JsValue = Json.parse("""{"startDate.day": "31", "startDate.month": "6", "startDate.year": "2015", "periodKey": 2015}""")
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(Some(changeLiabilityReturn), inputJson) { result =>
           status(result) must be(BAD_REQUEST)
         }
@@ -204,7 +204,7 @@ class EditLiabilityHasValueChangedControllerSpec
       "for valid date when we have indicated that the value has changed, save and redirect to change in acquisition page" in new Setup {
         val value1             = HasValueChanged(Some(true))
         val inputJson: JsValue = Json.toJson(value1)
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, inputJson) { result =>
           status(result) must be(SEE_OTHER)
@@ -215,7 +215,7 @@ class EditLiabilityHasValueChangedControllerSpec
       "for valid date when we have indicated that the value has NOT changed, save and redirect to change in period page" in new Setup {
         val value1             = HasValueChanged(Some(false))
         val inputJson: JsValue = Json.toJson(value1)
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, inputJson) { result =>
           status(result) must be(SEE_OTHER)

@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}
@@ -35,8 +35,8 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheService,
+                                                      val dataCacheService: DataCacheService,
+                                                      val backLinkCacheService: BackLinkCacheService,
                                                       view: views.html.propertyDetails.dateCouncilRegisteredKnown)(implicit
     val appConfig: ApplicationConfig)
     extends FrontendController(mcc)
@@ -55,8 +55,8 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) { case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
                   val councilRegisteredDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isLocalAuthRegDateKnown)
 
                   val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(councilRegisteredDateKnown))
@@ -86,7 +86,7 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
             .fold(
               formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
               form => {
-                dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap {
+                dataCacheService.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap {
                   case DateCouncilRegisteredKnown(Some(true)) =>
                     redirectWithBackLink(
                       DateCouncilRegisteredControllerId,
@@ -95,9 +95,9 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
                     )
                   case _ =>
                     // Date not known => Clear any previously store date from cache
-                    dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap { _ =>
+                    dataCacheService.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap { _ =>
                       // Fetch status of First occupied date
-                      dataCacheConnector.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
+                      dataCacheService.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
                         // First occupied date known => store date from current cached values
                         case Some(DateFirstOccupiedKnown(Some(true))) =>
                           storeNewBuildDatesFromCache(id).flatMap { _ =>

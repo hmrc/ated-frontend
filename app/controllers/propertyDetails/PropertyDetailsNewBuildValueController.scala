@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -39,8 +39,8 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                                                        propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheService,
+                                                       val dataCacheService: DataCacheService,
+                                                       val backLinkCacheService: BackLinkCacheService,
                                                        template: html.propertyDetails.propertyDetailsNewBuildValue)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -55,7 +55,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
 
                 val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())

@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models._
 
@@ -50,8 +50,8 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
 
   val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService         = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService   = mock[BackLinkCacheService]
 
   val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController =
     mock[PropertyDetailsProfessionallyValuedController]
@@ -79,8 +79,8 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       mockPropertyDetailsProfessionallyValuedController,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -103,15 +103,15 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
         .thenReturn(Future.successful(Html("")))
 
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
 
       when(
-        mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.eq(SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.eq(SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(true)))
 
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
@@ -133,10 +133,10 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
     def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       when(
         mockPropertyDetailsService
@@ -192,7 +192,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
     "Authorised users" should {
       "receive a BAD REQUEST when they enter an invalid money value" in new Setup {
         val formBody = List(("acquiredValue", "NotMoney"))
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser(formBody) { result =>
           status(result) must be(BAD_REQUEST)
         }
@@ -201,7 +201,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
 
     "be redirected to the professionally valued page" in new Setup {
       val formBody = List(("acquiredValue", "1000000"))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       submitWithAuthorisedUser(formBody) { result =>
         status(result) must be(SEE_OTHER)
         redirectLocation(result).get must include("/liability/create/valued/view")

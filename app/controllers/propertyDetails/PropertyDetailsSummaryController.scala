@@ -17,8 +17,8 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import java.time.LocalDate
@@ -35,12 +35,12 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  propertyDetailsDeclarationController: PropertyDetailsDeclarationController,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
-                                                 val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheService,
+                                                 val dataCacheService: DataCacheService,
+                                                 val backLinkCacheService: BackLinkCacheService,
                                                  template: views.html.propertyDetails.propertyDetailsSummary)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   override val controllerId = "PropertyDetailsSummaryController"

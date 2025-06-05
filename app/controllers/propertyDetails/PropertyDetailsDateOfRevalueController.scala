@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models._
@@ -37,8 +37,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val backLinkCacheConnector: BackLinkCacheService,
-                                                       val dataCacheConnector: DataCacheConnector,
+                                                       val backLinkCacheService: BackLinkCacheService,
+                                                       val dataCacheService: DataCacheService,
                                                        isFullTaxPeriodController: IsFullTaxPeriodController)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -57,8 +57,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
                     val dateOfRevalue = cachedDateOfRevalue.flatMap(_.dateOfRevalue)
                     Ok(template(id,
                       propertyDetails.periodKey,
@@ -85,11 +85,11 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             dateOfRevalue => {
-              dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
+              dataCacheService.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
               val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                hasPropertyBeenRevalued <- dataCacheConnector.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
-                revaluedValue <- dataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                dateOfChange <- dataCacheConnector.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
+                hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
+                revaluedValue <- dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
+                dateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
               } yield {
                 PropertyDetailsRevalued(
                   isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),

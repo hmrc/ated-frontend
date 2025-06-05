@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
 import models.HasBeenRevalued
@@ -37,8 +37,8 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                                                          template: propertyDetailsHasBeenRevalued,
                                                          serviceInfoService: ServiceInfoService,
                                                          val propertyDetailsService: PropertyDetailsService,
-                                                         val backLinkCacheConnector: BackLinkCacheService,
-                                                         val dataCacheConnector: DataCacheConnector,
+                                                         val backLinkCacheService: BackLinkCacheService,
+                                                         val dataCacheService: DataCacheService,
                                                          dateOfChangeController: PropertyDetailsDateOfChangeController,
                                                          exitController: PropertyDetailsExitController
                                                         )(
@@ -55,8 +55,8 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued).map {
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued).map {
                     cachedHasBeenRevalued =>
                       val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
                       Ok(template(id,
@@ -87,14 +87,14 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
               },
               hasBeenRevalued => {
                 if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
-                  dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                  dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                   redirectWithBackLink(
                     dateOfChangeController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id),
                     Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
                   )
                 } else {
-                  dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                  dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                   redirectWithBackLink(
                     exitController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsExitController.view(),

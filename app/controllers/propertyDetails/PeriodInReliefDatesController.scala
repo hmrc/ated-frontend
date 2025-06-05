@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -34,9 +34,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
                                               serviceInfoService: ServiceInfoService,
-                                              val dataCacheConnector: DataCacheConnector,
+                                              val dataCacheService: DataCacheService,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val backLinkCacheConnector: BackLinkCacheService,
+                                              val backLinkCacheService: BackLinkCacheService,
                                               template: views.html.propertyDetails.periodInReliefDates)
                                              (implicit val appConfig: ApplicationConfig)
 

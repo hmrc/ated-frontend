@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.SubmitReturnsResponse
@@ -33,7 +33,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
                                                        subscriptionDataService: SubscriptionDataService,
                                                        authAction: AuthAction,
                                                        serviceInfoService: ServiceInfoService,
-                                                       val dataCacheConnector: DataCacheConnector,
+                                                       val dataCacheService: DataCacheService,
                                                        template: views.html.propertyDetails.chargeableReturnsConfirmation)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -44,7 +44,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
   def confirmation : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        dataCacheService.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
             Ok(template(submitResponse, serviceInfoContent))
           case None =>
@@ -58,7 +58,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
   def viewPrintFriendlyChargeableConfirmation : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        submitedResponse <- dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
+        submitedResponse <- dataCacheService.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.propertyDetails.chargeableConfirmationPrintFriendly(submitedResponse, organisationName))

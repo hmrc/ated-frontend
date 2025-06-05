@@ -23,18 +23,18 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait BackLinkController {
+trait BackLinkService {
 
   implicit val ec: ExecutionContext
   val controllerId: String
-  val backLinkCacheConnector: BackLinkCacheService
+  val backLinkCacheService: BackLinkCacheService
 
-  def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    backLinkCacheConnector.saveBackLink(pageId, returnUrl)
+  private def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    backLinkCacheService.saveBackLink(pageId, returnUrl)
   }
 
   def getBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    backLinkCacheConnector.fetchAndGetBackLink(pageId)
+    backLinkCacheService.fetchAndGetBackLink(pageId)
   }
 
   def currentBackLink(implicit hc: HeaderCarrier): Future[Option[String]] = {
@@ -44,7 +44,7 @@ trait BackLinkController {
   def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
     pageIds match {
       case Nil => Future.successful(Nil)
-      case _   => backLinkCacheConnector.clearBackLinks(pageIds)
+      case _   => backLinkCacheService.clearBackLinks(pageIds)
     }
   }
 

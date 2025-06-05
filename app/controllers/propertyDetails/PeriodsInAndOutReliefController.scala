@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -35,8 +35,8 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                                                 propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController,
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
-                                                val dataCacheConnector: DataCacheConnector,
-                                                val backLinkCacheConnector: BackLinkCacheService,
+                                                val dataCacheService: DataCacheService,
+                                                val backLinkCacheService: BackLinkCacheService,
                                                 template: views.html.propertyDetails.periodsInAndOutRelief)
                                                (implicit val appConfig: ApplicationConfig)
 
@@ -52,7 +52,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
                     PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),

@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.YesNoQuestionDraftDeleteForm
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                                                   propertyDetailsService: PropertyDetailsService,
                                                   reliefsService: ReliefsService,
                                                   serviceInfoService: ServiceInfoService,
-                                                  val dataCacheConnector: DataCacheConnector,
+                                                  val dataCacheService: DataCacheService,
                                                   template: views.html.confirmDeleteDraft)
                                                  (implicit val appConfig: ApplicationConfig)
 

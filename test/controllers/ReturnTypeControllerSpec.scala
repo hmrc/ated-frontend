@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
@@ -53,8 +53,8 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
   implicit lazy val hc: HeaderCarrier                                        = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig                              = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents                                  = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheService                       = mock[BackLinkCacheService]
-  val mockDataCacheConnector: DataCacheConnector                             = mock[DataCacheConnector]
+  val mockBackLinkCacheService: BackLinkCacheService                       = mock[BackLinkCacheService]
+  val mockDataCacheService: DataCacheService                             = mock[DataCacheService]
   val mockSummaryReturnsService: SummaryReturnsService                       = mock[SummaryReturnsService]
   val mockAddressLookupController: AddressLookupController                   = mock[AddressLookupController]
   val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
@@ -80,8 +80,8 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       mockAuthAction,
       mockSummaryReturnsService,
       mockServiceInfoService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -91,13 +91,13 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[ReturnType](ArgumentMatchers.eq(RetrieveReturnTypeFormId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(ReturnType(Some("CR")))))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -110,13 +110,13 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetData[ReturnType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDataCacheService.fetchAndGetData[ReturnType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(ReturnType(Some("RR")))))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -136,13 +136,13 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
       when(
-        mockDataCacheConnector
+        mockDataCacheService
           .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(prevReturns))
-      when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
       val result = testReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
       test(result)
@@ -202,7 +202,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
             val inputJson: JsValue = Json.parse("""{"returnType": ""}""")
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+            when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
             submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) { result =>
               status(result) must be(BAD_REQUEST)
               val doc = Jsoup.parse(contentAsString(result))

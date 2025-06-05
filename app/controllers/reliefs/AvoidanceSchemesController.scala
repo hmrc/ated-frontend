@@ -17,8 +17,8 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
 import javax.inject.Inject
@@ -35,13 +35,13 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
                                            serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
-                                           val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheService,
+                                           val dataCacheService: DataCacheService,
+                                           val backLinkCacheService: BackLinkCacheService,
                                            template: views.html.reliefs.avoidanceSchemes,
                                            val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ReliefHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "AvoidanceSchemesController"

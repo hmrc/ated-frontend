@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 
@@ -38,8 +38,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           propertyDetailsTaxAvoidanceSchemeController : PropertyDetailsTaxAvoidanceSchemeController,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
-                                          val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheService,
+                                          val dataCacheService: DataCacheService,
+                                          val backLinkCacheService: BackLinkCacheService,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (implicit val appConfig: ApplicationConfig)
 
@@ -55,7 +55,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { answer =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { answer =>
                 val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
                 currentBackLink.flatMap(backLink =>
                   answer match {

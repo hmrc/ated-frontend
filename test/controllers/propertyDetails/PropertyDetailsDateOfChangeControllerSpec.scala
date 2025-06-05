@@ -32,8 +32,8 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
     mockServiceInfoService,
     injectedViewInstance,
     mockPropertyDetailsService,
-    mockBackLinkCacheConnector,
-    mockDataCacheConnector,
+    mockBackLinkCacheService,
+    mockDataCacheService,
     mockNewValuationController
   )
 

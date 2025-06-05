@@ -17,7 +17,7 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.SubmitReturnsResponse
@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
                                       authAction: AuthAction,
                                       serviceInfoService: ServiceInfoService,
-                                      val dataCacheConnector: DataCacheConnector,
+                                      val dataCacheService: DataCacheService,
                                       val reliefsService: ReliefsService,
                                       template: views.html.reliefs.reliefsSent)
                                      (implicit val appConfig: ApplicationConfig)
@@ -43,7 +43,7 @@ class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        dataCacheService.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
             Ok(template(periodKey, serviceInfoContent, submitResponse))
           case None =>

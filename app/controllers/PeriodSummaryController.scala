@@ -32,11 +32,11 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         summaryReturnsService: SummaryReturnsService,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
-                                        val backLinkCacheConnector: BackLinkCacheService,
+                                        val backLinkCacheService: BackLinkCacheService,
                                         template: views.html.periodSummary)
                                        (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ControllerIds {
+  extends FrontendController(mcc) with BackLinkService with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodSummaryController"

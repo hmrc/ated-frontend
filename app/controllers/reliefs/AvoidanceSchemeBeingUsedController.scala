@@ -17,8 +17,8 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
-import controllers.BackLinkController
+import connectors.{BackLinkCacheService, DataCacheService}
+import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms.isTaxAvoidanceForm
 
@@ -38,12 +38,12 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
                                                    authAction: AuthAction,
                                                    avoidanceSchemesController: AvoidanceSchemesController,
                                                    val reliefsService: ReliefsService,
-                                                   val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheService,
+                                                   val dataCacheService: DataCacheService,
+                                                   val backLinkCacheService: BackLinkCacheService,
                                                    template: views.html.reliefs.avoidanceSchemeBeingUsed,
                                                    val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                                   (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with ReliefHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "AvoidanceSchemeBeingUsedController"

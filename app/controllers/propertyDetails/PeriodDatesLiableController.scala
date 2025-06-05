@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -37,8 +37,8 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
                                             serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
-                                            val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheService,
+                                            val dataCacheService: DataCacheService,
+                                            val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with WithUnsafeDefaultFormBinding {

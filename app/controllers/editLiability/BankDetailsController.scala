@@ -17,9 +17,9 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.{BackLinkService, ControllerIds}
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
 import javax.inject.Inject
@@ -36,11 +36,11 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       changeLiabilityReturnService: ChangeLiabilityReturnService,
                                       authAction: AuthAction,
                                       serviceInfoService: ServiceInfoService,
-                                      val dataCacheConnector: DataCacheConnector,
-                                      val backLinkCacheConnector: BackLinkCacheService,
+                                      val dataCacheService: DataCacheService,
+                                      val backLinkCacheService: BackLinkCacheService,
                                       template: views.html.editLiability.bankDetails)
                                      (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
