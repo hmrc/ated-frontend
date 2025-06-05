@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package connectors
+package repositories
 
-import play.api.libs.json.Format
-import repositories.CacheRepository
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.cache.DataKey
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCacheConnector @Inject() (sessionCache: CacheRepository)(implicit ec: ExecutionContext) {
+trait CacheRepository {
 
-  def dataKey[T](formId: String): DataKey[T] = DataKey[T](s"$formId")
+  def putSession[T: Writes](
+      dataKey: DataKey[T],
+      data: T
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T]
 
-  def saveFormData[T](formId: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[T] =
-    sessionCache.putSession(dataKey(formId), data).map(_ => data)
+  def getFromSession[T: Reads](dataKey: DataKey[T])(implicit hc: HeaderCarrier): Future[Option[T]]
 
-  def fetchAndGetData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] =
-    sessionCache.getFromSession[T](dataKey(formId))
-
-  def clearCache()(implicit hc: HeaderCarrier): Future[Unit] =
-    sessionCache.deleteFromSession
+  def deleteFromSession(implicit hc: HeaderCarrier): Future[Unit]
 
 }
