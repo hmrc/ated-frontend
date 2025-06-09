@@ -104,11 +104,18 @@ object HasBankDetails {
   implicit val format: OFormat[HasBankDetails] = Json.format[HasBankDetails]
 }
 
+case class HasUkBankDetails(hasUkBankDetails: Option[Boolean] = None)
+
+object HasUkBankDetails {
+  implicit val format: OFormat[HasUkBankDetails] = Json.format[HasUkBankDetails]
+}
+
 
 case class BankDetails(hasUKBankAccount: Option[Boolean] = None,
                        accountName: Option[String] = None,
                        accountNumber: Option[String] = None,
                        sortCode: Option[SortCode] = None,
+                       buildingNumber: Option[String] = None,
                        bicSwiftCode: Option[BicSwiftCode] = None,
                        iban: Option[Iban] = None)
 

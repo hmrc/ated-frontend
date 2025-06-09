@@ -75,6 +75,10 @@ object BankDetailForms {
     "hasBankDetails" -> optional(boolean).verifying("ated.bank-details.error-key.hasBankDetails.empty", a => a.isDefined)
   )(HasBankDetails.apply)(HasBankDetails.unapply))
 
+  val hasUkBankDetailsForm: Form[HasUkBankDetails] = Form(mapping(
+    "hasUkBankDetails" -> optional(boolean).verifying("ated.bank-details.error-key.hasUkBankDetails.empty", a => a.isDefined)
+  )(HasUkBankDetails.apply)(HasUkBankDetails.unapply))
+
    lazy val accountNameConstraint: Constraint[Option[String]] = Constraint("accountName.validation") ({ data =>
     val accountName = data.map(_.trim)
     val errors  = {
@@ -92,6 +96,7 @@ object BankDetailForms {
     "accountName" -> optional(text).verifying(accountNameConstraint),
     "accountNumber" -> optional(text),
     "sortCode" -> sortCodeTuple,
+    "buildingNumber" -> optional(text),
     "bicSwiftCode" -> optional(of[BicSwiftCode]),
     "iban" -> optional(of[Iban])
   )(BankDetails.apply)(BankDetails.unapply))

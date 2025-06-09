@@ -63,6 +63,16 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     }
   }
 
+  def cacheDisposeLiabilityReturnHasUkBankDetails(oldFormBundleNo: String, hasUkBankDetails: Boolean)
+                                               (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+    atedConnector.cacheDraftDisposeLiabilityReturnHasUkBank(oldFormBundleNo, hasUkBankDetails) map {
+      response => response.status match {
+        case OK => response.json.asOpt[DisposeLiabilityReturn]
+        case status => None
+      }
+    }
+  }
+
   def cacheDisposeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
                                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo, updatedValue) map {

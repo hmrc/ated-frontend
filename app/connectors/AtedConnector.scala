@@ -53,6 +53,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
   val cacheDraftPeriod = "update-period"
 
   val cacheDraftHasBank = "update-has-bank"
+  val cacheDraftHasUkBank = "update-has-uk-bank"
   val cacheDraftBank = "update-bank"
   val calculateDraftDisposal = "calculate"
 
@@ -171,6 +172,13 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     val userLink = authContext.atedReferenceNumber
     val postUrl = s"$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasBank"
     http.post(url"$postUrl").withBody(Json.toJson(hasBankDetails)).execute[HttpResponse]
+  }
+
+  def cacheDraftDisposeLiabilityReturnHasUkBank(oldFormBundleNo: String, hasUkBankDetails: Boolean)
+                                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.atedReferenceNumber
+    val postUrl = s"$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasUkBank"
+    http.post(url"$postUrl").withBody(Json.toJson(hasUkBankDetails)).execute[HttpResponse]
   }
 
   def cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
