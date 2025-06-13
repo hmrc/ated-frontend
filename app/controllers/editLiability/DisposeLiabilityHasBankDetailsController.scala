@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                                          disposeLiabilityReturnService: DisposeLiabilityReturnService,
                                                          authAction: AuthAction,
-                                                         disposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController,
+                                                         disposeLiabilityHasUkBankDetailsController: DisposeLiabilityHasUkBankDetailsController,
                                                          disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                          serviceInfoService: ServiceInfoService,
                                                          val dataCacheConnector: DataCacheConnector,
@@ -99,7 +99,7 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                   disposeLiabilityReturnService.calculateDraftDisposal(oldFormBundleNo) flatMap {
                     case Some(_) =>
                       redirectWithBackLink(
-                        disposeLiabilityBankDetailsController.controllerId,
+                        disposeLiabilityHasUkBankDetailsController.controllerId,
                         controllers.editLiability.routes.DisposeLiabilityHasUkBankDetailsController.view(oldFormBundleNo),
                         backLink
                       )

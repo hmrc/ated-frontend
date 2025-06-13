@@ -54,7 +54,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockDisposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController = mock[DisposeLiabilityBankDetailsController]
+  val mockDisposeLiabilityBankDetailsController: DisposeLiabilityHasUkBankDetailsController = mock[DisposeLiabilityHasUkBankDetailsController]
   val mockDisposeLiabilitySummaryController: DisposeLiabilitySummaryController = mock[DisposeLiabilitySummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)

@@ -118,6 +118,8 @@ class DisposeLiabilityHasUkBankDetailsControllerSpec
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnHasBankDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(disposeReturn))
+      when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnHasUkBankDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(disposeReturn))
       when(mockDisposeLiabilityReturnService.calculateDraftDisposal(any())(any(), any()))
         .thenReturn(Future.successful(disposeReturn))
       val request = SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId)
