@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,7 +174,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     http.post(url"$postUrl").withBody(Json.toJson(hasBankDetails)).execute[HttpResponse]
   }
 
-  def cacheDraftDisposeLiabilityReturnHasUkBank(oldFormBundleNo: String, hasUkBankDetails: Boolean)
+  def cacheDraftDisposeLiabilityReturnHasUkBankDetails(oldFormBundleNo: String, hasUkBankDetails: Boolean)
                                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val userLink = authContext.atedReferenceNumber
     val postUrl = s"$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasUkBank"

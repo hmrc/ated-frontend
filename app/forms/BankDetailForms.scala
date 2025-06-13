@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,14 +101,16 @@ object BankDetailForms {
     "iban" -> optional(of[Iban])
   )(BankDetails.apply)(BankDetails.unapply))
 
-  def validateBankDetails(bankDetails: Form[BankDetails]): Form[BankDetails] = {
+  def validateBankDetails(controllerId: String, bankDetails: Form[BankDetails]): Form[BankDetails] = {
     val hasUKBankAccount = bankDetails.data.get("hasUKBankAccount").map(_.toBoolean)
 
     def validate: Seq[Option[FormError]] = {
-      hasUKBankAccount match {
-        case Some(false) => validateIBAN ++ validateBicSwiftCode
-        case Some(true) => validateAccountNumber ++ validateSortCode
-        case _ => Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
+      (hasUKBankAccount, controllerId) match {
+        case (Some(false), _) => validateIBAN ++ validateBicSwiftCode
+        case (Some(true), _) => validateAccountNumber ++ validateSortCode
+        case (None, "DisposeLiabilityUkBankDetailsController") => validateAccountNumber ++ validateSortCode
+        case (None, "DisposeLiabilityNonUkBankDetailsController") => validateIBAN ++ validateBicSwiftCode
+        case (None, _) => Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
       }
     }
 

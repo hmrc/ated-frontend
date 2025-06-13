@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -288,6 +288,16 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
         val result: Future[HttpResponse] = testAtedConnector.cacheDraftDisposeLiabilityReturnHasBank("1", hasBankDetails = true)
+        val response: HttpResponse = await(result)
+        response.status must be(OK)
+      }
+    }
+
+    "cacheDraftDisposeLiabilityReturnHasUkBank" must {
+      "return HttpResponse" in new Setup {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
+        val result: Future[HttpResponse] = testAtedConnector.cacheDraftDisposeLiabilityReturnHasUkBankDetails("1", hasUkBankDetails = true)
         val response: HttpResponse = await(result)
         response.status must be(OK)
       }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,10 +65,10 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
 
   def cacheDisposeLiabilityReturnHasUkBankDetails(oldFormBundleNo: String, hasUkBankDetails: Boolean)
                                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
-    atedConnector.cacheDraftDisposeLiabilityReturnHasUkBank(oldFormBundleNo, hasUkBankDetails) map {
+    atedConnector.cacheDraftDisposeLiabilityReturnHasUkBankDetails(oldFormBundleNo, hasUkBankDetails) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
       }
     }
   }
@@ -88,7 +88,7 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.calculateDraftDisposal(oldFormBundleNo) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
       }
     }
   }

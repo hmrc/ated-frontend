@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest()).fold(
+          BankDetailForms.validateBankDetails(controllerId, bankDetailsForm.bindFromRequest()).fold(
             formWithErrors =>
               currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {

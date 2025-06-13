@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,7 +214,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
         saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/bank-details"))
+            redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/has-uk-bank-details"))
             verify(mockDisposeLiabilityReturnService, times(1))
               .cacheDisposeLiabilityReturnHasBankDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }

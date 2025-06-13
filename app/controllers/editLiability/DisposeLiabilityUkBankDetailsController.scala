@@ -83,15 +83,18 @@ class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerC
     }
   }
 
-  def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+  def save(oldFormBundleNo: String): Action[AnyContent] = Action.async {
+    implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest()).fold(
-            formWithErrors =>
-              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+          BankDetailForms.validateBankDetails(controllerId, bankDetailsForm.bindFromRequest()).fold(
+            formWithErrors => {
+              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink)))
+            },
             bankData => {
-              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, sanitiseBankDetails(bankData)) flatMap {
+              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo,
+                sanitiseBankDetails(bankData).copy(hasUKBankAccount = Option(true))) flatMap {
                 _ => {
                   redirectWithBackLink(
                     disposeLiabilitySummaryController.controllerId,

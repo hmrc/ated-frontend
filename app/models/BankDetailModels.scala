@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ object HasBankDetails {
   implicit val format: OFormat[HasBankDetails] = Json.format[HasBankDetails]
 }
 
-case class HasUkBankDetails(hasUkBankDetails: Option[Boolean] = None)
+case class HasUkBankDetails(hasUkBankDetails: Option[Boolean] = Some(false))
 
 object HasUkBankDetails {
   implicit val format: OFormat[HasUkBankDetails] = Json.format[HasUkBankDetails]

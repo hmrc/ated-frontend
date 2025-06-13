@@ -87,7 +87,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest()).fold(
+          BankDetailForms.validateBankDetails(controllerId, bankDetailsForm.bindFromRequest()).fold(
             formWithErrors =>
               currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
