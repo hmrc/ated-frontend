@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import play.routes.compiler.InjectedRoutesGenerator
 import play.sbt.routes.RoutesKeys.routesGenerator
 import sbt.*
@@ -14,12 +30,23 @@ ThisBuild / scalaVersion := "2.13.16"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
-lazy val playSettings: Seq[Setting[_]] = Seq.empty
+lazy val playSettings: Seq[Setting[?]] = Seq.empty
 
 lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
     Seq(
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;prod.*;testOnlyDoNotUseInAppConf.*;config.*;uk.gov.hmrc.BuildInfo*;.*MicroserviceAuditConnector*;.*MicroserviceAuthConnector*;.*WSHttp*;uk.gov.hmrc.agentclientmandate.config.*;",
+      ScoverageKeys.coverageExcludedPackages :=
+        "<empty>;" +
+          "Reverse.*;" +
+          "app.Routes.*;" +
+          "prod.*;" +
+          "testOnlyDoNotUseInAppConf.*;" +
+          "config.*;" +
+          "uk.gov.hmrc.BuildInfo*;" +
+          ".*MicroserviceAuditConnector*;" +
+          ".*MicroserviceAuthConnector*;" +
+          ".*WSHttp*;" +
+          "uk.gov.hmrc.agentclientmandate.config.*;",
       ScoverageKeys.coverageMinimumStmtTotal := 80,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true
@@ -27,11 +54,11 @@ lazy val scoverageSettings = {
   }
 
 lazy val microservice = Project(appName, file("."))
-    .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
-    .settings(playSettings: _*)
-    .settings(scalaSettings: _*)
-    .settings(defaultSettings(): _*)
-    .settings(playSettings ++ scoverageSettings: _*)
+    .enablePlugins((Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins) *)
+    .settings(playSettings *)
+    .settings(scalaSettings *)
+    .settings(defaultSettings() *)
+    .settings((playSettings ++ scoverageSettings) *)
     .settings(
       TwirlKeys.templateImports ++= Seq(
         "views.html.helper.form",
@@ -48,7 +75,6 @@ lazy val microservice = Project(appName, file("."))
     )
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(
-      resolvers += Resolver.jcenterRepo,
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
     )
