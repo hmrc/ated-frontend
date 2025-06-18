@@ -39,7 +39,8 @@
     scripts: Option[Html],
     isUserResearchBannerVisible: Boolean = false,
     sideBar: Option[Html] = None,
-    banner: Html)(contentBlock: Html)(
+    banner: Html,
+    useAttorneyBanner: Boolean = true)(contentBlock: Html)(
     implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig, authContext: StandardAuthRetrievals)
 
 
@@ -62,11 +63,15 @@
 @signOutUrl = @{(controllers.routes.ApplicationController.logout.url)}
 
 @mainBanner = {
-    @if(authContext.delegationModel.isDefined) {
-        @Some(attorneyBanner(name = Some(authContext.delegationModel.get.principalName),
-            returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax,
-            customReturnLinkText = Some(authContext.delegationModel.get.link.text),
-            bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
+    @if(useAttorneyBanner == true) {
+        @if(authContext.delegationModel.isDefined) {
+            @Some(attorneyBanner(name = Some(authContext.delegationModel.get.principalName),
+                returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax,
+                customReturnLinkText = Some(authContext.delegationModel.get.link.text),
+                bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
+        } else {
+            @banner
+        }
     } else {
         @banner
     }
