@@ -17,7 +17,7 @@
 package services
 
 import builders.DisposeLiabilityReturnBuilder
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.{AtedConnector, DataCacheService}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -41,7 +41,7 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789000"
@@ -54,13 +54,13 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
   class Setup {
   val testDisposeLiabilityReturnService: DisposeLiabilityReturnService = new DisposeLiabilityReturnService(
   mockAtedConnector,
-  mockDataCacheConnector
+  mockDataCacheService
   )
 }
 
   override def beforeEach(): Unit = {
     reset(mockAtedConnector)
-    reset(mockDataCacheConnector)
+    reset(mockDataCacheService)
   }
 
 
@@ -197,8 +197,8 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
 
           val response: JsValue = Json.parse(jsonEtmpResponse)
 
-          when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
-          when(mockDataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel]
+          when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
+          when(mockDataCacheService.saveFormData[EditLiabilityReturnsResponseModel]
             (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
           when(mockAtedConnector.submitDraftDisposeLiabilityReturn(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))

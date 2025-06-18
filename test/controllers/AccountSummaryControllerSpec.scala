@@ -18,7 +18,7 @@ package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, DataCacheService}
 import controllers.auth.AuthAction
 import models._
 import java.time.LocalDate
@@ -54,7 +54,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
@@ -88,7 +88,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockSubscriptionDataService,
       mockMandateFrontendConnector,
       mockDetailsService,
-      mockDataCacheConnector,
+      mockDataCacheService,
       mockDateService,
       mockServiceInfoService,
       injectedViewInstance
@@ -101,7 +101,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
@@ -123,7 +123,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
 
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
@@ -146,7 +146,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -257,7 +257,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+        when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
         when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
         when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
         when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))

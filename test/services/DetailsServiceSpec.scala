@@ -18,7 +18,7 @@ package services
 
 import java.util.UUID
 import builders.RegistrationBuilder
-import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheService}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -42,13 +42,13 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   class Setup {
     val testDetailsService: DetailsService = new DetailsService(
       mockAtedConnector,
       mockMandateFrontendConnector,
-      mockDataCacheConnector
+      mockDataCacheService
     )
   }
 
@@ -299,7 +299,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "save the new client ref num, if clear cache is successful" in new Setup {
 
-      when(mockDataCacheConnector.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
+      when(mockDataCacheService.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
 

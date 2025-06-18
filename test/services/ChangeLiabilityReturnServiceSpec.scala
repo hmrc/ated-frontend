@@ -18,7 +18,7 @@ package services
 
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import config.ApplicationConfig
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.{AtedConnector, DataCacheService}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -42,7 +42,7 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("123456789012")
   val changeLiabilityReturnJson: JsValue = Json.toJson(changeLiabilityReturn)
@@ -60,7 +60,7 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
     val testChangeLiabilityReturnService: ChangeLiabilityReturnService = new ChangeLiabilityReturnService (
     mockMcc,
     mockAtedConnector,
-    mockDataCacheConnector
+    mockDataCacheService
     )
   }
 
@@ -168,8 +168,8 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
           val response: JsValue = Json.parse(jsonEtmpResponse)
 
-          when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
-          when(mockDataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel]
+          when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
+          when(mockDataCacheService.saveFormData[EditLiabilityReturnsResponseModel]
             (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
           when(mockAtedConnector.submitDraftChangeLiabilityReturn(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))

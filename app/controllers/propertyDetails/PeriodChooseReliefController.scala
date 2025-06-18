@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -31,8 +31,8 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
                                              authAction: AuthAction,
                                              serviceInfoService: ServiceInfoService,
                                              val propertyDetailsService: PropertyDetailsService,
-                                             val dataCacheConnector: DataCacheConnector,
-                                             val backLinkCacheConnector: BackLinkCacheConnector,
+                                             val dataCacheService: DataCacheService,
+                                             val backLinkCacheService: BackLinkCacheService,
                                              template: views.html.propertyDetails.periodChooseRelief)
                                             (implicit val appConfig: ApplicationConfig)
 
