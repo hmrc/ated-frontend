@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,14 +81,18 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     "have a yes/no radio button" in {
       doc must haveInputLabelWithText(idYes, yesLabelText)
       doc must haveInputLabelWithText(idNo, noLabelText)
-      doc.getElementById(idYes) must not be null
-      doc.getElementById(idNo) must not be null
+      doc.getElementById(idYes) must not be None
+      doc.getElementById(idNo) must not be None
 
     }
   }
 
   def pageWithContinueButtonForm(submitUrl: String): Unit = {
     pageWithButtonForm(submitUrl, "Save and continue")
+  }
+
+  def pageWithContinueButtonAndTextForm(submitUrl: String): Unit = {
+    pageWithButtonForm(submitUrl, "Continue")
   }
 
   def nonBreakable(string: String): String = string.replace(" ", "\u00A0")
