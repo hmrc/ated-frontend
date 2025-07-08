@@ -94,6 +94,9 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
     "the case should be correct for the postcode" in {
       AtedUtils.formatPostCode(Some("xx1 1xx")) must be(Some("XX1 1XX"))
     }
+    "the punctuations should be removed from the postcode" in {
+      AtedUtils.formatPostCode(Some("({xx1-1xx}).")) must be(Some("XX1 1XX"))
+    }
   }
 
 

@@ -71,7 +71,8 @@ object AtedUtils {
   }
 
   def formatMandatoryPostCode(postCode: String): String = {
-    val trimmedPostcode = postCode.replaceAll(" ", "").toUpperCase()
+    val postcodeFormatPattern: String = "[\\s+.:_;=(){}\\[\\]\\-\\^\\*]"
+    val trimmedPostcode = postCode.replaceAll(postcodeFormatPattern, "").toUpperCase()
     val postCodeSplit = trimmedPostcode splitAt (trimmedPostcode.length - 3)
     postCodeSplit._1 + " " + postCodeSplit._2
   }
