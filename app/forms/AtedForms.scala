@@ -72,7 +72,7 @@ object AtedForms {
         "addressLine4" -> optional(text)
           .verifying("ated.error.address.line-4", x => checkFieldLengthIfPopulated(x, addressLineLength)),
         "postalCode" -> optional(text)
-          .verifying("ated.error.address.postalcode", x => checkFieldLengthIfPopulated(x, PostcodeLength))
+          .verifying("ated.error.address.postalcode", x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), PostcodeLength))
           .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
         "countryCode" -> text
           .verifying("ated.address.country", x => x.length > lengthZero)
