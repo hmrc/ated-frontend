@@ -33,9 +33,9 @@
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @html = {
+    <span id="valuation-banner1">@Html(messages("ated.valuation.banner.p1"))</span>
+    <p id="valuation-banner2">@Html(messages("ated.valuation.banner.p2"))</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li id="valuation-banner1">@Html(messages("ated.valuation.banner.p1"))</li>
-        <li id="valuation-banner2">@Html(messages("ated.valuation.banner.p2"))</li>
         <li id="valuation-banner3">@Html(messages("ated.valuation.banner.p3"))</li>
         <li id="valuation-banner4">@Html(messages("ated.valuation.banner.p4"))</li>
     </ul>

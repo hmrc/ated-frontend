@@ -68,10 +68,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have the correct valuation date change banner" in {
-        assert(doc.select("#valuation-banner1").text() contains "Properties must be revalued every 5 years in line with ATED legislation.")
-        assert(doc.select("#valuation-banner2").text() contains "The 2023 to 2024 chargeable period is a revaluation year.")
-        assert(doc.select("#valuation-banner3").text() contains "For properties acquired on or before 1 April 2022, use this date as the revaluation date.")
-        assert(doc.select("#valuation-banner4").text() contains "For properties acquired after 1 April 2022, use the acquisition date as the valuation date.")
+        assert(doc.select("#valuation-banner1").text() ===  "You must revalue your property every 5 years in line with ATED legislation.")
+        assert(doc.select("#valuation-banner2").text() === "For the 2023 to 2024 chargeable periods:")
+        assert(doc.select("#valuation-banner3").text() === "on or before 1 April 2022, use 1 April 2022 as the revaluation date")
+        assert(doc.select("#valuation-banner4").text() contains "after 1 April 2022, use the date you acquired it as the valuation date")
       }
 
       "have the correct caption" in {
@@ -300,8 +300,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           fromAccountSummary = false
         )
 
-        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red") !== None)
-        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red").text() === "Revoked")
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--orange") !== None)
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--orange").text() === "Revoked")
       }
 
       "have Rejected agent" in {
