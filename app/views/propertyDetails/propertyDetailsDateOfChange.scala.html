@@ -37,8 +37,7 @@
     }
 }
 
-@main(title = titleBuilder(messages("ated.property-details-value.dateOfChange.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
-    @backLinkHtml
+@main(title = titleBuilder(messages("ated.property-details-value.dateOfChange.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateOfChange" -> "dateOfChange.day")))

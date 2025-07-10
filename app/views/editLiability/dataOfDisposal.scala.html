@@ -46,9 +46,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.dispose-property.disposal-date.title"), Some(disposeLiabilityForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.dispose-property.disposal-date.title"), Some(disposeLiabilityForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(disposeLiabilityForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(disposeLiabilityForm, mapping = Map("dateOfDisposal" -> "dateOfDisposal.day")))

@@ -45,9 +45,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages(printHeaderMsg(returnType)))) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages(printHeaderMsg(returnType))), back = Some(backLinkHtml)) {
 
     <header>
         <h2 class="govuk-caption-xl hmrc-caption-xl">

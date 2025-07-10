@@ -83,9 +83,7 @@
   }
 }
 
-@newMain(title = titleBuilder(messages("ated.company-details.title")), serviceInfoContent = serviceInfoContent, showUrBanner= Some(true)) {
-
-  @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.company-details.title")), serviceInfoContent = serviceInfoContent, showUrBanner= Some(true), back = Some(backLinkHtml)) {
 
   <header>
     <h2 class="govuk-caption-l hmrc-caption-l">

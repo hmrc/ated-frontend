@@ -42,9 +42,7 @@
     }
 }
 
-@newMain(titleBuilder(messages("ated.delete-draft.title"), Some(deleteDraftForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(titleBuilder(messages("ated.delete-draft.title"), Some(deleteDraftForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(deleteDraftForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(deleteDraftForm))

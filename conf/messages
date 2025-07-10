@@ -624,10 +624,12 @@ ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500
 
 ated.property-details-value.isNewBuild.title = Is the property a new build?
 ated.property-details-value.isNewBuild.header = Is the property a new build?
-ated.property-details-value.isNewBuild.paragraph = Answer yes only if your ATED liability is beginning in this chargeable period and the property is newly constructed or is a new dwelling adapted from other dwellings.
-ated.property-details-value.isNewBuild.yesParagraphOne = You may be eligible for a
-ated.property-details-value.isNewBuild.yesParagraphTwo = longer filing window of 90 days (opens in  new tab)
-ated.property-details-value.isNewBuild.yesParagraphThree = in which to submit your returns and pay ATED in this chargeable period.
+ated.property-details-value.isNewBuild.paragraph = Select 'Yes' only if:
+ated.property-details-value.isNewBuild.listitem1 = your ATED charge starts this chargeable period
+ated.property-details-value.isNewBuild.listitem2 = the property is newly built or converted from another type of building
+
+ated.property-details-value.isNewBuild.yesParagraphOne = You may be eligible up to 90 days to file your return and pay ATED.
+ated.property-details-value.isNewBuild.yesParagraphTwo = Find out about the 90-day filing rule (opens in new tab)
 
 ated.property-details-value.isNewBuild = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
 ated.property-details-value.isNewBuild.what-is-this = What is a new build?

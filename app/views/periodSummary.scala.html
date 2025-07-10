@@ -41,9 +41,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString)), serviceInfoContent = serviceInfoContent){
-
-@backLinkHtml
+    periodEndDate(periodKey).getYear.toString)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)){
 
 <header>
     <h2 class="govuk-caption-xl hmrc-caption-xl">

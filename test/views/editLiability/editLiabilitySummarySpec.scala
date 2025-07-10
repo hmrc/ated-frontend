@@ -103,7 +103,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
 
     Scenario("Changed charge with periods") {
@@ -156,7 +156,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
@@ -203,7 +203,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
@@ -280,7 +280,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£8,875")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
@@ -357,7 +357,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£8,875")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
@@ -426,7 +426,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£8,875")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
@@ -495,7 +495,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("ated-charge-value").text() === "£8,875")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

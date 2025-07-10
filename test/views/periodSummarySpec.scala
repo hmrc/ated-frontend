@@ -107,7 +107,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.getElementById("draft-liability-0") === null)
       assert(document.getElementById("draft-relief-1") === null)
 
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")
@@ -135,7 +135,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.select("#current-liability-submitted-0").text() === "View or change the return for addressLine1+2")
       assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
     }
 
@@ -169,7 +169,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
       Then("Show the back link")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
 
       Then("add the link to create a return")

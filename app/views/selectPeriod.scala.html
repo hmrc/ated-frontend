@@ -53,9 +53,7 @@
     </p>
 }
 
-@newMain(title = titleBuilder(messages("ated.select-period.title"), Some(selectPeriodForm)), serviceInfoContent = serviceInfoContent) {
-
-  @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.select-period.title"), Some(selectPeriodForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
   @if(selectPeriodForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(selectPeriodForm))

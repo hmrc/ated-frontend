@@ -37,8 +37,7 @@ content = Text("Back")
 }
 }
 
-@main(title = titleBuilder(messages("ated.property-details-value.dateOfRevalue.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
-@backLinkHtml
+@main(title = titleBuilder(messages("ated.property-details-value.dateOfRevalue.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
 @if(propertyDetailsForm.errors.nonEmpty) {
 @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateOfRevalue" -> "dateOfRevalue.day")))

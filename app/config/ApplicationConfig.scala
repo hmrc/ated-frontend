@@ -41,7 +41,7 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
   lazy val urBannerToggle: Boolean = loadConfig("urBanner.toggle").toBoolean
   lazy val urBannerLink: String = loadConfig("urBanner.link")
-  lazy val serviceSignOut:String = loadConfig("service-signout.url")
+  lazy val serviceSignOut:String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${loadConfig("service-signout.url")}"""
 
   lazy val baseUri: String = conf.baseUrl("cachable.session-cache")
   lazy val defaultSource: String = "ated-frontend"
@@ -56,7 +56,7 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val continueURL: String = s"$loginCallback"
   lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
   lazy val signOut: String = s"$basGatewayHost/bas-gateway/sign-out-without-state"
-  lazy val signOutRedirect: String = conf.getString("microservice.services.auth.sign-out-redirect")
+  lazy val signOutRedirect: String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${conf.getString("microservice.services.auth.sign-out-redirect")}"""
   lazy val createNewGatewayLink: String = conf.getString("microservice.services.auth.create-account")
   lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
