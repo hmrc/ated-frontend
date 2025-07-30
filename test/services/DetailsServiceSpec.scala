@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       | "agentName": "agent name",
       | "changeAgentLink": "changeUrl",
       | "email": "email@address",
-      | "changeEmailLink": "changeEmailUrl"
+      | "changeEmailLink": "changeEmailUrl",
+      | "status": ""
       | }
     """.stripMargin
   )
@@ -102,8 +103,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
   "getDetails" must {
     "for OK response status, return body as Some(EtmpRegistrationDetails)" in new Setup {
-      when(mockAtedConnector
-        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponseInd.toString)))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, successResponseInd.toString)))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       await(result) must be(Some(successResponseInd.as[EtmpRegistrationDetails]))
     }
@@ -114,15 +115,15 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       await(result) must be(None)
     }
     "for BAD_REQUEST response status, throw bad request exception" in new Setup {
-      when(mockAtedConnector
-        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
       thrown.message must include("Bad Data")
     }
     "getAgentDetails throws InternalServerException exception for call to ETMP, when BadRequest response is received" in new Setup {
-      when(mockAtedConnector
-        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
       thrown.message must include("Internal server error")
@@ -133,8 +134,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     "return details for organisation" in new Setup {
       val indResponse: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForIndividual("TestFirstName", "TestLastName")
       val successResponseInd: JsValue = Json.toJson(indResponse)
-      when(mockAtedConnector
-        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponseInd.toString)))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, successResponseInd.toString)))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getRegisteredDetailsFromSafeId("1234567890")
       val bp: Option[EtmpRegistrationDetails] = await(result)
       bp.isDefined must be(true)
@@ -146,8 +147,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     "return details for individual" in new Setup {
       val orgResponse: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForOrganisation("Agents Limited")
       val successResponseOrg: JsValue = Json.toJson(orgResponse)
-      when(mockAtedConnector
-        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponseOrg.toString)))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, successResponseOrg.toString)))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getRegisteredDetailsFromSafeId("1234567890")
       val bp: Option[EtmpRegistrationDetails] = await(result)
       bp.isDefined must be(true)
@@ -199,7 +200,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
 
-        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldOrgDetailsNoGroup, registeredDetails)
+        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldOrgDetailsNoGroup,
+          registeredDetails)
         val updatedDetails: Option[UpdateRegistrationDetailsRequest] = await(result)
         updatedDetails.isDefined must be(false)
       }
@@ -230,7 +232,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
-        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails, Some(overseasCompanyRegistration))
+        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails,
+          Some(overseasCompanyRegistration))
         val updatedDetails: Option[UpdateRegistrationDetailsRequest] = await(result)
         updatedDetails.isDefined must be(false)
       }
@@ -239,7 +242,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
 
-        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails, Some(overseasCompanyRegistration))
+        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails,
+          Some(overseasCompanyRegistration))
         val updatedDetails: Option[UpdateRegistrationDetailsRequest] = await(result)
         updatedDetails.isDefined must be(true)
 
@@ -251,7 +255,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
 
-        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetailsNoGroup, Some(overseasCompanyRegistration))
+        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetailsNoGroup,
+          Some(overseasCompanyRegistration))
         val updatedDetails: Option[UpdateRegistrationDetailsRequest] = await(result)
         updatedDetails.isDefined must be(false)
       }
@@ -262,7 +267,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, "")))
 
-        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldIndDetails, Some(overseasCompanyRegistration))
+        val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldIndDetails,
+          Some(overseasCompanyRegistration))
         val updatedDetails: Option[UpdateRegistrationDetailsRequest] = await(result)
         updatedDetails.isDefined must be(false)
 
