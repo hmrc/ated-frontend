@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package utils
 
 import config.ApplicationConfig
 import models._
+
 import java.time.LocalDate
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.AtedConstants._
 
 trait TestModels {
@@ -29,7 +30,8 @@ trait TestModels {
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
   val formBundleNo3: String = "876547696786"
-
+  val atedReference: String = "XN1200000100001"
+  val cancelAgentUrl: String = ""
   val currentYear: Int = LocalDate.now().getYear
   lazy val currentTaxYear: Int = PeriodUtils.calculatePeakStartYear(LocalDate.now())
 
@@ -42,22 +44,39 @@ trait TestModels {
         faxNumber = Some("0223344556677"))),
       addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))}
 
-  def draftReturns1(periodKey: Int) = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-  def draftReturns2(periodKey: Int) = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft)
-  def draftReturns2SocialHousing(periodKey: Int) = DraftReturns(periodKey, "", if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", None, TypeReliefDraft)
-  def draftReturns3(periodKey: Int) = DraftReturns(periodKey, "1", "liability draft", Some(BigDecimal(100.00)), TypeLiabilityDraft)
-  def draftReturns4(periodKey: Int) = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft)
+  val clientMandateDetails: ClientMandateDetails = {
+    ClientMandateDetails(
+      agentName = "name1",
+      changeAgentLink = "",
+      email = "aa@a.com",
+      changeEmailLink = "",
+      status = "Active")
+  }
+  def draftReturns1(periodKey: Int): DraftReturns = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+  def draftReturns2(periodKey: Int): DraftReturns = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft)
+  def draftReturns2SocialHousing(periodKey: Int): DraftReturns = DraftReturns(periodKey,
+    "",
+    if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing",
+    None,
+    TypeReliefDraft)
+  def draftReturns3(periodKey: Int): DraftReturns = DraftReturns(periodKey, "1", "liability draft", Some(BigDecimal(100.00)), TypeLiabilityDraft)
+  def draftReturns4(periodKey: Int): DraftReturns = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft)
 
-  val submittedReliefReturns1 = SubmittedReliefReturns(
+  val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(
     formBundleNo1, "some relief", LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
   def submittedReliefReturnsSocialHousing(periodKey: Int): SubmittedReliefReturns = SubmittedReliefReturns(
-    formBundleNo1, if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
-  val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+    formBundleNo1,
+    if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing",
+    LocalDate.parse("2015-05-05"),
+    LocalDate.parse("2015-05-05"),
+    LocalDate.parse("2015-05-05"))
+  val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(
     formBundleNo2, "addr1+2", BigDecimal(1234.00), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"),
     LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
 
-  val previousReturns = SubmittedLiabilityReturns(
-    formBundleNo3, "12 Stone Row", BigDecimal(123), LocalDate.parse("2015-05-05"),
+  val liabilityAmount = 123
+  val previousReturns: SubmittedLiabilityReturns = SubmittedLiabilityReturns(
+    formBundleNo3, "12 Stone Row", BigDecimal(liabilityAmount), LocalDate.parse("2015-05-05"),
     LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = false, "payment-ref"
   )
 
@@ -77,7 +96,7 @@ trait TestModels {
     }
   }
 
-  def draftReturnsJson(periodKey: Int) = Json.arr(
+  def draftReturnsJson(periodKey: Int): JsArray = Json.arr(
     Json.obj(
       "periodKey" -> periodKey,
       "id" -> "1",
@@ -93,7 +112,7 @@ trait TestModels {
     )
   )
 
-  def draftReturnsJsonSocialHousing(periodKey: Int) = Json.arr(
+  def draftReturnsJsonSocialHousing(periodKey: Int): JsArray = Json.arr(
     Json.obj(
       "periodKey" -> periodKey,
       "id" -> "1",
@@ -109,7 +128,7 @@ trait TestModels {
     )
   )
 
-  def submittedReturnsJson(periodKey: Int) = Json.obj(
+  def submittedReturnsJson(periodKey: Int): JsObject = Json.obj(
     "periodKey" -> periodKey,
     "reliefReturns" -> Json.arr(
       Json.obj(
@@ -135,7 +154,7 @@ trait TestModels {
     )
   )
 
-  def submittedReturnsJsonSocialHousing(periodKey: Int) = Json.obj(
+  def submittedReturnsJsonSocialHousing(periodKey: Int): JsObject = Json.obj(
     "periodKey" -> periodKey,
     "reliefReturns" -> Json.arr(
       Json.obj(
@@ -262,12 +281,23 @@ trait TestModels {
   }
 
   def summaryReturnsModel(atedBalance: BigDecimal = BigDecimal(999.99),
-                          periodKey: Int, withDraftReturns: Boolean = true,
-                          withSubmittedReturns: Boolean = true, withPastReturns: Boolean = false, submittedReturnsSocialHousing: Boolean = false): SummaryReturnsModel = {
+                          periodKey: Int,
+                          withDraftReturns: Boolean = true,
+                          withSubmittedReturns: Boolean = true,
+                          withPastReturns: Boolean = false,
+                          submittedReturnsSocialHousing: Boolean = false): SummaryReturnsModel = {
     SummaryReturnsModel(
       Some(atedBalance),
-      Seq(periodSummaryReturns(periodKey, withDraftReturns, withSubmittedReturns, withPastReturns, false, submittedReturnsSocialHousing)),
-      Seq(periodSummaryReturns(periodKey - 1, withDraftReturns, withSubmittedReturns, withPastReturns, false, submittedReturnsSocialHousing))
+      Seq(periodSummaryReturns(periodKey,
+        withDraftReturns,
+        withSubmittedReturns,
+        withPastReturns,
+        submittedReturnsSocialHousing = submittedReturnsSocialHousing)),
+      Seq(periodSummaryReturns(periodKey - 1,
+        withDraftReturns,
+        withSubmittedReturns,
+        withPastReturns,
+        submittedReturnsSocialHousing = submittedReturnsSocialHousing))
     )
   }
 
@@ -280,7 +310,7 @@ trait TestModels {
     )
   }
 
-  val prevReturn = PreviousReturns("1 address street", "12345678", LocalDate.parse("2015-04-02"), true)
+  val prevReturn: PreviousReturns = PreviousReturns("1 address street", "12345678", LocalDate.parse("2015-04-02"), changeAllowed = true)
   val pastReturnDetails: Seq[PreviousReturns] = Seq(prevReturn)
 
   def currentYearReturnsForDisplay: Seq[AccountSummaryRowModel] = {
