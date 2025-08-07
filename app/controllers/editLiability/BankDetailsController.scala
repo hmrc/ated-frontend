@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,42 +22,39 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.{BackLinkController, ControllerIds}
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
+import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedUtils
 import utils.AtedUtils.sanitiseBankDetails
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                        changeLiabilityReturnService: ChangeLiabilityReturnService,
-                                        authAction: AuthAction,
-                                        serviceInfoService: ServiceInfoService,
-                                        val dataCacheConnector: DataCacheConnector,
-                                        val backLinkCacheConnector: BackLinkCacheConnector,
-                                        template: views.html.editLiability.ukBankDetails)
-                                       (implicit val appConfig: ApplicationConfig)
+class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                      changeLiabilityReturnService: ChangeLiabilityReturnService,
+                                      authAction: AuthAction,
+                                      serviceInfoService: ServiceInfoService,
+                                      val dataCacheConnector: DataCacheConnector,
+                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                      template: views.html.editLiability.bankDetails)
+                                     (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  val controllerId: String = ukBankDetailsControllerId
+  val controllerId: String = bankDetailsControllerId
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
-            case Some(propertyDetails) =>
+            case Some(x) =>
               currentBackLink.map { backLink =>
-                Ok(template(bankDetailsForm.fill(propertyDetails.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)),
-                  oldFormBundleNo,
-                  serviceInfoContent,
-                  backLink))
+                val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
+                Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
@@ -66,6 +63,7 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
+
   def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -73,10 +71,9 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
           changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
             case Some(x) =>
               Future.successful {
-                Ok(template(bankDetailsForm.fill(x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)),
-                  oldFormBundleNo,
-                  serviceInfoContent,
-                  AtedUtils.getSummaryBackLink(oldFormBundleNo, AtedUtils.getEditSubmittedMode(x))))
+                val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
+                val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
+                Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
@@ -89,20 +86,15 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          BankDetailForms.validateBankDetails(controllerId, bankDetailsForm.bindFromRequest()).fold(
+          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest()).fold(
             formWithErrors =>
-              currentBackLink.map(backLink =>
-                BadRequest(template(formWithErrors,
-                  oldFormBundleNo,
-                  serviceInfoContent,
-                  backLink))),
+              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
-              changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo,
-                sanitiseBankDetails(bankData).copy(hasUKBankAccount = Option(true))) flatMap { _ => {
+              changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, sanitiseBankDetails(bankData)) flatMap { _ => {
                 redirectWithBackLink(
                   editLiabilitySummaryId,
                   controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo),
-                  Some(controllers.editLiability.routes.UkBankDetailsController.view(oldFormBundleNo).url)
+                  Some(controllers.editLiability.routes.BankDetailsController.view(oldFormBundleNo).url)
                 )
               }
               }

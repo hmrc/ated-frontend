@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockBankDetailsController: HasUkBankAccountController = mock[HasUkBankAccountController]
+  val mockBankDetailsController: BankDetailsController = mock[BankDetailsController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -103,8 +103,6 @@ class Setup {
     setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
     (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(changeLiabilityReturnOpt))
@@ -119,8 +117,6 @@ class Setup {
     setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
     when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails
     (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -211,7 +207,7 @@ class Setup {
         saveWithAuthorisedUser(inputJson) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/has-uk-bank-account"))
+            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/bank-details"))
             verify(mockChangeLiabilityReturnService, times(1))
               .cacheChangeLiabilityReturnHasBankDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,31 +21,31 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms
-import forms.BankDetailForms.bankDetailsForm
+import forms.BankDetailForms._
+import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils.sanitiseBankDetails
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
-class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                                        disposeLiabilityReturnService: DisposeLiabilityReturnService,
-                                                        authAction: AuthAction,
-                                                        disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
-                                                        serviceInfoService: ServiceInfoService,
-                                                        val dataCacheConnector: DataCacheConnector,
-                                                        val backLinkCacheConnector: BackLinkCacheConnector,
-                                                        template: views.html.editLiability.disposeLiabilityUkBankDetails)
-                                                       (implicit val appConfig: ApplicationConfig)
+class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                      disposeLiabilityReturnService: DisposeLiabilityReturnService,
+                                                      authAction: AuthAction,
+                                                      disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
+                                                      serviceInfoService: ServiceInfoService,
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      template: views.html.editLiability.disposeLiabilityBankDetails)
+                                                     (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper with BackLinkController with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  val controllerId = "DisposeLiabilityUkBankDetailsController"
+  val controllerId = "DisposeLiabilityBankDetailsController"
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -83,23 +83,20 @@ class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerC
     }
   }
 
-  def save(oldFormBundleNo: String): Action[AnyContent] = Action.async {
-    implicit request =>
+  def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          BankDetailForms.validateBankDetails(controllerId, bankDetailsForm.bindFromRequest()).fold(
-            formWithErrors => {
-              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink)))
-            },
+          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest()).fold(
+            formWithErrors =>
+              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
-              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo,
-                sanitiseBankDetails(bankData).copy(hasUKBankAccount = Option(true))) flatMap {
+              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, sanitiseBankDetails(bankData)) flatMap {
                 _ => {
                   redirectWithBackLink(
                     disposeLiabilitySummaryController.controllerId,
                     controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo),
-                    Some(controllers.editLiability.routes.DisposeLiabilityUkBankDetailsController.view(oldFormBundleNo).url)
+                    Some(controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo).url)
                   )
                 }
               }
@@ -111,4 +108,3 @@ class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerC
   }
 
 }
-

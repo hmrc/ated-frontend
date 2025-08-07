@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,18 +232,8 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
       "return HttpResponse" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
-        val bankDetails: BankDetails = BankDetails()
+        val bankDetails = BankDetails()
         val result: Future[HttpResponse] = testAtedConnector.cacheDraftChangeLiabilityReturnBank("1", bankDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-    }
-
-    "cacheDraftChangeLiabilityHasUkBankAccount" must {
-      "return HttpResponse" in new Setup {
-        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
-        val result: Future[HttpResponse] = testAtedConnector.cacheDraftChangeLiabilityHasUkBankAccount("1", updatedValue = true)
         val response: HttpResponse = await(result)
         response.status must be(OK)
       }
@@ -303,22 +293,12 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
       }
     }
 
-    "cacheDraftDisposeLiabilityReturnHasUkBank" must {
-      "return HttpResponse" in new Setup {
-        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
-        val result: Future[HttpResponse] = testAtedConnector.cacheDraftDisposeLiabilityReturnHasUkBankAccount("1", hasUkBankAccount = true)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-    }
-
 
     "cacheDraftDisposeLiabilityReturnBank" must {
       "return HttpResponse" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
-        val bankDetails: BankDetails = BankDetails()
+        val bankDetails = BankDetails()
         val result: Future[HttpResponse] = testAtedConnector.cacheDraftDisposeLiabilityReturnBank("1", bankDetails)
         val response: HttpResponse = await(result)
         response.status must be(OK)
@@ -360,8 +340,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         val successResponse: JsValue = Json.toJson(Seq(ReliefBuilder.reliefTaxAvoidance(periodKey)))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
          when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-        val period: Int = 2017
-        val result: Future[HttpResponse] = testAtedConnector.deleteDraftReliefsByYear(period)
+        val result: Future[HttpResponse] = testAtedConnector.deleteDraftReliefsByYear(2017)
         val response: HttpResponse = await(result)
         response.status must be(OK)
       }
@@ -369,8 +348,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
       "for an invalid id, return an empty object" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-        val period: Int = 4012
-        val result: Future[HttpResponse] = testAtedConnector.deleteDraftReliefsByYear(period)
+        val result: Future[HttpResponse] = testAtedConnector.deleteDraftReliefsByYear(4012)
         val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }

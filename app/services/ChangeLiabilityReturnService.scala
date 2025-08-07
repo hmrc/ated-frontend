@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,16 +72,6 @@ class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
   def cacheChangeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
                                     (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]]  = {
     atedConnector.cacheDraftChangeLiabilityReturnBank(oldFormBundleNo, updatedValue) map {
-      response => response.status match {
-        case OK => response.json.asOpt[PropertyDetails]
-        case _  => None
-      }
-    }
-  }
-
-  def cacheChangeLiabilityHasUkBankAccount(oldFormBundleNo: String, hasUkBankAccount: Boolean)
-                                    (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]]  = {
-    atedConnector.cacheDraftChangeLiabilityHasUkBankAccount(oldFormBundleNo, hasUkBankAccount) map {
       response => response.status match {
         case OK => response.json.asOpt[PropertyDetails]
         case _  => None
