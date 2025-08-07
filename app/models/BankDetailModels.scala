@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ case class SortCode(firstElement: String, secondElement: String, thirdElement: S
 object SortCode {
 
   implicit val formats: OFormat[SortCode] = Json.format[SortCode]
-  private val FIRST_ELEMENT_START = 0
-  private val SECOND_ELEMENT_START = 2
-  private val THIRD_ELEMENT_START = 4
-  private val SORT_CODE_LENGTH = 6
+  val FIRST_ELEMENT_START = 0
+  val SECOND_ELEMENT_START = 2
+  val THIRD_ELEMENT_START = 4
+  val SORT_CODE_LENGTH = 6
 
   def fromString(sixDigits: String): SortCode = {
     require(sixDigits.length == SORT_CODE_LENGTH, s"Invalid SortCode, must be $SORT_CODE_LENGTH characters in length")
@@ -40,9 +40,9 @@ object SortCode {
 }
 
 case class BicSwiftCode(swiftCode: String) {
-  private val strippedSwiftCode: String = swiftCode.replaceAll(" ", "")
+  val strippedSwiftCode: String = swiftCode.replaceAll(" ", "")
 
-  private def bankCode: String = {
+  def bankCode: String = {
     val BANK_CODE_START = 0
     val BANK_CODE_END = 4
     strippedSwiftCode.substring(BANK_CODE_START, BANK_CODE_END)
@@ -54,19 +54,18 @@ case class BicSwiftCode(swiftCode: String) {
     strippedSwiftCode.substring(COUNTRY_CODE_START, COUNTRY_CODE_END)
   }
 
-  private def locationCode: String = {
+  def locationCode: String = {
     val LOCATION_CODE_START = 6
     val LOCATION_CODE_END = 8
     strippedSwiftCode.substring(LOCATION_CODE_START, LOCATION_CODE_END)
   }
-  private def branchCode: String = {
+  def branchCode: String = {
     val BRANCH_CODE_START = 8
     val BRANCH_CODE_END = 11
-    if (strippedSwiftCode.length >= BRANCH_CODE_END) {
+    if (strippedSwiftCode.length >= BRANCH_CODE_END)
       strippedSwiftCode.substring(BRANCH_CODE_START, BRANCH_CODE_END)
-    } else {
+    else
       ""
-    }
   }
 
   override def toString: String = {
@@ -105,18 +104,11 @@ object HasBankDetails {
   implicit val format: OFormat[HasBankDetails] = Json.format[HasBankDetails]
 }
 
-case class HasUkBankAccount(hasUkBankAccount: Option[Boolean] = Some(false))
-
-object HasUkBankAccount {
-  implicit val format: OFormat[HasUkBankAccount] = Json.format[HasUkBankAccount]
-}
-
 
 case class BankDetails(hasUKBankAccount: Option[Boolean] = None,
                        accountName: Option[String] = None,
                        accountNumber: Option[String] = None,
                        sortCode: Option[SortCode] = None,
-                       buildingNumber: Option[String] = None,
                        bicSwiftCode: Option[BicSwiftCode] = None,
                        iban: Option[Iban] = None)
 

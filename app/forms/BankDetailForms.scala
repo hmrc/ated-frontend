@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,15 @@ import scala.util.Try
 
 object BankDetailForms {
 
-  private val SIX = 6
+  val SIX = 6
 
-  private val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
+  val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
-  private val sortCodeRegEx = """^[0-9]{2}\s?\-?\–?[0-9]{2}\s?\-?\–?[0-9]{2}$"""
+  val sortCodeRegEx = """^[0-9]{2}\s?\-?\–?[0-9]{2}\s?\-?\–?[0-9]{2}$"""
 
-  private def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
+  def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
 
-  private def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
+  def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
 
     optional(text)
       .transform[Option[SortCode]](
@@ -49,13 +49,13 @@ object BankDetailForms {
       )
   }
 
-  private object SortCodeFields {
+  object SortCodeFields {
     def isValid(value: String): Boolean = value.length == SIX && Try(value.toInt).isSuccess
   }
 
   implicit val bicSwiftFormat: Formatter[BicSwiftCode] = new Formatter[BicSwiftCode] {
     def bind(key: String, data: Map[String, String]):Either[Seq[FormError], BicSwiftCode] = {
-      val bicSwiftValue = data.getOrElse(key, "")
+      val bicSwiftValue = data.get(key).getOrElse("")
       Right(BicSwiftCode(bicSwiftValue))
     }
 
@@ -64,7 +64,7 @@ object BankDetailForms {
 
   implicit val ibanFormat: Formatter[Iban] = new Formatter[Iban] {
     def bind(key: String, data: Map[String, String]):Either[Seq[FormError], Iban] = {
-      val ibanValue = data.getOrElse(key, "")
+      val ibanValue = data.get(key).getOrElse("")
       Right(Iban(ibanValue))
     }
 
@@ -75,11 +75,7 @@ object BankDetailForms {
     "hasBankDetails" -> optional(boolean).verifying("ated.bank-details.error-key.hasBankDetails.empty", a => a.isDefined)
   )(HasBankDetails.apply)(HasBankDetails.unapply))
 
-  val hasUkBankAccountForm: Form[HasUkBankAccount] = Form(mapping(
-    "hasUkBankAccount" -> optional(boolean).verifying("ated.bank-details.error-key.hasUkBankAccount.empty", a => a.isDefined)
-  )(HasUkBankAccount.apply)(HasUkBankAccount.unapply))
-
-   private lazy val accountNameConstraint: Constraint[Option[String]] = Constraint("accountName.validation") ({ data =>
+   lazy val accountNameConstraint: Constraint[Option[String]] = Constraint("accountName.validation") ({ data =>
     val accountName = data.map(_.trim)
     val errors  = {
       if (accountName.getOrElse("").isEmpty) Seq(ValidationError("ated.bank-details.error-key.accountName.empty"))
@@ -96,30 +92,24 @@ object BankDetailForms {
     "accountName" -> optional(text).verifying(accountNameConstraint),
     "accountNumber" -> optional(text),
     "sortCode" -> sortCodeTuple,
-    "buildingNumber" -> optional(text),
     "bicSwiftCode" -> optional(of[BicSwiftCode]),
     "iban" -> optional(of[Iban])
   )(BankDetails.apply)(BankDetails.unapply))
 
-  def validateBankDetails(controllerId: String, bankDetails: Form[BankDetails]): Form[BankDetails] = {
+  def validateBankDetails(bankDetails: Form[BankDetails]): Form[BankDetails] = {
     val hasUKBankAccount = bankDetails.data.get("hasUKBankAccount").map(_.toBoolean)
 
     def validate: Seq[Option[FormError]] = {
-      (hasUKBankAccount, controllerId) match {
-        case (Some(true), _) => validateAccountNumber ++ validateSortCode
-        case (Some(false), _) => validateIBAN ++ validateBicSwiftCode
-        case (None, id) if Set("DisposeLiabilityUkBankDetailsController", "UkBankDetailsController").contains(id) =>
-          validateAccountNumber ++ validateSortCode
-        case (None, id) if Set("DisposeLiabilityNonUkBankDetailsController", "NonUkBankDetailsController").contains(id) =>
-          validateIBAN ++ validateBicSwiftCode
-        case (None, _) =>
-          Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
+      hasUKBankAccount match {
+        case Some(false) => validateIBAN ++ validateBicSwiftCode
+        case Some(true) => validateAccountNumber ++ validateSortCode
+        case _ => Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
       }
     }
 
     def validateAccountNumber: Seq[Option[FormError]] = {
       val accountNumber = bankDetails.data.get("accountNumber").map(_.trim)
-      if (accountNumber.getOrElse("").isEmpty) {
+      if (accountNumber.getOrElse("").length == 0) {
         Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
       }
       else if (accountNumber.nonEmpty && accountNumber.getOrElse("").length > 18) {
@@ -135,7 +125,7 @@ object BankDetailForms {
       val sortCode = bankDetails.data.get("sortCode").map(x => sanitiseSortCode(x))
 
       sortCode match {
-        case Some(a) if a.nonEmpty =>
+        case Some(a) if a.length > 0 =>
           if (SortCodeFields.isValid(a)) Seq()
           else Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.invalid")))
         case _ => Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.empty")))
@@ -144,7 +134,7 @@ object BankDetailForms {
 
     def validateIBAN: Seq[Option[FormError]] = {
       val iban = bankDetails.data.get("iban").map(_.trim).getOrElse("").replaceAll(" ", "")
-      if (iban.isEmpty) Seq(Some(FormError("iban", "ated.bank-details.error-key.iban.empty")))
+      if (iban.length == 0) Seq(Some(FormError("iban", "ated.bank-details.error-key.iban.empty")))
       else if (iban.length > 34) Seq(Some(FormError("iban", "ated.bank-details.error-key.iban.max-len")))
       else if (!Iban.isValid(iban)) Seq(Some(FormError("iban", "ated.bank-details.error-key.iban.invalid")))
       else Seq()
@@ -152,7 +142,7 @@ object BankDetailForms {
 
     def validateBicSwiftCode: Seq[Option[FormError]] = {
       val bicSwiftCode = bankDetails.data.get("bicSwiftCode").map(_.trim).getOrElse("").replaceAll(" ", "")
-      if (bicSwiftCode.isEmpty) Seq(Some(FormError("bicSwiftCode", "ated.bank-details.error-key.bicSwiftCode.empty")))
+      if (bicSwiftCode.length == 0) Seq(Some(FormError("bicSwiftCode", "ated.bank-details.error-key.bicSwiftCode.empty")))
       else if (!BicSwiftCode.isValid(bicSwiftCode)) Seq(Some(FormError("bicSwiftCode", "ated.bank-details.error-key.bicSwiftCode.invalid")))
       else Seq()
     }

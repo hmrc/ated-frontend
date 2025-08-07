@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package controllers.editLiability
+
+import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
@@ -38,12 +40,11 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
-import views.html.editLiability.ukBankDetails
+import views.html.editLiability.bankDetails
 
-import java.util.UUID
 import scala.concurrent.Future
 
-class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
@@ -55,7 +56,7 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: ukBankDetails = app.injector.instanceOf[views.html.editLiability.ukBankDetails]
+  val injectedViewInstance: bankDetails = app.injector.instanceOf[views.html.editLiability.bankDetails]
 
   class Setup {
 
@@ -65,7 +66,7 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       mockAuthConnector
     )
 
-    val testBankDetailsController: UkBankDetailsController = new UkBankDetailsController(
+    val testBankDetailsController : BankDetailsController = new BankDetailsController(
       mockMcc,
       mockChangeLiabilityReturnService,
       mockAuthAction,
@@ -92,33 +93,14 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def editFromSummary(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
-      setAuthMocks(authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet))
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-      (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(propertyDetails))
-      val result = testBankDetailsController.editFromSummary("12345678901")
-        .apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
     def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
       when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnBank
-      (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(changeLiabilityReturn)))
-      when(mockChangeLiabilityReturnService.cacheChangeLiabilityHasUkBankAccount
       (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(changeLiabilityReturn)))
       val result = testBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
@@ -145,7 +127,7 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Enter your bank or building society account details"))
+            document.title() must be(TitleBuilder.buildTitle("Enter your bank account details"))
             document.getElementsByClass("govuk-caption-xl").text() must include("This section is: Change return")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementsByClass("govuk-back-link").text must be("Back")
@@ -158,28 +140,6 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/account-summary"))
-        }
-      }
-    }
-
-    "edit - for authorised users" must {
-
-      "return OK and set backlink to summary" in new Setup {
-        val bankDetails: BankDetailsModel = BankDetailsModel(hasBankDetails = false)
-        val returnData: PropertyDetails = ChangeLiabilityReturnBuilder
-          .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
-
-        editFromSummary(Some(returnData)) { result =>
-          status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
-          doc.getElementsByClass("govuk-back-link").attr("href") must include("/summary")
-        }
-      }
-
-      "redirect if no liability return found" in new Setup {
-        editFromSummary(None) { result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/ated/account-summary")
         }
       }
     }
@@ -197,7 +157,7 @@ class UkBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
       }
 
-      "for a valid UK bank account details, redirect to the summary page" in new Setup {
+      "for valid, redirect to change in value page" in new Setup {
         val bankDetailsJson: JsValue = Json.parse(
           """{
             |"hasUKBankAccount": true,

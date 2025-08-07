@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                                          disposeLiabilityReturnService: DisposeLiabilityReturnService,
                                                          authAction: AuthAction,
-                                                         disposeLiabilityHasUkBankAccountController: DisposeLiabilityHasUkBankAccountController,
+                                                         disposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController,
                                                          disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                          serviceInfoService: ServiceInfoService,
                                                          val dataCacheConnector: DataCacheConnector,
@@ -99,8 +99,8 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                   disposeLiabilityReturnService.calculateDraftDisposal(oldFormBundleNo) flatMap {
                     case Some(_) =>
                       redirectWithBackLink(
-                        disposeLiabilityHasUkBankAccountController.controllerId,
-                        controllers.editLiability.routes.DisposeLiabilityHasUkBankAccountController.view(oldFormBundleNo),
+                        disposeLiabilityBankDetailsController.controllerId,
+                        controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo),
                         backLink
                       )
                     case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
