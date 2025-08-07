@@ -1166,12 +1166,18 @@ ated.edit.liability.sent.button = Your ATED summary
 ated.bank-details.has-bank-details.title = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
+ated.bank-details.has-uk-bank-account.title = Are you using a UK bank account?
+ated.bank-details.has-uk-bank-account.header = Are you using a UK bank account?
 
 ated.bank-details.title = Enter your bank account details
 ated.bank-details.header = Enter your bank account details
+ated.bank-details.bank-account.name.label = Name on the account
+ated.bank-details-uk.title = Enter your bank or building society account details
+ated.bank-details-uk.header = Enter your bank or building society account details
 ated.bank-details.location.label = Is the bank account in the UK?
 ated.bank-details.account.number.hint = Must be between 6 and 8 digits long
 ated.bank-details.sort.code.hint = Must be 6 digits long
+ated.bank-details.building.society.number.hint = You can find it on your card, statement or passbook
 ated.bank-details.iban.hint = You can ask your bank or check your bank statement
 ated.bank-details.swift.hint = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
 
@@ -1182,6 +1188,7 @@ ated.bank-details.uk-bank-account.number.label = Account number
 ated.bank-details.uk-bank-account.sort-code.label = Sort code
 ated.bank-details.non-uk-bank-account.iban.label = IBAN
 ated.bank-details.non-uk-bank-account.bic-swift-code.label = SWIFT code
+ated.bank-details.dispose-non-uk-bank-account.bic-swift-code.label = BIC or SWIFT code
 ated.bank-details.error-key.accountName.empty = Enter the name of the bank account holder
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
 ated.bank-details.error-key.accountNumber.empty = Enter an account number
