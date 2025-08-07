@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,31 +33,27 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
   val serviceURL: String = appConfig.conf.baseUrl("ated") + "/ated/"
   val http: HttpClientV2 = httpClient
 
-  val saveDraftReliefURI = "reliefs/save"
-  val retrieveDraftReliefURI = "reliefs"
-  val submitDraftReliefURI = "reliefs/submit"
-  val getDetailsURI = "details"
+  private val saveDraftReliefURI = "reliefs/save"
+  private val retrieveDraftReliefURI = "reliefs"
+  private val submitDraftReliefURI = "reliefs/submit"
+  private val getDetailsURI = "details"
 
-  val retrieveFullSummaryReturns = "returns/full-summary"
-  val retrievePartialSummaryReturns = "returns/partial-summary"
+  private val retrieveFullSummaryReturns = "returns/full-summary"
+  private val retrievePartialSummaryReturns = "returns/partial-summary"
   val retrieveSubscriptionData = "subscription-data"
   val updateSubscriptionData = "subscription-data"
-  val updateRegistrationDetailsURI = "registration-details"
+  private val updateRegistrationDetailsURI = "registration-details"
   val retrieveFormBundleReturns = "returns/form-bundle"
   val retrieveLiabilityReturn = "liability-return"
-  val retrievePreviousLiabilityReturn = "prev-liability-return"
-  val retrieveDisposeLiability = "dispose-liability"
-  val cacheDraftAddress = "update-address"
-  val cacheDraftTitle = "update-title"
-  val cacheDraftValue = "update-value"
-  val cacheDraftPeriod = "update-period"
+  private val retrievePreviousLiabilityReturn = "prev-liability-return"
+  private val retrieveDisposeLiability = "dispose-liability"
 
-  val cacheDraftHasBank = "update-has-bank"
-  val cacheDraftBank = "update-bank"
+  private val cacheDraftHasBank = "update-has-bank"
+  private val cacheDraftHasUkBankAccount = "update-has-uk-bank-account"
+  private val cacheDraftBank = "update-bank"
   val calculateDraftDisposal = "calculate"
 
-  val cacheDraftDate = "update-date"
-  val cacheDraftSelectRelief = "update-relief"
+  private val cacheDraftDate = "update-date"
   val submit = "submit"
 
   def saveDraftReliefs(accountRef: String, reliefs: ReliefsTaxAvoidance)
@@ -146,6 +142,13 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     http.post(url"$postUrl").withBody(Json.toJson(updatedValue)).execute[HttpResponse]
   }
 
+  def cacheDraftChangeLiabilityHasUkBankAccount(oldFormBundleNo: String, updatedValue: Boolean)
+                                         (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.atedReferenceNumber
+    val postUrl = s"$serviceURL$userLink/$retrieveLiabilityReturn/$oldFormBundleNo/$cacheDraftHasUkBankAccount"
+    http.post(url"$postUrl").withBody(Json.toJson(updatedValue)).execute[HttpResponse]
+  }
+
   def submitDraftChangeLiabilityReturn(oldFormBundleNo: String)
                                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val userLink = authContext.atedReferenceNumber
@@ -171,6 +174,13 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     val userLink = authContext.atedReferenceNumber
     val postUrl = s"$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasBank"
     http.post(url"$postUrl").withBody(Json.toJson(hasBankDetails)).execute[HttpResponse]
+  }
+
+  def cacheDraftDisposeLiabilityReturnHasUkBankAccount(oldFormBundleNo: String, hasUkBankAccount: Boolean)
+                                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.atedReferenceNumber
+    val postUrl = s"$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasUkBankAccount"
+    http.post(url"$postUrl").withBody(Json.toJson(hasUkBankAccount)).execute[HttpResponse]
   }
 
   def cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)

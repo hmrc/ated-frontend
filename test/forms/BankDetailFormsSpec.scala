@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package forms
 
-import forms.BankDetailForms.bankDetailsForm
-import models.{BicSwiftCode, Iban, SortCode}
+import forms.BankDetailForms.{bankDetailsForm, hasUkBankAccountForm}
+import models.{BicSwiftCode, HasUkBankAccount, Iban, SortCode}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.data.Form
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
@@ -76,9 +77,25 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   )
 
   "bankDetailsForm" must {
+
+    "bind successfully when 'hasUkBankAccount' is true" in {
+      val data: Map[String, String] = Map("hasUkBankAccount" -> "true")
+      val boundForm: Form[HasUkBankAccount] = hasUkBankAccountForm.bind(data)
+      boundForm.hasErrors mustBe false
+      boundForm.value mustBe Some(HasUkBankAccount(Some(true)))
+    }
+
+    "show an error when 'hasUkBankAccount' is missing" in {
+      val data: Map[String, String] = Map.empty
+      val boundForm: Form[HasUkBankAccount] = hasUkBankAccountForm.bind(data)
+      boundForm.hasErrors mustBe true
+      boundForm.errors.size mustBe 1
+      boundForm.error("hasUkBankAccount").map(_.message) mustBe Some("ated.bank-details.error-key.hasUkBankAccount.empty")
+    }
+
     "pass through validation" when {
       "supplied with valid data for uk accounts" in {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bind(validUkData)).fold(
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkData)).fold(
           formWithErrors => {
             fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
 
@@ -92,7 +109,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with valid data for non uk accounts" in {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bind(validNonUkData)).fold(
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validNonUkData)).fold(
           formWithErrors => {
             fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
 
@@ -108,7 +125,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "fail validation" when {
 
       "supplied with empty form" in {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bind(Map.empty[String, String])).fold (
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(Map.empty[String, String])).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 2
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
@@ -121,7 +138,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with uk account 'empty form'" in {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bind(emptyUkData)).fold (
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(emptyUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
@@ -135,7 +152,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with non uk account 'empty form'" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(emptyNonUkData)).fold (
+        BankDetailForms.validateBankDetails("", BankDetailForms.bankDetailsForm.bind(emptyNonUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
@@ -150,7 +167,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with uk account form data which exceeds max length" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(maxLengthUkData)).fold (
+        BankDetailForms.validateBankDetails("", BankDetailForms.bankDetailsForm.bind(maxLengthUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.max-len"
@@ -164,7 +181,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with non uk form data which exceeds  max length" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(maxLengthNonUkData)).fold (
+        BankDetailForms.validateBankDetails("", BankDetailForms.bankDetailsForm.bind(maxLengthNonUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.max-len"
@@ -180,7 +197,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with uk account form non valid data" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(nonValidUkData)).fold (
+        BankDetailForms.validateBankDetails("", BankDetailForms.bankDetailsForm.bind(nonValidUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 2
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountNumber.invalid"
@@ -193,7 +210,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with non uk account form non valid data" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(nonValidNonUkData)).fold (
+        BankDetailForms.validateBankDetails("", BankDetailForms.bankDetailsForm.bind(nonValidNonUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 1
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.bicSwiftCode.invalid"
