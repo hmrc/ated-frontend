@@ -50,7 +50,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
               currentBackLink.map(backLink =>
                 Ok(template(oldFormBundleNo, returnType, serviceInfoContent, backLink))
               )
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
@@ -66,7 +66,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
               case Some(_) =>
                 Redirect(controllers.editLiability.routes.EditLiabilitySentController.view(oldFormBundleNo))
               case None =>
-                Redirect(controllers.routes.AccountSummaryController.view)
+                Redirect(controllers.routes.AccountSummaryController.view())
             }
         }
       }

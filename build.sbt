@@ -33,6 +33,8 @@ lazy val microservice = Project(appName, file("."))
     .settings(defaultSettings(): _*)
     .settings(playSettings ++ scoverageSettings: _*)
     .settings(
+      scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
       TwirlKeys.templateImports ++= Seq(
         "views.html.helper.form",
         "uk.gov.hmrc.govukfrontend.views.html.components._",

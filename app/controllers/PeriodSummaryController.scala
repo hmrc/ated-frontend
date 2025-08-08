@@ -60,7 +60,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
       val backLink = if (!fromAccountSummary) {
         routes.PeriodSummaryController.view(periodKey).url
       } else {
-        routes.AccountSummaryController.view.url
+        routes.AccountSummaryController.view().url
       }
 
       redirectWithBackLink(returnTypeControllerId,
@@ -110,9 +110,9 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
 
   private def getBackLink(periodKey: Int): Some[String] = {
     if (periodKey.equals(PeriodUtils.calculatePeakStartYear())) {
-      Some(routes.AccountSummaryController.view.url)
+      Some(routes.AccountSummaryController.view().url)
     } else {
-      Some(routes.PrevPeriodsSummaryController.view.url)
+      Some(routes.PrevPeriodsSummaryController.view().url)
     }
   }
 }

@@ -77,7 +77,7 @@
 
   <div class="govuk-form-group govuk-!-padding-top-5">
       @govukButton(Button(
-          href = Some(controllers.routes.AccountSummaryController.view.url),
+          href = Some(controllers.routes.AccountSummaryController.view().url),
           content = Text(messages("ated.reliefs-sent.client-link")),
           attributes  = Map("id" -> "account-link")
       ))

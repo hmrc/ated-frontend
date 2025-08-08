@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package models
 
 import play.api.Logging
-import uk.gov.hmrc.auth.core.AffinityGroup.Agent
+import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.ForbiddenException
 
@@ -64,6 +64,8 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
   }
 
   def isAgent: Boolean = affinityGroup contains Agent
+
+  def isOrg: Boolean = affinityGroup contains Organisation
 
   def isSa: Boolean = getEnrolment(saKey).isDefined
 

@@ -85,6 +85,6 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink(): Option[String] = {
-    Some(routes.PrevPeriodsSummaryController.view.url)
+    Some(routes.PrevPeriodsSummaryController.view().url)
   }
 }

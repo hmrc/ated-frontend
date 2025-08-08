@@ -47,7 +47,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(r) => Ok(template(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
-              case None => Redirect(controllers.routes.AccountSummaryController.view)
+              case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
           case None =>
             throw new RuntimeException("Return Response not found in cache")

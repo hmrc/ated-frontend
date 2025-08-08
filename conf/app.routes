@@ -11,8 +11,8 @@ GET            /logout                                                      cont
 GET            /sign-out                                                    controllers.ApplicationController.redirectToSignIn
 GET            /sign-out-individual                                         controllers.ApplicationController.redirectToGuidance()
 
-GET            /account-summary                                             controllers.AccountSummaryController.view
-GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view
+GET            /account-summary                                             controllers.AccountSummaryController.view()
+GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view()
 GET            /period/select                                               controllers.SelectPeriodController.view
 POST           /period/select                                               controllers.SelectPeriodController.submit
 
@@ -57,8 +57,8 @@ POST           /edit-contact-email                                          cont
 GET            /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.editAddress
 POST           /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.submit
 
-GET            /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.edit
-POST           /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.submit
+GET            /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.edit()
+POST           /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.submit()
 
 GET            /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.edit
 POST           /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.submit

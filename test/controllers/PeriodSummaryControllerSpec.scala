@@ -99,7 +99,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view.url)))(ArgumentMatchers.any()))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view().url)))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))

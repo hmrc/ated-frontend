@@ -29,7 +29,7 @@ object PeriodUtils {
 
   def calculatePeakStartYear(date: LocalDate = LocalDate.now(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
 
-    val draftReturnsAllowedFrom = LocalDate.of(date.getYear(), month, appConfig.atedPeakStartDay.toInt)
+    val draftReturnsAllowedFrom = LocalDate.of(date.getYear, month, appConfig.atedPeakStartDay.toInt)
 
     if(date.isBefore(draftReturnsAllowedFrom)) {
       date.minusYears(1).getYear

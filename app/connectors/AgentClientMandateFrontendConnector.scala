@@ -43,7 +43,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
 
   def getClientBannerPartial(clientId: String, service: String)
                             (implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
-    val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.routes.AccountSummaryController.view}"
+    val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.routes.AccountSummaryController.view()}"
 
      httpClient.get(url"$getUrl").execute[HttpResponse] map { response =>
       response.status match {

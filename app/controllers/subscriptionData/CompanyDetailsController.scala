@@ -54,7 +54,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
           clientMandateDetails,
           overseasCompanyRegistration,
           serviceInfoContent,
-          Some(controllers.routes.AccountSummaryController.view.url)
+          Some(controllers.routes.AccountSummaryController.view().url)
         ))
       }
     }
@@ -62,7 +62,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   def back: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { _ =>
-      Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+      Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
     }
   }
 }
