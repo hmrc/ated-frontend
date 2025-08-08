@@ -32,7 +32,7 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
   lazy val ws: WSClient = app.injector.instanceOf[WSClient]
 
   override lazy val app: Application = new GuiceApplicationBuilder()
-    .configure(Map(
+    .configure(Map[String, Any](
       "play.http.router"                                      -> "testOnlyDoNotUseInAppConf.Routes",
       "mongo.uri"                                             -> "mongodb://localhost:27017/test-ated-frontend",
       "microservice.metrics.graphite.host"                    -> "localhost",

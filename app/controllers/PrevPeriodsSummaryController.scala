@@ -69,7 +69,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
           duringPeak,
           currentYear = dateService.now().getYear,
           taxYearStartingYear = PeriodUtils.calculatePeakStartYear(dateService.now()),
-          Some(controllers.routes.AccountSummaryController.view.url)
+          Some(controllers.routes.AccountSummaryController.view().url)
         ))
       }
     } recover {
