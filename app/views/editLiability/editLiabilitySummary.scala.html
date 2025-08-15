@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@
             @incomplete
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" id="edit-account-type-incomplete" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+            <a class="govuk-link" id="edit-account-type-incomplete" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
               @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
             </a>
           </dd>
@@ -210,7 +210,7 @@
               @messages("ated.label.yes")
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-uk-account" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-uk-account" href="@controllers.editLiability.routes.HasUkBankAccountController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
               </a>
             </dd>
@@ -223,7 +223,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-uk-account-holder-name" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-uk-account-holder-name" href="@controllers.editLiability.routes.UkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
               </a>
             </dd>
@@ -236,7 +236,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-account-number" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-account-number" href="@controllers.editLiability.routes.UkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
               </a>
             </dd>
@@ -249,7 +249,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-sort-code" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-sort-code" href="@controllers.editLiability.routes.UkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
               </a>
             </dd>
@@ -279,7 +279,7 @@
               @messages("ated.label.no")
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-overseas-account" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-overseas-account" href="@controllers.editLiability.routes.HasUkBankAccountController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
               </a>
             </dd>
@@ -292,7 +292,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-overseas-account-holder-name" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-overseas-account-holder-name" href="@controllers.editLiability.routes.NonUkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
               </a>
             </dd>
@@ -305,7 +305,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-iban" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-iban" href="@controllers.editLiability.routes.NonUkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
               </a>
             </dd>
@@ -318,7 +318,7 @@
               @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-bic-swift" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+              <a class="govuk-link" id="edit-bic-swift" href="@controllers.editLiability.routes.NonUkBankDetailsController.editFromSummary(changeLiability.id.toString)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
               </a>
             </dd>
