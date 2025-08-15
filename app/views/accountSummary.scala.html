@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,22 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import views.ViewUtils.titleBuilder
+@import _root_.utils.AtedUtils._
 
 @this(newMain: newMain,
-    peakGuidance: peakGuidance,
     govukButton : GovukButton,
     govukNotificationBanner : GovukNotificationBanner)
 
-@(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
-        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
-        serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html, duringPeak: Boolean, currentYear: Int,
+@(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int,
+        otherReturns: SummaryReturnsModel, organisationName: Option[String], atedReference: String, agentDetails: Option[ClientMandateDetails],
+        serviceInfoContent: Html = HtmlFormat.empty, cancelAgentUrl: String, dynamicYearForContent: Int,
         taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @html = {
+    <span id="valuation-banner1">@Html(messages("ated.valuation.banner.p1"))</span>
+    <p id="valuation-banner2">@Html(messages("ated.valuation.banner.p2"))</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li id="valuation-banner1">@Html(messages("ated.valuation.banner.p1"))</li>
-        <li id="valuation-banner2">@Html(messages("ated.valuation.banner.p2"))</li>
         <li id="valuation-banner3">@Html(messages("ated.valuation.banner.p3"))</li>
         <li id="valuation-banner4">@Html(messages("ated.valuation.banner.p4"))</li>
     </ul>
@@ -43,72 +43,139 @@
 @newMain(
     title = titleBuilder(messages("ated.summary-return.title")),
     serviceInfoContent = serviceInfoContent,
-    sideBar = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
     showUrBanner = Some(true),
-    banner = clientBanner
+    useAttorneyBanner = false
 ) {
-        <header>
-            <h2 class="govuk-caption-l hmrc-caption-l">
-                <span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")
-            </h2>
-            <h1 class="govuk-heading-xl">
-                @messages("ated.summary-return.header")
-            </h1>
-        </header>
+    @govukNotificationBanner(NotificationBanner(
+        content = HtmlContent(html)
+    ))
 
-        @govukNotificationBanner(NotificationBanner(
-            content = HtmlContent(html)
-        ))
+    <header>
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section-name")
+                </span>
+                @organisationName.getOrElse("")
+            </span>
+        </h2>
+        <h1 class="govuk-heading-xl">
+            @messages("ated.summary-return.title")
+        </h1>
 
-        @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
+    </header>
 
-        @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
-            <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
-            @if(authContext.delegationModel.isEmpty) {
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
-            }
+    @if(authContext.isAgent) {
+        <div class="govuk-inset-text govuk-!-margin-top-0">
+            <p id="agent-info-text">@messages("ated.account-summary.agent-accessing-information.text")&nbsp;<b>@organisationName.getOrElse("")</b>.
+                <a id="agent-change-client" class="govuk-link" href="@appConfig.agentSummary">@messages("ated.change-client-link")</a></p>
+        </div>
+    }
 
-            <div class="govuk-form-group">
-                @govukButton(Button(
-                    href = Some(controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary).url),
-                    content = Text(messages("ated.account-summary.create-new-return", taxYearStartingYear.toString, (taxYearStartingYear+1).toString)),
-                    attributes = Map("id" -> "create-return-0")
-                ))
+
+    <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-one.text", (dynamicYearForContent).toString, (dynamicYearForContent + 1).toString)
+    @messages("ated.account-summary.peak-guidance-part-two.text", (dynamicYearForContent).toString)</p>
+    <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-three.text", (dynamicYearForContent).toString)</p>
+
+    <br>
+    @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) < 0) {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-owed.heading")</h2>
+        <p class="govuk-body">@messages("ated.account-summary.balance-owed-part-one.text")</p>
+        <p class="govuk-body">@messages("ated.account-summary.balance-owed-part-two.text")</p>
+
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                @messages("ated.account-summary.balance-owed-amount-owed.text")
+                </dt>
+                <dd class="govuk-summary-list__actions">
+                @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                </dd>
             </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                @messages("ated.account-summary.balance-owed-status.text")
+                </dt>
+                <dd id="amount-owed-status" class="govuk-summary-list__actions">
+                    <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
+                </dd>
+            </div>
+        </dl>
 
-        } else {
+    } else {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
+        @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
 
-            @if(returnsCurrentTaxYear.nonEmpty) {
-                <h2 class="govuk-heading-m govuk-!-padding-top-5">@messages("ated.account-summary.current-year-returns")</h2>
-                <div class="govuk-hint">
-                  @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    @messages("ated.account-summary.balance-outstanding-total-due.text")
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                    @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                    </dd>
                 </div>
-                <dl class="govuk-summary-list govuk-!-margin-bottom-9">
-                    @returnsCurrentTaxYear.map { rtn =>
-                        @accountSummaryRow(
-                            rtn.description,
-                            messages(rtn.returnType),
-                            messages("ated.account-summary.view-or-change"),
-                            rtn.route
-                        )
-                    }
-                </dl>
+            </dl>
 
-                @if(totalCurrentYearReturns > 5 || hasPastReturns) {
-                    <div class="govuk-form-group">
-                        <a id="view-all-returns" class="govuk-link govuk-!-font-size-19" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
-                          @messages(
-                              "ated.account-summary.view-all", taxYearStartingYear.toString, (taxYearStartingYear + 1).toString
-                          )
-                        </a>
-                    </div>
-                }
+            @govukButton(Button(
+                href = Some("https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference"),
+                content = Text(messages("ated.account-summary.pay-button.text")),
+                attributes = Map("id" -> "pay-now")
+            ))
 
-                } else {
-                    @noReturnsText()
-                }
+            <p class="govuk-body">
+                <a id="other-ways-you-can-pay" class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">
+                @messages("ated.account-summary.other-ways-to-pay")</a>
+            </p>
+        } else {
+            <p class="govuk-body">@messages("ated.account-summary.no-payment-due.text")</p>
+        }
+    }
 
+    <br>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.current-year-returns.heading")</h2>
+
+        @if(returnsCurrentTaxYear.isEmpty) {
+            <p id ="empty-current-year-returns" class="govuk-body">@messages("ated.account-summary.current-year-returns-no-returns.text")</p>
+        } else {
+            @if(totalCurrentYearReturns > 5) {
+                <div class="govuk-hint">
+                @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
+                </div>
+            }
+            <dl id="current-tax-year-returns" class="govuk-summary-list">
+            @returnsCurrentTaxYear.map { rtn =>
+                @accountSummaryRow(
+                    rtn.description,
+                    messages(rtn.returnType),
+                    messages("ated.account-summary.view-or-change"),
+                    rtn.route
+                )
+            }
+            </dl>
+
+            @if(totalCurrentYearReturns > 5) {
+                <div class="govuk-form-group">
+                    <a id="view-all-returns" class="govuk-link govuk-!-font-size-19" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
+                    @messages(
+                        "ated.account-summary.view-all", taxYearStartingYear.toString, (taxYearStartingYear + 1).toString
+                    )
+                    </a>
+                </div>
+            }
+        }
+
+        @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
+            <div class="govuk-form-group">
+                <p class="govuk-body">
+                <a id = "create-return-1" class="govuk-link" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
+                    @messages("ated.account-summary.create-new-return", taxYearStartingYear.toString, (taxYearStartingYear+1).toString)
+                </a>
+                </p>
+            </div>
+        }else{
             <div class="govuk-form-group">
                 @govukButton(Button(
                     href = Some(controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary).url),
@@ -117,4 +184,90 @@
                 ))
             </div>
         }
+
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.previous-year-returns.heading")</h2>
+        <p class="govuk-body"><a id="previous-returns" class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view()">
+            @messages("ated.account-summary.previous-year-returns-link.text")</a></p>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-details.heading")</h2>
+
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt id="company-details-label" class="govuk-summary-list__key govuk-!-width-one-half">
+            @messages("ated.account-summary.ated-details-company.text")
+            </dt>
+            <dd id="company-details" class="govuk-summary-list__value govuk-!-width-one-half">
+            @messages(organisationName.getOrElse(""))
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt id="reference-number-label" class="govuk-summary-list__key govuk-!-width-one-half">
+            @messages("ated.account-summary.ated-details-reference.text")
+            </dt>
+            <dd id="reference-number" class="govuk-summary-list__value govuk-!-width-one-half">
+                @messages(atedReference)
+            </dd>
+        </div>
+    </dl>
+
+    <p class="govuk-body">
+        <a id = "view-ated-details" class="govuk-link" href="@controllers.subscriptionData.routes.CompanyDetailsController.view">
+            @messages("ated.summary-return.company-details.link")
+        </a>
+    </p>
+
+    @if(authContext.isOrg) {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-agent.heading")</h2>
+        @if(agentDetails.isDefined) {
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt id="agent-name-label" class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-name.text")
+                    </dt>
+                    <dd id="agent-name" class="govuk-summary-list__value">
+                    @messages(printNotProvidedIfEmpty(agentDetails.get.agentName))
+                    </dd>
+                </div>
+                <div  class="govuk-summary-list__row">
+                    <dt id="agent-email-label" class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-email.text")
+                    </dt>
+                    <dd id="agent-email" class="govuk-summary-list__value">
+                    @messages(printNotProvidedIfEmpty(agentDetails.get.email))
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt id="agent-status-label" class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-status.text")
+                    </dt>
+                    <dd id="agent-status" class="govuk-summary-list__value">
+                        @if(agentDetails.get.status == "Active") {
+                            <strong class="govuk-tag govuk-tag--green">Confirmed</strong>
+                        }
+                        @if(agentDetails.get.status == "Approved") {
+                            <strong class="govuk-tag govuk-tag--light-blue">Pending</strong>
+                        }
+                        @if(agentDetails.get.status == "Cancelled") {
+                            <strong class="govuk-tag govuk-tag--orange">Revoked</strong>
+                        }
+                        @if(agentDetails.get.status == "Rejected") {
+                            <strong class="govuk-tag govuk-tag--red">Rejected</strong>
+                        }
+                    </dd>
+                </div>
+            </dl>
+
+            @if(agentDetails.get.status == "Cancelled" || agentDetails.get.status == "Rejected") {
+                <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
+            }
+
+            @if(agentDetails.get.status == "Active" || agentDetails.get.status == "Approved") {
+                <p class="govuk-body"><a class="govuk-link" href="@cancelAgentUrl">@messages("ated.account-summary.cancel-agent.text")</a></p>
+            }
+
+        } else {
+            <p id="no-agent-info" class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
+            <p class="govuk-body"><a id="no-agent-appoint-agent" class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
+        }
+    }
+
 }

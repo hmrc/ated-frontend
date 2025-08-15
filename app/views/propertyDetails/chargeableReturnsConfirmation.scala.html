@@ -65,7 +65,7 @@
 
     <div class="govuk-form-group">
         @govukButton(Button(
-            href = Some(controllers.routes.AccountSummaryController.view.url),
+            href = Some(controllers.routes.AccountSummaryController.view().url),
             content = Text(messages("ated.chargeable-return-confirmation.back-to-ated-link.text")),
             attributes = Map("id" -> "submit")
         ))
