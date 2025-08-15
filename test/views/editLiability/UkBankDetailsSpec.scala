@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 package views.editLiability
- 
+
 import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
@@ -29,9 +29,9 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
-import views.html.editLiability.bankDetails
+import views.html.editLiability.ukBankDetails
 
-class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
+class UkBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
@@ -39,15 +39,15 @@ class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance: bankDetails = app.injector.instanceOf[views.html.editLiability.bankDetails]
+  val injectedViewInstance: ukBankDetails = app.injector.instanceOf[views.html.editLiability.ukBankDetails]
 
-  Feature("The user can whether they have bank details") {
+  Feature("The user can enter their UK bank account details") {
 
-    info("as a client i want change whether I send my bank details")
+    info("as a client i want enter my UK bank account details")
 
-    Scenario("allow indicating bank details status") {
+    Scenario("allow entering bank details") {
 
-      Given("the client is prompted to add their bank details")
+      Given("the client is prompted to add their UK bank account details")
       When("The user views the page")
 
       val html = injectedViewInstance(bankDetailsForm, "1", Html(""), Some("http://backLink"))
@@ -55,8 +55,8 @@ class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is the bank account in the UK?")
-      assert(document.title() === "Enter your bank account details - Submit and view your ATED returns - GOV.UK")
-      assert(document.select("h1").text.contains("Enter your bank account details"))
+      assert(document.title() === "Enter your bank or building society account details - Submit and view your ATED returns - GOV.UK")
+      assert(document.select("h1").text.contains("Enter your bank or building society account details"))
 
       Then("The subheader should be - Change return")
       assert(document.getElementsByClass("govuk-caption-xl").text.contains("This section is: Change return"))
@@ -64,22 +64,17 @@ class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       Then("The fields should have the correct titles")
       And("No data is populated")
 
-      assert(document.getElementById("hasUKBankAccount").text() === "")
-      assert(document.getElementById("hasUKBankAccount-2").text() === "")
-      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount").text() contains "Yes")
-      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount-2").text() contains "No")
-      assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
+      assert(document.getElementById("name-of-person").text() === "Name on the account")
+
+      assert(document.getElementsByAttributeValue("for" ,"sortCode").text() === "Sort code")
+      assert(document.getElementById("sortCode-hint").text() === "Must be 6 digits long")
+      assert(document.getElementById("sortCode").attr("type") === "text")
+      assert(document.getElementById("sortCode").attr("inputmode") === "numeric")
 
       assert(document.getElementsByAttributeValue("for","accountNumber").text() === "Account number")
       assert(document.getElementById("accountNumber-hint").text() === "Must be between 6 and 8 digits long")
-      assert(document.getElementsByAttributeValue("for" ,"sortCode").text() === "Sort code")
-      assert(document.getElementById("sortCode-hint").text() === "Must be 6 digits long")
-      assert(document.getElementById("accountNumber").attr("type") === "number")
-
-      assert(document.getElementsByAttributeValue("for","iban").text() === "IBAN")
-      assert(document.getElementById("iban-hint").text() === "You can ask your bank or check your bank statement")
-      assert(document.getElementsByAttributeValue("for","bicSwiftCode").text() === "SWIFT code")
-      assert(document.getElementById("bicSwiftCode-hint").text() === "Must be between 8 and 11 characters long. You can ask your bank or check your bank statement")
+      assert(document.getElementById("accountNumber").attr("type") === "text")
+      assert(document.getElementById("accountNumber").attr("inputmode") === "numeric")
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Save and continue")
