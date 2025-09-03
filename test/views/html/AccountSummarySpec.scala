@@ -108,7 +108,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       "have the pay now button" in {
         assert(doc.select("#pay-now").text() === "Pay now")
         assert(doc.select("#pay-now").attr("href")
-          === "https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference")
+          === "https://www.tax.service.gov.uk/pay/ated/start-journey")
       }
 
       "have the other ways of pay link" in {
