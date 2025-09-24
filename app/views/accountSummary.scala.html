@@ -252,11 +252,14 @@
                         @if(agentDetails.get.status == "Rejected") {
                             <strong class="govuk-tag govuk-tag--red">Rejected</strong>
                         }
+                        @if(agentDetails.get.status == "Expired") {
+                            <strong class="govuk-tag govuk-tag--grey">Expired</strong>
+                        }
                     </dd>
                 </div>
             </dl>
 
-            @if(agentDetails.get.status == "Cancelled" || agentDetails.get.status == "Rejected") {
+            @if(agentDetails.get.status == "Cancelled" || agentDetails.get.status == "Rejected" || agentDetails.get.status == "Expired") {
                 <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
             }
 

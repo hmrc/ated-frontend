@@ -345,6 +345,30 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red").text() === "Rejected")
       }
 
+      "have Expired agent" in {
+        val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(organisationName),
+          atedReference,
+          Some(ClientMandateDetails(
+            agentName = "name1",
+            changeAgentLink = "",
+            email = "aa@a.com",
+            changeEmailLink = "",
+            status = "Expired")),
+          Html(""),
+          cancelAgentUrl,
+          currentYear,
+          currentTaxYear,
+          fromAccountSummary = false
+        )
+
+        assert(doc(view)getElementsByClass "govuk-tag govuk-tag--grey" !== None)
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--grey").text() === "Expired")
+      }
+
       "have No agent details info" in {
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
