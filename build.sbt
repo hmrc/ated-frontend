@@ -10,7 +10,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ated-frontend"
 
 ThisBuild / majorVersion := 3
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.17"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
@@ -33,6 +33,8 @@ lazy val microservice = Project(appName, file("."))
     .settings(defaultSettings(): _*)
     .settings(playSettings ++ scoverageSettings: _*)
     .settings(
+      scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
       TwirlKeys.templateImports ++= Seq(
         "views.html.helper.form",
         "uk.gov.hmrc.govukfrontend.views.html.components._",
@@ -51,7 +53,6 @@ lazy val microservice = Project(appName, file("."))
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
     )
-    .disablePlugins(JUnitXmlReportPlugin)
 
 
 lazy val it = project
@@ -59,3 +60,6 @@ lazy val it = project
   .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.itDependencies)
+
+addCommandAlias("runAllChecks", ";clean;compile;coverage;test;it/test;coverageReport")
+

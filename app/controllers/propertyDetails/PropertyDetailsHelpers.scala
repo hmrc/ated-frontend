@@ -34,7 +34,7 @@ trait PropertyDetailsHelpers extends BackLinkService {
 
     val handleError: PartialFunction[PropertyDetailsCacheResponse, Future[Result]] = {
       case PropertyDetailsCacheNotFoundResponse | PropertyDetailsCacheErrorResponse =>
-        Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+        Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
     }
 
     propertyDetailsService.retrieveDraftPropertyDetails(id).flatMap(handleError orElse f)

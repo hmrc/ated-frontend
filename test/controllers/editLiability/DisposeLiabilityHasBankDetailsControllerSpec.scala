@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
-  val mockDataCacheService: DataCacheService = mock[DataCacheService]
-  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
-  val mockDisposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController = mock[DisposeLiabilityBankDetailsController]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDisposeLiabilityBankDetailsController: DisposeLiabilityHasUkBankAccountController = mock[DisposeLiabilityHasUkBankAccountController]
   val mockDisposeLiabilitySummaryController: DisposeLiabilitySummaryController = mock[DisposeLiabilitySummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -214,7 +214,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
         saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/bank-details"))
+            redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/has-uk-bank-account"))
             verify(mockDisposeLiabilityReturnService, times(1))
               .cacheDisposeLiabilityReturnHasBankDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }

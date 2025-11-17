@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val btaManageAccountUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountManageAccountUrl)
   lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + conf.getString(Keys.helpAndContactHelpUrl)
   lazy val atedFrontendHost: String = conf.getString("microservice.services.ated-frontend.host")
-  lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
   lazy val urBannerToggle: Boolean = loadConfig("urBanner.toggle").toBoolean
   lazy val urBannerLink: String = loadConfig("urBanner.link")
   lazy val serviceSignOut:String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${loadConfig("service-signout.url")}"""
@@ -57,11 +56,14 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val continueURL: String = s"$loginCallback"
   lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
   lazy val signOut: String = s"$basGatewayHost/bas-gateway/sign-out-without-state"
-  lazy val signOutRedirect: String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${conf.getString("microservice.services.auth.sign-out-redirect")}"""
+  lazy val signOutRedirect: String =
+    s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=
+       |${conf.getString("microservice.services.auth.sign-out-redirect")}""".stripMargin
   lazy val createNewGatewayLink: String = conf.getString("microservice.services.auth.create-account")
   lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
+  lazy val agentSummary: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentSummaryUri")
   lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
 
   lazy val val2022Date: Boolean = conf.getBoolean("feature.valuation2022DateActive")

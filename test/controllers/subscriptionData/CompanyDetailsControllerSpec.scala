@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,60 +57,58 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
-class Setup {
+  class Setup {
 
-  val mockAuthAction: AuthAction = new AuthAction(
-    mockAppConfig,
-    mockDelegationService,
-    mockAuthConnector
-  )
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
 
-  val testCompanyDetailsController: CompanyDetailsController = new CompanyDetailsController(
+    val testCompanyDetailsController: CompanyDetailsController = new CompanyDetailsController(
       mockMcc,
       mockAuthAction,
       mockSubscriptionDataService,
       mockServiceInfoService,
       mockDetailsService,
-    injectedViewInstance
-  )
+      injectedViewInstance
+    )
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedUser(correspondence: Option[Address] = None,
+                              registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any): Any = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockSubscriptionDataService.getEmailConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
+      when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
+
+      val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
+    }
+
+    def getWithAuthorisedUserBack(test: Future[Result] => Any): Any = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+
+      val result = testCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
+    }
   }
-
-  def getWithAuthorisedUser(correspondence: Option[Address] = None,
-                            registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockSubscriptionDataService.getEmailConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-    when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
-    when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
-    when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-
-    val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-  def getWithAuthorisedUserBack(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-
-    val result = testCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-}
 
   override def beforeEach(): Unit = {
   }
@@ -146,6 +144,9 @@ class Setup {
             postalCode = Some("postCode"),
             countryCode = "GB"))
 
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
           result =>
             status(result) must be(OK)
@@ -172,13 +173,16 @@ class Setup {
             postalCode = Some("postCode"),
             countryCode = "GB"))
 
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
-            document.select("div.hmrc-user-research-banner") must not be null
+            document.select("div.hmrc-user-research-banner") must not be None
             document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
         }
@@ -196,6 +200,9 @@ class Setup {
             postalCode = Some("postCode"),
             countryCode = "GB"))
 
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
           result =>
             status(result) must be(OK)
@@ -228,6 +235,236 @@ class Setup {
         val result: Future[Result] = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
         val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must be("Could not get safeId")
+      }
+
+      "display details when agent's status is Active" in new Setup {
+
+        val fourthIndex = 4
+        val fifthIndex = 5
+        val seventhIndex = 7
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "",
+          addressLine4 = Some("addressLine4"), countryCode = "GB")
+
+        val contactDetails: ContactDetails = ContactDetails(phoneNumber = Some("testPhoneNumber"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
+          RegisteredAddressDetails(addressLine1 = "bpline1",
+            addressLine2 = "bpline2",
+            addressLine3 = Some("bpline3"),
+            addressLine4 = Some("bpline4"),
+            postalCode = Some("postCode"),
+            countryCode = "GB"))
+
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink", "Active")
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(clientMandateDetails)))
+        getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.select("div.hmrc-user-research-banner") must not be None
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+
+            document.select("dt.govuk-summary-list__key") must not be None
+            document.select("dt.govuk-summary-list__key").size() mustEqual 8
+            document.select("dt.govuk-summary-list__key").get(1)
+              .text() must be(messages("ated.company-details.appointed_agent"))
+
+            document.select("dd.govuk-summary-list__value") must not be None
+            document.select("dd.govuk-summary-list__value").size() mustEqual 8
+            document.select("dd.govuk-summary-list__value").get(1)
+              .text() must be("agentName")
+            document.select("dd.govuk-summary-list__value").get(fourthIndex)
+              .getElementById("line_4")
+              .text() must be ("addressLine4")
+
+            document.select("dd.govuk-summary-list__actions") must not be None
+            document.select("dd.govuk-summary-list__actions").size() mustEqual 6
+            document.select("dd.govuk-summary-list__actions").get(0)
+              .getElementById("appointed-agent-link")
+              .text() must be ("Change Appointed agent")
+
+            document.select("dt.govuk-summary-list__key").get(seventhIndex)
+              .text() must be (messages("ated.company-details.mandate_email"))
+
+            document.select("dd.govuk-summary-list__value").get(seventhIndex)
+              .text() must be ("email")
+
+            document.select("dd.govuk-summary-list__actions").get(fifthIndex)
+              .getElementById("email-link") must not be None
+            document.select("dd.govuk-summary-list__actions").get(fifthIndex)
+              .getElementById("email-link")
+              .text() must be ("Change Email address for notifications")
+        }
+      }
+
+      "display details when agent's status is InActive" in new Setup {
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "",
+          addressLine4 = Some("addressLine4"), countryCode = "GB")
+
+        val contactDetails: ContactDetails = ContactDetails(phoneNumber = Some("testPhoneNumber"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
+          RegisteredAddressDetails(addressLine1 = "bpline1",
+            addressLine2 = "bpline2",
+            addressLine3 = Some("bpline3"),
+            addressLine4 = Some("bpline4"),
+            postalCode = Some("postCode"),
+            countryCode = "GB"))
+
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink", "InActive")
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(clientMandateDetails)))
+        getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.select("div.hmrc-user-research-banner") must not be None
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+
+            document.select("dt.govuk-summary-list__key") must not be None
+            document.select("dt.govuk-summary-list__key").size() mustEqual 6
+            document.select("dt.govuk-summary-list__key").get(1)
+              .text() must be("ATED reference number")
+
+            document.select("dd.govuk-summary-list__value") must not be None
+            document.select("dd.govuk-summary-list__value").size() mustEqual 6
+
+            document.select("dd.govuk-summary-list__actions") must not be None
+            document.select("dd.govuk-summary-list__actions").size() mustEqual 4
+
+            document.select("dd.govuk-summary-list__actions")
+              .stream()
+              .filter(element => element.getElementById("appointed-agent-link") != null || element.getElementById("email-link") != null)
+              .count() must be (0)
+        }
+      }
+
+      "with Overseas company details" in new Setup {
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
+          RegisteredAddressDetails(addressLine1 = "bpline1",
+            addressLine2 = "bpline2",
+            addressLine3 = Some("bpline3"),
+            addressLine4 = Some("bpline4"),
+            postalCode = Some("postCode"),
+            countryCode = "GB"))
+
+        val identification: Identification = Identification("idNumber", "issuingInstitution", "issuingCountryCode")
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(identification)))
+
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+
+        getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.select("div.hmrc-user-research-banner") must not be None
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+
+            document.select("dt.govuk-summary-list__key").get(3) must not be None
+            document.select("dt.govuk-summary-list__key").get(3).text() must be(messages("ated.company-details.overseas_reg_number"))
+
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_number") must not be None
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_number")
+              .text() must be("idNumber")
+
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_country") must not be None
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_country")
+              .text() must be("issuingCountryCode")
+
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_issuer") must not be None
+            document.select("dd.govuk-summary-list__value").get(3)
+              .getElementById("reg_issuer")
+              .text() must be("issuingInstitution")
+        }
+      }
+
+      "with no business partner details" in new Setup {
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "",
+          addressLine4 = Some("addressLine4"), countryCode = "GB")
+
+        val contactDetails: ContactDetails = ContactDetails(phoneNumber = Some("testPhoneNumber"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink", "Active")
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(clientMandateDetails)))
+        getWithAuthorisedUser(Some(correspondence), None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.select("div.hmrc-user-research-banner") must not be None
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+
+            document.select("dd.govuk-summary-list__actions") must not be None
+            document.select("dd.govuk-summary-list__actions").size() mustEqual 5
+
+            document.select("dd.govuk-summary-list__actions")
+              .stream()
+              .filter(element => element.getElementById("registered-edit") != null)
+              .count() must be (0)
+        }
+      }
+
+      "with business partner and no Overseas company details" in new Setup {
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "",
+          addressLine4 = Some("addressLine4"), countryCode = "GB")
+
+        val contactDetails: ContactDetails = ContactDetails(phoneNumber = Some("testPhoneNumber"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+
+        val identification: Identification = Identification("idNumber", "issuingInstitution", "issuingCountryCode")
+        when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(identification)))
+
+        val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink", "Active")
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(clientMandateDetails)))
+        getWithAuthorisedUser(Some(correspondence), None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.select("div.hmrc-user-research-banner") must not be None
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+
+            document.select("dd.govuk-summary-list__actions") must not be None
+            document.select("dd.govuk-summary-list__actions").size() mustEqual 5
+
+            document.select("dd.govuk-summary-list__actions")
+              .stream()
+              .filter(element => element.getElementById("registered-edit") != null || element.getElementById("registered-edit-os") != null)
+              .count() must be (0)
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.cacheDraftDisposeLiabilityReturnDate(oldFormBundleNo, updatedDate) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
       }
     }
   }
@@ -58,7 +58,17 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.cacheDraftDisposeLiabilityReturnHasBank(oldFormBundleNo, hasBankDetails) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
+      }
+    }
+  }
+
+  def cacheDisposeLiabilityReturnHasUkBankAccount(oldFormBundleNo: String, hasUkBankAccount: Boolean)
+                                               (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+    atedConnector.cacheDraftDisposeLiabilityReturnHasUkBankAccount(oldFormBundleNo, hasUkBankAccount) map {
+      response => response.status match {
+        case OK => response.json.asOpt[DisposeLiabilityReturn]
+        case _ => None
       }
     }
   }
@@ -68,7 +78,7 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo, updatedValue) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
       }
     }
   }
@@ -78,20 +88,21 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
     atedConnector.calculateDraftDisposal(oldFormBundleNo) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
-        case status => None
+        case _ => None
       }
     }
   }
 
-  def submitDraftDisposeLiability(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
+  def submitDraftDisposeLiability(oldFormBundleNo: String)
+                                 (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
     atedConnector.submitDraftDisposeLiabilityReturn(oldFormBundleNo) flatMap {
       disposeLiabilityResponse => disposeLiabilityResponse.status match {
         case OK =>
-          dataCacheService.clearCache() flatMap { response =>
+          dataCacheService.clearCache() flatMap { _ =>
             dataCacheService.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
               data = disposeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
-        case status => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))
+        case _ => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))
       }
     }
   }

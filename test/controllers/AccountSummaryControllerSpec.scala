@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheService}
 import controllers.auth.AuthAction
 import models._
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -36,13 +35,13 @@ import play.api.test.Injecting
 import play.twirl.api.Html
 import services._
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
 import views.html.{BtaNavigationLinks, accountSummary}
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -66,10 +65,21 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: accountSummary = app.injector.instanceOf[views.html.accountSummary]
 
-  when(mockDateService.now()).thenReturn(LocalDate.now())
-  when(mockAppConfig.atedPeakStartDay).thenReturn("27")
-  when(mockAppConfig.urBannerLink).thenReturn("https://test")
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAppConfig.asInstanceOf[AnyRef],
+      mockDateService.asInstanceOf[AnyRef],
+      mockDataCacheConnector.asInstanceOf[AnyRef],
+      mockSummaryReturnsService.asInstanceOf[AnyRef],
+      mockSubscriptionDataService.asInstanceOf[AnyRef],
+      mockMandateFrontendConnector.asInstanceOf[AnyRef],
+      mockDetailsService.asInstanceOf[AnyRef],
+      mockServiceInfoService.asInstanceOf[AnyRef])
 
+    when(mockDateService.now()).thenReturn(LocalDate.now())
+    when(mockAppConfig.atedPeakStartDay).thenReturn("27")
+    when(mockAppConfig.urBannerLink).thenReturn("https://test")
+  }
 
   val periodKey2015: Int = 2015
 
@@ -94,9 +104,36 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       injectedViewInstance
     )
 
-    def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                              correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
+    private def setupCommonMocks(
+                                  returnsSummaryWithDraft: SummaryReturnsModel,
+                                  correspondence: Option[Address],
+                                  safeId: Option[String] = Some("safeId"),
+                                  clientBannerPartial: HtmlPartial = HtmlPartial.Success(Some("thepartial"), Html("")),
+                                  clientMandateDetails: ClientMandateDetails = clientMandateDetails
+                                ): Unit = {
       val httpValue = 200
+
+      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
+      when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(safeId))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful("XN1200000100001"))
+      when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(clientMandateDetails)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(clientBannerPartial))
+    }
+
+    def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
+                              correspondence: Option[Address] = None,
+                              safeId: Option[String] = Some("safeId"),
+                              clientBannerPartial: HtmlPartial = HtmlPartial.Success(Some("thepartial"), Html("")),
+                              clientMandateDetails: ClientMandateDetails = clientMandateDetails
+                             )(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -112,37 +149,27 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         .thenReturn(Future.successful("XN1200000100001"))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
 
+      setupCommonMocks(returnsSummaryWithDraft, correspondence, safeId, clientBannerPartial, clientMandateDetails)
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def getWithForbiddenUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                             correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
-      val httpValue = 200
+                             correspondence: Option[Address] = None)(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
 
       when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      setupCommonMocks(returnsSummaryWithDraft, correspondence)
       when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
-      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(organisationName)))
-      when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
-      when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
-        .thenReturn(Future.successful("XN1200000100001"))
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
-
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                                       correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
-      val httpValue = 200
+                                       correspondence: Option[Address] = None)(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
       setAuthMocks(authMock)
@@ -156,11 +183,12 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
       when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
+      setupCommonMocks(returnsSummaryWithDraft, correspondence)
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -203,8 +231,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementsByTag("h1").text() contains ("Your ATED summary")
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
+            document.getElementsByTag("h1").text() contains "Annual Tax on Enveloped Dwellings (ATED) summary"
         }
       }
 
@@ -233,9 +261,9 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementById("create-return") != null
-            document.getElementById("appoint-agent") != null
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
+            document.getElementById("create-return") must not be None
+            document.getElementById("appoint-agent") must not be None
         }
       }
 
@@ -245,14 +273,13 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementById("create-return") != null
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
+            document.getElementById("create-return") must not be None
             Option(document.getElementById("appoint-agent")) must be(None)
         }
       }
 
-      "throw exception for no safe id" in new Setup {
-        val httpValue = 200
+      "show the agent info for authorised delegated user" in new Setup {
         val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -266,10 +293,24 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
         when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+        getWithAuthorisedDelegatedUser(data, None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
 
-        val result: Future[Result] = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-        val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
-        thrown.getMessage must be("Could not get safeId")
+            document.getElementById("agent-info-text")
+              .getElementsContainingText("As an agent, you are accessing information about your client").size() must not be 0
+            document.getElementById("agent-change-client").getElementsContainingText("Change client").size() must not be 0
+            document.getElementById("agent-change-client").attr("href") === "http://localhost:9959/mandate/agent/summary"
+        }
+      }
+
+      "throw exception for no safe id" in new Setup {
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
+        getWithAuthorisedUser(data, None, safeId = None) { result =>
+          val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
+          thrown.getMessage must be("Could not get safeId")
+        }
       }
 
       "show the create a return button and no appoint an agent link if there are returns and delegation" in new Setup {
@@ -280,9 +321,31 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementById("create-return") != null
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
+            document.getElementById("create-return") must not be None
             Option(document.getElementById("appoint-agent")) must be(None)
+        }
+      }
+
+      "with valid response from ACM" in new Setup {
+        val cancelHtml: String =
+        """<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+         |<html>
+         |
+         |<head>
+         |  <title>Response from ACM</title>
+         |</head>
+         |
+         |<body>
+         |  <a id="client-banner-text-link" href="/testCancelACMLinkUri/testAgentId">Cancel</a>
+         |</body>
+         |
+         |</html>""".stripMargin
+        getWithAuthorisedUser(summaryReturnsModel(periodKey = periodKey2015),
+          Some(address),
+          clientBannerPartial = HtmlPartial.Success(Some("CancelLinkData"), Html(cancelHtml))) {
+          result =>
+            status(result) must be(OK)
         }
       }
     }

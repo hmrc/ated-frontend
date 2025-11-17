@@ -41,15 +41,6 @@
     }
 }
 
-@textHtml = {
-    <div id="newBuild">
-        <p class="govuk-body">@messages("ated.property-details-value.isNewBuild.yesParagraphOne")
-          <a class="govuk-link" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec2" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-value.isNewBuild.yesParagraphTwo")</a>
-        @messages("ated.property-details-value.isNewBuild.yesParagraphThree")
-      </p>
-    </div>
-}
-
 @newMain(title = titleBuilder(messages("ated.property-details-value.isNewBuild.title"), Some(propertyDetailsForm)),
           pageScripts = None,
           serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
@@ -68,7 +59,16 @@
       </h1>
     </header>
 
-  <p class="govuk-body">@messages("ated.property-details-value.isNewBuild.paragraph")</p>
+    <p class="govuk-body">@messages("ated.property-details-value.isNewBuild.paragraph")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("ated.property-details-value.isNewBuild.listitem1")</li>
+        <li>@messages("ated.property-details-value.isNewBuild.listitem2")</li>
+    </ul>
+
+    <p class="govuk-body">@messages("ated.property-details-value.isNewBuild.yesParagraphOne")
+        <a class="govuk-link" style="display:block" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec2" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-value.isNewBuild.yesParagraphTwo")</a>
+    </p>
 
   @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildController.save(id, periodKey, mode)) {
 
@@ -79,11 +79,11 @@
               classes = "govuk-visually-hidden"
           ))
       )),
+      classes = "govuk-radios--inline",
       items = Seq(
           RadioItem(
               content = Text(messages("ated.property-details-value.yes")),
-              value = Some("true"),
-                conditionalHtml = Some(textHtml)),
+              value = Some("true")),
           RadioItem(
               content = Text(messages("ated.property-details-value.no")),
               value = Some("false")))

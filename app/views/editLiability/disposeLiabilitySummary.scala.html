@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@
             actions = Some(Actions(
               items = Seq(
                 ActionItem(
-                  href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                  href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                   content = HtmlContent(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
                 )
@@ -204,7 +204,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityHasUkBankAccountController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
                   )
@@ -221,7 +221,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
                   )
@@ -238,7 +238,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-number"))
                   )
@@ -255,7 +255,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.sort-code"))
                   )
@@ -296,7 +296,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityHasUkBankAccountController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
                   )
@@ -313,7 +313,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityNonUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
                   )
@@ -331,7 +331,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityNonUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.iban"))
                   )
@@ -348,7 +348,7 @@
               actions = Some(Actions(
                 items = Seq(
                   ActionItem(
-                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    href = controllers.editLiability.routes.DisposeLiabilityNonUkBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                     content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
                   )
@@ -455,7 +455,7 @@
   </p>
 
   <p class="govuk-body">
-    <a class="govuk-link" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.dispose-property.summary.save-as-draft-link")</a>
+    <a class="govuk-link" href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.dispose-property.summary.save-as-draft-link")</a>
   </p>
 
   @if(DisposeLiabilityReturn.isComplete(disposeLiability)) {

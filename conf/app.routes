@@ -11,8 +11,8 @@ GET            /logout                                                      cont
 GET            /sign-out                                                    controllers.ApplicationController.redirectToSignIn
 GET            /sign-out-individual                                         controllers.ApplicationController.redirectToGuidance()
 
-GET            /account-summary                                             controllers.AccountSummaryController.view
-GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view
+GET            /account-summary                                             controllers.AccountSummaryController.view()
+GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view()
 GET            /period/select                                               controllers.SelectPeriodController.view
 POST           /period/select                                               controllers.SelectPeriodController.submit
 
@@ -57,8 +57,8 @@ POST           /edit-contact-email                                          cont
 GET            /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.editAddress
 POST           /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.submit
 
-GET            /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.edit
-POST           /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.submit
+GET            /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.edit()
+POST           /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.submit()
 
 GET            /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.edit
 POST           /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.submit
@@ -88,9 +88,19 @@ POST    /liability/:formBundleNo/change/value                               cont
 GET     /liability/:formBundleNo/change/has-bank-details/edit-summary       controllers.editLiability.HasBankDetailsController.editFromSummary(formBundleNo: String)
 GET     /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.save(formBundleNo: String)
-GET     /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.view(formBundleNo: String)
-GET     /liability/:formBundleNo/change/bank-details/edit-summary           controllers.editLiability.BankDetailsController.editFromSummary(formBundleNo: String)
-POST    /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/change/has-uk-bank-account                 controllers.editLiability.HasUkBankAccountController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/change/has-uk-bank-account/edit-summary    controllers.editLiability.HasUkBankAccountController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/change/has-uk-bank-account                 controllers.editLiability.HasUkBankAccountController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/change/uk-bank-details                     controllers.editLiability.UkBankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/change/uk-bank-details/edit-summary        controllers.editLiability.UkBankDetailsController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/change/uk-bank-details                     controllers.editLiability.UkBankDetailsController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/change/non-uk-bank-details                 controllers.editLiability.NonUkBankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/change/non-uk-bank-details/edit-summary    controllers.editLiability.NonUkBankDetailsController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/change/non-uk-bank-details                 controllers.editLiability.NonUkBankDetailsController.save(formBundleNo: String)
+
 GET     /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.submit(formBundleNo: String)
 GET     /liability/:formBundleNo/change/view-summary                        controllers.editLiability.EditLiabilitySummaryController.viewSummary(formBundleNo: String)
@@ -109,9 +119,19 @@ POST    /liability/:formBundleNo/dispose                                    cont
 GET     /liability/:formBundleNo/dispose/has-bank-details/edit-summary      controllers.editLiability.DisposeLiabilityHasBankDetailsController.editFromSummary(formBundleNo: String)
 GET     /liability/:formBundleNo/dispose/has-bank-details                   controllers.editLiability.DisposeLiabilityHasBankDetailsController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/dispose/has-bank-details                   controllers.editLiability.DisposeLiabilityHasBankDetailsController.save(formBundleNo: String)
-GET     /liability/:formBundleNo/dispose/bank-details                       controllers.editLiability.DisposeLiabilityBankDetailsController.view(formBundleNo: String)
-GET     /liability/:formBundleNo/dispose/bank-details/edit-summary          controllers.editLiability.DisposeLiabilityBankDetailsController.editFromSummary(formBundleNo: String)
-POST    /liability/:formBundleNo/dispose/bank-details                       controllers.editLiability.DisposeLiabilityBankDetailsController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/dispose/has-uk-bank-account/edit-summary   controllers.editLiability.DisposeLiabilityHasUkBankAccountController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/has-uk-bank-account                controllers.editLiability.DisposeLiabilityHasUkBankAccountController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/has-uk-bank-account                controllers.editLiability.DisposeLiabilityHasUkBankAccountController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/dispose/uk-bank-details                    controllers.editLiability.DisposeLiabilityUkBankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/uk-bank-details/edit-summary       controllers.editLiability.DisposeLiabilityUkBankDetailsController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/uk-bank-details                    controllers.editLiability.DisposeLiabilityUkBankDetailsController.save(formBundleNo: String)
+
+GET     /liability/:formBundleNo/dispose/non-uk-bank-details                controllers.editLiability.DisposeLiabilityNonUkBankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/non-uk-bank-details/edit-summary   controllers.editLiability.DisposeLiabilityNonUkBankDetailsController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/non-uk-bank-details                controllers.editLiability.DisposeLiabilityNonUkBankDetailsController.save(formBundleNo: String)
+
 GET     /liability/:formBundleNo/dispose/summary                            controllers.editLiability.DisposeLiabilitySummaryController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/dispose/summary                            controllers.editLiability.DisposeLiabilitySummaryController.submit(formBundleNo: String)
 GET     /liability/:formBundleNo/dispose/summary/print                      controllers.editLiability.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(formBundleNo: String)

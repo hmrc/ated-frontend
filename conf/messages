@@ -5,6 +5,7 @@ ated.continue = Continue
 ated.cancel = Cancel
 ated.back = Back
 ated.change = Change
+ated.change-client-link = Change client
 ated.navTitle = Submit and view your ATED returns
 ated.refNo = ATED reference number {0}
 ated.agent.acting.on.behalf.of = acting on behalf of
@@ -113,17 +114,39 @@ unauthorised.sa.p2 = If you are an overseas landlord or client you need to sign 
 
 ##### ACCOUNT SUMMARY
 
-ated.account-summary.appoint-agent.text = Appoint an agent for ATED
-ated.account-summary.peak-guidance.warning = Deadline for {0} to {1} returns: 30 April {0}.
-ated.account-summary.peak-guidance.text.1 = This is the deadline for returns and payments for all ATED-eligible properties that you own on 1 April {0}.
-ated.account-summary.peak-guidance.text.2 = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
-ated.account-summary.outside-peak-guidance.warning = Returns for newly acquired ATED properties must be sent to HMRC within 30 days (90 days for new builds).
-ated.account-summary.current-year-returns = Current year returns
+ated.account-summary.agent-accessing-information.text = As an agent, you are accessing information about your client
+ated.account-summary.appoint-agent.text = Appoint an agent
+ated.account-summary.cancel-agent.text = Cancel agent
+ated.account-summary.current-year-returns.heading = Current year ATED returns
+ated.account-summary.current-year-returns-no-returns.text = You have no current year returns.
 ated.account-summary.showing = Showing {0} of {1} returns
 ated.account-summary.view-or-change = View or change
-ated.account-summary.outside-peak-guidance-part-one.text = Returns for {0} to {1} are due by 30 April {0}.
-ated.account-summary.outside-peak-guidance-part-two.text = This is for all properties in scope of ATED on 1 April {0}.
+ated.account-summary.previous-year-returns.heading = Previous years ATED returns
+ated.account-summary.previous-year-returns-link.text = View or change ATED returns for previous chargeable periods
+ated.account-summary.peak-guidance-part-one.text = The deadline for {0} to {1} returns and payments for all ATED-eligible properties that you own on 1 April {0} is
+ated.account-summary.peak-guidance-part-two.text =  30 April {0}.
+ated.account-summary.peak-guidance-part-three.text = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
+ated.account-summary.balance-outstanding.heading = Amount due
+ated.account-summary.balance-outstanding-part-one.text = You will need your payment reference number to pay. Your payment reference number is on your latest return.
+ated.account-summary.balance-outstanding-part-two.text = There can be a 24 hour delay before you see any updates on your balance after you have paid.
+ated.account-summary.balance-outstanding-total-due.text = Total amount due
+ated.account-summary.balance-owed.heading = Amount owed
+ated.account-summary.balance-owed-part-one.text = You are due a refund as you have made changes to one or more of your ATED returns.
+ated.account-summary.balance-owed-part-two.text = The refund process is automatic and takes 15 working days. If it is delayed you will receive a letter from HMRC.
+ated.account-summary.balance-owed-amount-owed.text = Amount owed
+ated.account-summary.balance-owed-status.text = Status
+ated.account-summary.pay-button.text = Pay now
+ated.account-summary.other-ways-to-pay = Other ways you can pay
+ated.account-summary.no-payment-due.text = You have no payment due.
 ated.account-summary.no-returns-heading = You have no returns
+ated.account-summary.ated-details.heading = Your ATED details
+ated.account-summary.ated-details-company.text = Company details
+ated.account-summary.ated-details-reference.text = ATED reference number
+ated.account-summary.ated-agent.heading = Your ATED agent
+ated.account-summary.ated-agent-name.text = Agent name
+ated.account-summary.ated-agent-email.text = Agent email address
+ated.account-summary.ated-agent-status.text = Agent status
+ated.account-summary.ated-no-agent.text = You can let an agent represent for ATED using an ATED1 form. However, this authority is limited to ATED and does not extend to other services.
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
 ##### SELECT PERIOD
@@ -368,8 +391,8 @@ ated.prev-period-summary.create-return.button = Create a new return
 
 ##### SUMMARY RETURN
 
-ated.summary-return.title = Your ATED summary
-ated.summary-return.header = Your ATED summary
+ated.summary-return.title = Annual Tax on Enveloped Dwellings (ATED) summary
+ated.summary-return.header = Annual Tax on Enveloped Dwellings (ATED) summary
 ated.summary-return.sidebar.balance = Your balance
 ated.summary-return.sidebar.pay.link = Deadlines and ways to pay
 ated.summary-return.sidebar.owed.link = Ways to be paid
@@ -601,10 +624,12 @@ ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500
 
 ated.property-details-value.isNewBuild.title = Is the property a new build?
 ated.property-details-value.isNewBuild.header = Is the property a new build?
-ated.property-details-value.isNewBuild.paragraph = Answer yes only if your ATED liability is beginning in this chargeable period and the property is newly constructed or is a new dwelling adapted from other dwellings.
-ated.property-details-value.isNewBuild.yesParagraphOne = You may be eligible for a
-ated.property-details-value.isNewBuild.yesParagraphTwo = longer filing window of 90 days (opens in  new tab)
-ated.property-details-value.isNewBuild.yesParagraphThree = in which to submit your returns and pay ATED in this chargeable period.
+ated.property-details-value.isNewBuild.paragraph = Select 'Yes' only if:
+ated.property-details-value.isNewBuild.listitem1 = your ATED charge starts this chargeable period
+ated.property-details-value.isNewBuild.listitem2 = the property is newly built or converted from another type of building
+
+ated.property-details-value.isNewBuild.yesParagraphOne = You may be eligible up to 90 days to file your return and pay ATED.
+ated.property-details-value.isNewBuild.yesParagraphTwo = Find out about the 90-day filing rule (opens in new tab)
 
 ated.property-details-value.isNewBuild = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
 ated.property-details-value.isNewBuild.what-is-this = What is a new build?
@@ -1164,12 +1189,18 @@ ated.edit.liability.sent.button = Your ATED summary
 ated.bank-details.has-bank-details.title = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
+ated.bank-details.has-uk-bank-account.title = Are you using a UK bank account?
+ated.bank-details.has-uk-bank-account.header = Are you using a UK bank account?
 
 ated.bank-details.title = Enter your bank account details
 ated.bank-details.header = Enter your bank account details
+ated.bank-details.bank-account.name.label = Name on the account
+ated.bank-details-uk.title = Enter your bank or building society account details
+ated.bank-details-uk.header = Enter your bank or building society account details
 ated.bank-details.location.label = Is the bank account in the UK?
 ated.bank-details.account.number.hint = Must be between 6 and 8 digits long
 ated.bank-details.sort.code.hint = Must be 6 digits long
+ated.bank-details.building.society.number.hint = You can find it on your card, statement or passbook
 ated.bank-details.iban.hint = You can ask your bank or check your bank statement
 ated.bank-details.swift.hint = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
 
@@ -1180,6 +1211,7 @@ ated.bank-details.uk-bank-account.number.label = Account number
 ated.bank-details.uk-bank-account.sort-code.label = Sort code
 ated.bank-details.non-uk-bank-account.iban.label = IBAN
 ated.bank-details.non-uk-bank-account.bic-swift-code.label = SWIFT code
+ated.bank-details.dispose-non-uk-bank-account.bic-swift-code.label = BIC or SWIFT code
 ated.bank-details.error-key.accountName.empty = Enter the name of the bank account holder
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
 ated.bank-details.error-key.accountNumber.empty = Enter an account number
@@ -1244,10 +1276,10 @@ ated.agent.banner = You are viewing the returns of <strong class="govuk-!-font-w
 
 ##### VALUATION DATE CHANGE BANNER
 
-ated.valuation.banner.p1 = Properties must be revalued every 5 years in line with ATED legislation.
-ated.valuation.banner.p2 = The 2023 to 2024 chargeable period is a revaluation year.
-ated.valuation.banner.p3 = For properties acquired <strong class="govuk-!-font-weight-bold">on or before</strong> 1 April 2022, use this date as the revaluation date.
-ated.valuation.banner.p4 = For properties acquired <strong class="govuk-!-font-weight-bold">after</strong> 1 April 2022, use the acquisition date as the valuation date.
+ated.valuation.banner.p1 = You must revalue your property every 5 years under ATED rules.
+ated.valuation.banner.p2 = For the 2023 to 2024 chargeable period, if you bought the property:
+ated.valuation.banner.p3 = on or before 1 April 2022, use 1 April 2022 as the revaluation date
+ated.valuation.banner.p4 = after 1 April 2022, use the date you acquired it as the valuation date
 
 ##### WRONG CLIENT ERROR MESSAGE
 
