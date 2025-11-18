@@ -35,7 +35,8 @@ import play.api.test.Injecting
 import play.twirl.api.Html
 import services._
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
@@ -69,7 +70,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     super.beforeEach()
     reset(mockAppConfig.asInstanceOf[AnyRef],
       mockDateService.asInstanceOf[AnyRef],
-      mockDataCacheConnector.asInstanceOf[AnyRef],
+      mockDataCacheService.asInstanceOf[AnyRef],
       mockSummaryReturnsService.asInstanceOf[AnyRef],
       mockSubscriptionDataService.asInstanceOf[AnyRef],
       mockMandateFrontendConnector.asInstanceOf[AnyRef],
@@ -82,6 +83,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   }
 
   val periodKey2015: Int = 2015
+  val httpValue = 200
 
   class Setup {
 
@@ -111,9 +113,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                                   clientBannerPartial: HtmlPartial = HtmlPartial.Success(Some("thepartial"), Html("")),
                                   clientMandateDetails: ClientMandateDetails = clientMandateDetails
                                 ): Unit = {
-      val httpValue = 200
-
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))

@@ -66,7 +66,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       when(mockMandateFrontendConnector.getClientDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(mandateFrontendGetClientDetailsResponse))
 
-      when(mockDataCacheConnector.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
+      when(mockDataCacheService.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(dataCacheSaveFormDataResponse))
     }
@@ -74,7 +74,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAtedConnector, mockMandateFrontendConnector, mockDataCacheConnector)
+    reset(mockAtedConnector, mockMandateFrontendConnector, mockDataCacheService)
   }
 
   val successResponseInd: JsValue = Json.parse(
