@@ -19,7 +19,7 @@ package controllers.subscriptionData
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheConnector
+import connectors.DataCacheService
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -51,7 +51,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

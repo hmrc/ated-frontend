@@ -16,7 +16,7 @@
 
 package controllers.propertyDetails
 
-import controllers.BackLinkController
+import controllers.BackLinkService
 import models.StandardAuthRetrievals
 import play.api.mvc.Result
 import play.api.mvc.Results._
@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait PropertyDetailsHelpers extends BackLinkController {
+trait PropertyDetailsHelpers extends BackLinkService {
 
   def propertyDetailsService: PropertyDetailsService
 

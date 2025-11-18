@@ -29,8 +29,8 @@ class PropertyDetailsExitControllerSpec extends PropertyDetailsTestFixture {
     mockMcc,
     mockAuthAction,
     mockPropertyDetailsService,
-    mockDataCacheConnector,
-    mockBackLinkCacheConnector,
+    mockDataCacheService,
+    mockBackLinkCacheService,
     injectedViewInstance
   )
 

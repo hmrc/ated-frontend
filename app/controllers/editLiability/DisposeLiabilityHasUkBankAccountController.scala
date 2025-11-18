@@ -17,9 +17,9 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.{BackLinkService, ControllerIds}
 import forms.BankDetailForms.hasUkBankAccountForm
 import models.{BankDetails, HasUkBankAccount}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,12 +36,12 @@ class DisposeLiabilityHasUkBankAccountController @Inject()(mcc: MessagesControll
                                                            disposeLiabilityUkBankDetailsController: DisposeLiabilityUkBankDetailsController,
                                                            disposeLiabilityNonUkBankDetailsController: DisposeLiabilityNonUkBankDetailsController,
                                                            serviceInfoService: ServiceInfoService,
-                                                           val dataCacheConnector: DataCacheConnector,
-                                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                                           val dataCacheService: DataCacheService,
+                                                           val backLinkCacheService: BackLinkCacheService,
                                                            template: views.html.editLiability.disposeLiabilityHasUkBankAccount)
                                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
