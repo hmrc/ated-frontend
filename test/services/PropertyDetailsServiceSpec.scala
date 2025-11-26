@@ -18,7 +18,7 @@ package services
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{DataCacheConnector, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -41,12 +41,12 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
   implicit  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector : PropertyDetailsConnector = mock[PropertyDetailsConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
  class Setup {
    val testPropertyDetailsService: PropertyDetailsService = new PropertyDetailsService(
      mockPropertyDetailsConnector,
-     mockDataCacheConnector
+     mockDataCacheService
    )
  }
   override def beforeEach(): Unit = {
@@ -450,18 +450,18 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         when(mockPropertyDetailsConnector.submitDraftPropertyDetails(ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
+        when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
-        when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
+        when(mockDataCacheService.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
           ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
           (ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.submitDraftPropertyDetails("1")
         await(result)
-        verify(mockDataCacheConnector, times(1)).clearCache()(ArgumentMatchers.any())
-        verify(mockDataCacheConnector, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())
+        verify(mockDataCacheService, times(1)).clearCache()(ArgumentMatchers.any())
+        verify(mockDataCacheService, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())
       }
 
     }

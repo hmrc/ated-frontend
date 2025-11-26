@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.BackLinkCacheConnector
 import models.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -42,7 +41,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCache: BackLinkCacheService = mock[BackLinkCacheService]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   object TestPropertyDetailsHelpers extends PropertyDetailsHelpers {
@@ -50,7 +49,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
    val delegationService: DelegationService = mockDelegationService
     val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
     override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val backLinkCacheService: BackLinkCacheService = mockBackLinkCache
   }
 
   "PropertyDetailsHelpers" must {

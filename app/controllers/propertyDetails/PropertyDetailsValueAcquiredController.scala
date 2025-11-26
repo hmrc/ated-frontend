@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -38,8 +37,8 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
                                                        propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val dataCacheService: DataCacheService,
+                                                       val backLinkCacheService: BackLinkCacheService,
                                                        template: html.propertyDetails.propertyDetailsValueAcquired)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -54,7 +53,7 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
                 val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(LocalDate.now())
                 Future.successful(Ok(template(id,

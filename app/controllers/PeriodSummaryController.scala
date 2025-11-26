@@ -17,11 +17,11 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.BackLinkCacheConnector
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
+import services.{BackLinkCacheService, BackLinkService, ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
 
@@ -32,11 +32,11 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         summaryReturnsService: SummaryReturnsService,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
-                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                        val backLinkCacheService: BackLinkCacheService,
                                         template: views.html.periodSummary)
                                        (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ControllerIds {
+  extends FrontendController(mcc) with BackLinkService with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodSummaryController"

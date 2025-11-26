@@ -17,7 +17,7 @@
 package services
 
 import config.ApplicationConfig
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.AtedConnector
 
 import javax.inject.Inject
 import models._
@@ -30,7 +30,7 @@ import utils.ReliefsUtils
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReliefsService @Inject()(atedConnector: AtedConnector,
-                               dataCacheConnector: DataCacheConnector)(implicit val ec: ExecutionContext) extends Logging {
+                               dataCacheService: DataCacheService)(implicit val ec: ExecutionContext) extends Logging {
 
   def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)
                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
@@ -99,13 +99,13 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
   def submitDraftReliefs(atedRefNo: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     for {
       httpResponse <- atedConnector.submitDraftReliefs(atedRefNo, periodKey)
-      _ <- dataCacheConnector.clearCache()
+      _ <- dataCacheService.clearCache()
       _ <-  {
         httpResponse.status match {
-          case OK => dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
+          case OK => dataCacheService.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
           case NOT_FOUND =>
             logger.warn(s"[ReliefsService][submitDraftReliefs] - No reliefs to submit - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
-            dataCacheConnector.saveFormData[AlreadySubmittedReturnsResponse](formId = AlreadySubmittedReturnsResponseFormId, data = httpResponse.json.as[AlreadySubmittedReturnsResponse])
+            dataCacheService.saveFormData[AlreadySubmittedReturnsResponse](formId = AlreadySubmittedReturnsResponseFormId, data = httpResponse.json.as[AlreadySubmittedReturnsResponse])
           case _ =>
             logger.warn(s"[ReliefsService][submitDraftReliefs] - Invalid status returned when submitting draft relief - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
             throw new InternalServerException(s"[ReliefsService][submitDraftReliefs] - status : ${httpResponse.status}")
@@ -151,7 +151,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
   def viewReliefReturn(periodKey: Int, formBundleNo: String)(implicit hc: HeaderCarrier,
                        appConfig: ApplicationConfig): Future[(Option[SubmittedReliefReturns], Boolean)] = {
     for {
-      cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
+      cachedReturns <- dataCacheService.fetchAndGetData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {
       cachedReturns match {
         case Some(x) =>

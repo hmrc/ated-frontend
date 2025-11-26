@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthAction
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                              subscriptionDataService: SubscriptionDataService,
                                              mandateFrontendConnector: AgentClientMandateFrontendConnector,
                                              detailsService: DetailsService,
-                                             dataCacheConnector: DataCacheConnector,
+                                             dataCacheService: DataCacheService,
                                              serviceInfoService: ServiceInfoService,
                                              dateService: DateService,
                                              template: views.html.prevPeriodsSummary)
@@ -48,7 +48,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        _ <- dataCacheConnector.clearCache()
+        _ <- dataCacheService.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
         previousReturns = allReturns.returnsOtherTaxYears.filterNot(_.periodKey.equals(PeriodUtils.calculatePeakStartYear() + 1))
         _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)

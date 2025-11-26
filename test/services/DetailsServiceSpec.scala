@@ -18,7 +18,7 @@ package services
 
 import java.util.UUID
 import builders.RegistrationBuilder
-import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -42,13 +42,13 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   class Setup {
     val testDetailsService: DetailsService = new DetailsService(
       mockAtedConnector,
       mockMandateFrontendConnector,
-      mockDataCacheConnector
+      mockDataCacheService
     )
 
     def setupCommonMocks(
@@ -66,7 +66,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       when(mockMandateFrontendConnector.getClientDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(mandateFrontendGetClientDetailsResponse))
 
-      when(mockDataCacheConnector.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
+      when(mockDataCacheService.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(dataCacheSaveFormDataResponse))
     }
@@ -74,7 +74,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAtedConnector, mockMandateFrontendConnector, mockDataCacheConnector)
+    reset(mockAtedConnector, mockMandateFrontendConnector, mockDataCacheService)
   }
 
   val successResponseInd: JsValue = Json.parse(
@@ -308,6 +308,9 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "save the new client ref num, if clear cache is successful" in new Setup {
 
+      when(mockDataCacheService.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
       setupCommonMocks(dataCacheSaveFormDataResponse = "XN1200000100001")
 
       val result: Future[String] = testDetailsService.cacheClientReference("XN1200000100001")(hc)

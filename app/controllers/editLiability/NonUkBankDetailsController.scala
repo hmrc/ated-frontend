@@ -17,14 +17,13 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.ControllerIds
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ChangeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, ChangeLiabilityReturnService, DataCacheService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
@@ -37,11 +36,11 @@ class NonUkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                            changeLiabilityReturnService: ChangeLiabilityReturnService,
                                            authAction: AuthAction,
                                            serviceInfoService: ServiceInfoService,
-                                           val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                           val dataCacheService: DataCacheService,
+                                           val backLinkCacheService: BackLinkCacheService,
                                            template: views.html.editLiability.nonUkBankDetails)
                                           (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
