@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package controllers
+package services
 
-import connectors.BackLinkCacheService
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier

@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
 import org.mockito.ArgumentMatchers
@@ -29,7 +28,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.OK
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.MessagesControllerComponents
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.HeaderCarrier

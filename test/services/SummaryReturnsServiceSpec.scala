@@ -17,7 +17,7 @@
 package services
 
 import config.ApplicationConfig
-import connectors.{AtedConnector, DataCacheService}
+import connectors.AtedConnector
 import models._
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

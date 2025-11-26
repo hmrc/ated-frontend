@@ -17,10 +17,9 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._

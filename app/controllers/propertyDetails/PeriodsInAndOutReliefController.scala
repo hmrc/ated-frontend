@@ -17,13 +17,12 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.{AtedUtils, PeriodUtils}

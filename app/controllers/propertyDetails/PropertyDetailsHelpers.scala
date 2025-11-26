@@ -16,7 +16,6 @@
 
 package controllers.propertyDetails
 
-import controllers.BackLinkService
 import models.StandardAuthRetrievals
 import play.api.mvc.Result
 import play.api.mvc.Results._

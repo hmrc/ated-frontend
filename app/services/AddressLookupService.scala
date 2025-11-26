@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AddressLookupConnector, DataCacheService}
+import connectors.AddressLookupConnector
 
 import javax.inject.Inject
 import models._

@@ -19,7 +19,6 @@ package controllers
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
@@ -38,7 +37,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ServiceInfoService, SummaryReturnsService}
+import services.{BackLinkCacheService, DataCacheService, ServiceInfoService, SummaryReturnsService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

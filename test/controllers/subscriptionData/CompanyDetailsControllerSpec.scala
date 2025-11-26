@@ -19,7 +19,6 @@ package controllers.subscriptionData
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheService
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -32,7 +31,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, DetailsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}

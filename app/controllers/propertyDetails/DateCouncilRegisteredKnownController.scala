@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}

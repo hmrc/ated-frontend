@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheService
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.{MockAuthUtil, TestUtil}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

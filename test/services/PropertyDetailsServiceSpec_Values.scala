@@ -18,7 +18,7 @@ package services
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{DataCacheService, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

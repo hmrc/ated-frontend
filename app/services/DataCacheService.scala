@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
 import play.api.libs.json.Format
 import repositories.CacheRepository

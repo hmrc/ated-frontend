@@ -17,13 +17,12 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.DataCacheService
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.SubmitReturnsResponse
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 

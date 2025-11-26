@@ -18,7 +18,7 @@ package services
 
 import java.util.UUID
 import builders.RegistrationBuilder
-import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheService}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

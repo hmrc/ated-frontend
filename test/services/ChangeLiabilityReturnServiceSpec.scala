@@ -18,7 +18,7 @@ package services
 
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import config.ApplicationConfig
-import connectors.{AtedConnector, DataCacheService}
+import connectors.AtedConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

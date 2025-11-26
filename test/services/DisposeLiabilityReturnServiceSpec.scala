@@ -17,7 +17,7 @@
 package services
 
 import builders.DisposeLiabilityReturnBuilder
-import connectors.{AtedConnector, DataCacheService}
+import connectors.AtedConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

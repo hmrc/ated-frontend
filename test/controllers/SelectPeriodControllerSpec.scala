@@ -18,7 +18,6 @@ package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.SelectPeriod
 import org.jsoup.Jsoup
@@ -32,7 +31,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ServiceInfoService
+import services.{BackLinkCacheService, DataCacheService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

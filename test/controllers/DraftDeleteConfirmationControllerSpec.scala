@@ -19,7 +19,6 @@ package controllers
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheService
 import controllers.auth.AuthAction
 import forms.AtedForms.YesNoQuestion
 import org.jsoup.Jsoup

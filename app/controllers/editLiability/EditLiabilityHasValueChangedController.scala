@@ -17,14 +17,13 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails._
 import forms.PropertyDetailsForms.hasValueChangedForm
 import javax.inject.Inject
 import models.HasValueChanged
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils

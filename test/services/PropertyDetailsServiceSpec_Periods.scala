@@ -18,7 +18,7 @@ package services
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{DataCacheService, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 import models._
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers

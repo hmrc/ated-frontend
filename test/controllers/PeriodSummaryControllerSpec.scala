@@ -18,7 +18,6 @@ package controllers
 
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.BackLinkCacheService
 import controllers.auth.AuthAction
 import controllers.editLiability.DisposePropertyController
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
@@ -34,7 +33,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
+import services.{BackLinkCacheService, ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

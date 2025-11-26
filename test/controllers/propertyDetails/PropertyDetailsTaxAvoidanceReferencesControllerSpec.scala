@@ -19,7 +19,6 @@ package controllers.test
 import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController
 import models._
@@ -35,7 +34,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

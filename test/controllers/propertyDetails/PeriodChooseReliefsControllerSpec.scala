@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -34,7 +33,7 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

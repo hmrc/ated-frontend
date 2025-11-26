@@ -16,7 +16,6 @@
 
 package controllers.propertyDetails
 
-import connectors.DataCacheService
 import models.PropertyDetailsNewBuildDates
 import play.api.mvc.MessagesControllerComponents
 import services._

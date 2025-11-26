@@ -18,7 +18,6 @@ package services
 
 import java.util.UUID
 import builders.RegistrationBuilder
-import connectors.DataCacheService
 import models._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._

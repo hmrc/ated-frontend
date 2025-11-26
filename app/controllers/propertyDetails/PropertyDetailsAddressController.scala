@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._

@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models._
 import java.time.LocalDate

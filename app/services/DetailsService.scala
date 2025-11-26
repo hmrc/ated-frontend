@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheService}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector}
 
 import javax.inject.Inject
 import models._

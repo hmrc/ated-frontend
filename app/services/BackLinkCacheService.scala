@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
 import models.BackLinkModel
 import repositories.SessionCacheRepository
@@ -29,7 +29,7 @@ class BackLinkCacheService @Inject()(
     sessionCache: SessionCacheRepository
 )(implicit ec: ExecutionContext) {
 
-  val sourceId: String = "ATED_Back_Link"
+  private val sourceId: String = "ATED_Back_Link"
 
   def dataKey(pageId: String): DataKey[BackLinkModel] = DataKey[BackLinkModel](s"$sourceId$pageId")
 
@@ -43,7 +43,10 @@ class BackLinkCacheService @Inject()(
 
   def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] =
     if (pageIds.nonEmpty) {
-      Future.sequence(pageIds.map(pageId => saveBackLink(pageId, None)))
+      Future.sequence {
+        val cleared = pageIds.map(pageId => saveBackLink(pageId, None))
+        cleared
+      }
     } else {
       Future.successful(Nil)
     }

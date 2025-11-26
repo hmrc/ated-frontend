@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheService}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthAction
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element

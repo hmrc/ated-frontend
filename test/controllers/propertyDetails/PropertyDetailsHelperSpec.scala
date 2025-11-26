@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.BackLinkCacheService
 import models.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

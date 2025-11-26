@@ -19,7 +19,6 @@ package controllers.reliefs
 import java.util.UUID
 import builders.{ReliefBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.jsoup.Jsoup
@@ -33,7 +32,7 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, ReliefsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

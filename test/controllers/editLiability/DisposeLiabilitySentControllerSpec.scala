@@ -19,7 +19,6 @@ package controllers.editLiability
 import java.util.UUID
 import builders._
 import config.ApplicationConfig
-import connectors.DataCacheService
 import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
 import java.time.format.DateTimeFormatter
@@ -34,7 +33,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

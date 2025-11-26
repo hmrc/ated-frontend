@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AddressLookupConnector, DataCacheService}
+import connectors.AddressLookupConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityHasValueChangedController

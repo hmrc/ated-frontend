@@ -19,7 +19,6 @@ package controllers.reliefs
 import java.util.UUID
 import builders.{ReliefBuilder, SessionBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.PropertyDetailsAddressController
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
@@ -34,7 +33,7 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{FormBundleReturnsService, PropertyDetailsService, ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, FormBundleReturnsService, PropertyDetailsService, ReliefsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

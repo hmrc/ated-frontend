@@ -18,7 +18,6 @@ package controllers.editLiability
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import models.{BankDetailsModel, PropertyDetails}
 import org.jsoup.Jsoup
@@ -33,7 +32,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ChangeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, ChangeLiabilityReturnService, DataCacheService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.AtedConstants

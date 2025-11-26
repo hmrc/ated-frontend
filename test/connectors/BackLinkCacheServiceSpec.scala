@@ -26,6 +26,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Injecting
 import repositories.SessionCacheRepository
+import services.BackLinkCacheService
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mongo.cache.DataKey
 

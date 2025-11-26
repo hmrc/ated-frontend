@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{DataCacheService, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 
 import javax.inject.Inject
 import models._

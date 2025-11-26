@@ -18,7 +18,7 @@ package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheService}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup

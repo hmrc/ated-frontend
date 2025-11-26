@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsNewValuationForm
 import models.PropertyDetailsNewValuation

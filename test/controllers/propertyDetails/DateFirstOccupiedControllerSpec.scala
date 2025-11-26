@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
 import controllers.auth.AuthAction
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers

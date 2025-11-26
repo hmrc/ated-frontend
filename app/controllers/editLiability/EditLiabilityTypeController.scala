@@ -17,8 +17,6 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheService, DataCacheService}
-import controllers.BackLinkService
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import forms.AtedForms._
@@ -26,7 +24,7 @@ import javax.inject.Inject
 import models.EditLiabilityReturnType
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
-import services.ServiceInfoService
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}

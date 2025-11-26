@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AtedConnector, DataCacheService}
+import connectors.AtedConnector
 
 import javax.inject.Inject
 import models._
