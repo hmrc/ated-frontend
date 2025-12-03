@@ -26,10 +26,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DataCacheService @Inject()(sessionCache: CacheRepository)(implicit ec: ExecutionContext) {
 
-  def dataKey[T](formId: String): DataKey[T] = DataKey[T](s"$formId")
+  def dataKey[T](formId: String): DataKey[T] = DataKey[T](formId)
 
   def saveFormData[T](formId: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[T] =
-    sessionCache.putSession(dataKey(formId), data).map(_ => data)
+    sessionCache.putSession(dataKey(formId), data)
 
   def fetchAndGetData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] =
     sessionCache.getFromSession[T](dataKey(formId))
