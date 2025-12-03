@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package controllers
+package services
 
-import connectors.BackLinkCacheConnector
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait BackLinkController {
+trait BackLinkService {
 
   implicit val ec: ExecutionContext
   val controllerId: String
-  val backLinkCacheConnector: BackLinkCacheConnector
+  val backLinkCacheService: BackLinkCacheService
 
-  def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    backLinkCacheConnector.saveBackLink(pageId, returnUrl)
+  private def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    backLinkCacheService.saveBackLink(pageId, returnUrl)
   }
 
   def getBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    backLinkCacheConnector.fetchAndGetBackLink(pageId)
+    backLinkCacheService.fetchAndGetBackLink(pageId)
   }
 
   def currentBackLink(implicit hc: HeaderCarrier): Future[Option[String]] = {
@@ -44,16 +43,15 @@ trait BackLinkController {
   def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
     pageIds match {
       case Nil => Future.successful(Nil)
-      case _ => backLinkCacheConnector.clearBackLinks(pageIds)
+      case _   => backLinkCacheService.clearBackLinks(pageIds)
     }
   }
 
-  def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)
-                               (implicit hc: HeaderCarrier): Future[Result] = {
+  def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)(implicit hc: HeaderCarrier): Future[Result] = {
     for {
       currentBackLink <- currentBackLink
-      _ <- setBackLink(nextPageId, currentBackLink)
-    } yield{
+      _               <- setBackLink(nextPageId, currentBackLink)
+    } yield {
       Redirect(redirectCall)
     }
   }
@@ -63,7 +61,7 @@ trait BackLinkController {
     for {
       _ <- setBackLink(nextPageId, backCall)
       _ <- clearBackLinks(pageIds)
-    } yield{
+    } yield {
       Redirect(redirectCall)
     }
   }
@@ -73,11 +71,12 @@ trait BackLinkController {
     for {
       oldBackLink <- getBackLink(nextPageId)
       _ <- oldBackLink match {
-          case Some(_) => Future.successful(oldBackLink)
-          case None => setBackLink(nextPageId, backCall)
-        }
-    } yield{
+        case Some(_) => Future.successful(oldBackLink)
+        case None    => setBackLink(nextPageId, backCall)
+      }
+    } yield {
       Redirect(redirectCall)
     }
   }
+
 }

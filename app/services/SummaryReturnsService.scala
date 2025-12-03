@@ -17,7 +17,7 @@
 package services
 
 import config.ApplicationConfig
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.AtedConnector
 
 import javax.inject.Inject
 import models._
@@ -30,7 +30,7 @@ import utils.{PeriodUtils, ReliefsUtils}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.Ordering.Implicits.infixOrderingOps
 
-class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(
+class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheService: DataCacheService)(
   implicit val appConfig: ApplicationConfig, ec: ExecutionContext) extends Logging {
 
   def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
@@ -45,7 +45,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
     }
 
     for {
-      cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
+      cachedReturns <- dataCacheService.fetchAndGetData[SummaryReturnsModel](RetrieveReturnsResponseId)
       summaryReturns: SummaryReturnsModel <- {
         cachedReturns match {
           case Some(x) => atedConnector.getPartialSummaryReturns map {
@@ -116,7 +116,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
                     returnsOtherTaxYears = returnsFilteredOtherTaxYears.map(a => a.copy(draftReturns = Nil))
                   )
 
-                  dataCacheConnector.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId,
+                  dataCacheService.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId,
                     summaryReturnsToCache) map (_ =>
                     resp.copy(
                       returnsCurrentTaxYear = returnsFilteredCurrentTaxYear,
@@ -175,11 +175,11 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
 
   private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])
                                    (implicit headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
-    dataCacheConnector.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
+    dataCacheService.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
   }
 
   def retrieveCachedPreviousReturnAddressList(implicit hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
-    dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
+    dataCacheService.fetchAndGetData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
 
   def generateCurrentTaxYearReturns(returns: Seq[PeriodSummaryReturns]): Future[(Seq[AccountSummaryRowModel], Int, Boolean)] = {

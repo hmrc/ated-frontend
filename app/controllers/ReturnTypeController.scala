@@ -17,28 +17,29 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.returnTypeForm
+
 import javax.inject.Inject
 import models.ReturnType
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ServiceInfoService, SummaryReturnsService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      authAction: AuthAction,
                                      summaryReturnService: SummaryReturnsService,
                                      serviceInfoService: ServiceInfoService,
-                                     val dataCacheConnector: DataCacheConnector,
-                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                     val dataCacheService: DataCacheService,
+                                     val backLinkCacheService: BackLinkCacheService,
                                      template: views.html.returnType)
                                     (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   val controllerId: String = "ReturnTypeController"
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -48,7 +49,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(backLink =>
-            dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
+            dataCacheService.fetchAndGetData[ReturnType](RetrieveReturnTypeFormId) map {
               case Some(data) => Ok(template(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
               case _ => Ok(template(periodKey, returnTypeForm, serviceInfoContent, backLink))
             }
@@ -68,7 +69,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                 BadRequest(template(periodKey, formWithError, serviceInfoContent, backLink))
               ),
             returnTypeData => {
-              dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
+              dataCacheService.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
               val returnUrl = Some(routes.ReturnTypeController.view(periodKey).url)
               summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
                 (returnTypeData.returnType, pastReturns) match {

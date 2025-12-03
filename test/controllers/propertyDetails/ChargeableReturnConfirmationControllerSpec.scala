@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{LiabilityReturnResponse, SubmitReturnsResponse}
 import java.time.ZonedDateTime
@@ -33,7 +32,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -50,7 +49,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -71,7 +70,7 @@ class Setup {
     mockSubscriptionDataService,
     mockAuthAction,
     mockServiceInfoService,
-    mockDataCacheConnector,
+    mockDataCacheService,
     injectedViewInstance
   )
 
@@ -84,7 +83,7 @@ class Setup {
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheService.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -95,7 +94,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheService.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -123,7 +122,7 @@ class Setup {
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheService.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
     when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
@@ -136,7 +135,7 @@ class Setup {
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)
-    reset(mockDataCacheConnector)
+    reset(mockDataCacheService)
   }
 
   "ChargeableReturnConfirmationController" must {

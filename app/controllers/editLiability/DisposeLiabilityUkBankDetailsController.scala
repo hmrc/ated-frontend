@@ -17,14 +17,12 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DisposeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils.sanitiseBankDetails
@@ -37,11 +35,11 @@ class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerC
                                                         authAction: AuthAction,
                                                         disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                         serviceInfoService: ServiceInfoService,
-                                                        val dataCacheConnector: DataCacheConnector,
-                                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                                        val dataCacheService: DataCacheService,
+                                                        val backLinkCacheService: BackLinkCacheService,
                                                         template: views.html.editLiability.disposeLiabilityUkBankDetails)
                                                        (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with ClientHelper with BackLinkController with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with ClientHelper with BackLinkService with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

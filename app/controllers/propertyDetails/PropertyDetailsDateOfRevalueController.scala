@@ -17,13 +17,12 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models._
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
@@ -37,8 +36,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                       val dataCacheConnector: DataCacheConnector,
+                                                       val backLinkCacheService: BackLinkCacheService,
+                                                       val dataCacheService: DataCacheService,
                                                        isFullTaxPeriodController: IsFullTaxPeriodController)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -57,8 +56,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
                     val dateOfRevalue = cachedDateOfRevalue.flatMap(_.dateOfRevalue)
                     Ok(template(id,
                       propertyDetails.periodKey,
@@ -85,11 +84,11 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             dateOfRevalue => {
-              dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
+              dataCacheService.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
               val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                hasPropertyBeenRevalued <- dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued)
-                revaluedValue <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                dateOfChange <- dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange)
+                hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
+                revaluedValue <- dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
+                dateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
               } yield {
                 PropertyDetailsRevalued(
                   isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),

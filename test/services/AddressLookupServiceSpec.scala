@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AddressLookupConnector, DataCacheConnector}
+import connectors.AddressLookupConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -38,12 +38,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   class Setup {
     val testAddressLookupService: AddressLookupService = new AddressLookupService(
     mockAddressLookupConnector,
-    mockDataCacheConnector
+    mockDataCacheService
     )
   }
 
@@ -61,7 +61,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
 
       when(mockAddressLookupConnector.findByPostcode(ArgumentMatchers.eq(addressLookup))
         (ArgumentMatchers.any())).thenReturn(Future.successful(results))
-      when(mockDataCacheConnector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.eq(addressSearchResults))
+      when(mockDataCacheService.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.eq(addressSearchResults))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(addressSearchResults))
 
       val result: AddressSearchResults = await(testAddressLookupService.find(addressLookup))
@@ -241,7 +241,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookup = AddressLookup("testPostCode", None)
       val addressSearchResults = AddressSearchResults(addressLookup, List(addressLookupRecord) )
 
-      when(mockDataCacheConnector.fetchAndGetFormData[AddressSearchResults](ArgumentMatchers.any())
+      when(mockDataCacheService.fetchAndGetData[AddressSearchResults](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressSearchResults)))
 
       val result: Option[AddressSearchResults] = await(testAddressLookupService.retrieveCachedSearchResults())

@@ -22,15 +22,14 @@ import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import controllers.auth.{AuthAction, ClientHelper}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import services._
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsExitController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val dataCacheConnector: DataCacheConnector,
-                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              val dataCacheService: DataCacheService,
+                                              val backLinkCacheService: BackLinkCacheService,
                                               template: views.html.propertyDetails.propertyDetailsExit)
                                              (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {

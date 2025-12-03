@@ -17,12 +17,10 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
@@ -33,12 +31,12 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                            changeReliefReturnController: ChangeReliefReturnController,
                                            serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
-                                           val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                           val dataCacheService: DataCacheService,
+                                           val backLinkCacheService: BackLinkCacheService,
                                            template: views.html.reliefs.viewReliefReturn)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "ChangeReliefReturnController"

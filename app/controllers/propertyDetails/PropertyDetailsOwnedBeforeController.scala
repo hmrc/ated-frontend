@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -38,8 +37,8 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
-                                                     val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     val dataCacheService: DataCacheService,
+                                                     val backLinkCacheService: BackLinkCacheService,
                                                      template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (implicit val appConfig: ApplicationConfig)
 
@@ -56,7 +55,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
                     propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                   Future.successful(Ok(template(id,
@@ -80,7 +79,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
                   propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)

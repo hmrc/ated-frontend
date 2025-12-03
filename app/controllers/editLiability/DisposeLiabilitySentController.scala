@@ -17,12 +17,11 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
@@ -33,7 +32,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
                                                subscriptionDataService: SubscriptionDataService,
                                                authAction: AuthAction,
                                                serviceInfoService: ServiceInfoService,
-                                               val dataCacheConnector: DataCacheConnector,
+                                               val dataCacheService: DataCacheService,
                                                template: views.html.editLiability.disposeLiabilitySent)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper {
@@ -43,7 +42,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+        dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(r) => Ok(template(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
@@ -59,7 +58,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
   def viewPrintFriendlyDisposeLiabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+        submittedResponse <- dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)

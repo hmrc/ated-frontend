@@ -17,12 +17,11 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
+import services.{BackLinkCacheService, DataCacheService, FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -36,8 +35,8 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                                                       formBundleReturnService: FormBundleReturnsService,
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val dataCacheService: DataCacheService,
+                                                      val backLinkCacheService: BackLinkCacheService,
                                                       template: views.html.propertyDetails.selectPreviousReturn)
                                                      (implicit val appConfig: ApplicationConfig)
 
@@ -105,7 +104,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                 formBundleReturnOpt <- formBundleReturnService.getFormBundleReturns(formBundleNum)
                 result <- formBundleReturnOpt match {
                   case Some(_) =>
-                    dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
+                    dataCacheService.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
                       redirectWithBackLink(
                         confirmAddressController.controllerId,
                         controllers.propertyDetails.routes.ConfirmAddressController.editSubmittedReturn(formBundleNum),

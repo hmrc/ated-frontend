@@ -17,13 +17,11 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, DelegationService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -35,13 +33,13 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             serviceInfoService: ServiceInfoService,
                                             val reliefsService: ReliefsService,
                                             val delegationService: DelegationService,
-                                            val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            val dataCacheService: DataCacheService,
+                                            val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.reliefs.reliefDeclaration,
                                             templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding with Logging {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "ReliefDeclarationController"
