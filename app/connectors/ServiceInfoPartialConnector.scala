@@ -21,8 +21,8 @@ import models.requests.NavContent
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.StringContextOps
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps, UpstreamErrorResponse}
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,9 +33,11 @@ class ServiceInfoPartialConnector @Inject()(http: HttpClientV2, config: Applicat
 
   def getNavLinks(implicit ec: ExecutionContext, hc : HeaderCarrier): Future[Option[NavContent]] =
     http.get(url"$btaNavLinksUrl").execute[Option[NavContent]]
-      .recover{
+      .recover {
+        case e: UpstreamErrorResponse if e.statusCode == 403 && e.getMessage.contains("You cannot view this page") =>
+        None
         case e =>
-          logger.warn(s"[ServiceInfoPartialConnector][getNavLinks] - Unexpected error ${e.getMessage}")
-          None
+        logger.warn(s"[ServiceInfoPartialConnector][getNavLinks] - Unexpected error ${e.getMessage}")
+        None
       }
 }
