@@ -33,6 +33,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val injectedViewInstance: accountSummary = inject[views.html.accountSummary]
+  val staticYearOf2025 = 2025
 
   val view: HtmlFormat.Appendable = injectedViewInstance(
     currentYearReturnsForDisplay,
@@ -43,8 +44,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     Some(clientMandateDetails),
     Html(""),
     cancelAgentUrl,
-    currentYear,
-    currentTaxYear,
+    staticYearOf2025,
+    staticYearOf2025,
     fromAccountSummary = true
   )
 
@@ -80,9 +81,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have correct deadline info text" in {
-        val nextTaxYear = currentTaxYear+1
+        val yearPassedToView = staticYearOf2025
+        val nextTaxYear = staticYearOf2025+1
         assert(doc.select(".govuk-body").get(0).text() contains
-          s"The deadline for $currentTaxYear to $nextTaxYear returns and payments for all ATED-eligible properties that you own on 1 April $currentTaxYear is 30 April $currentTaxYear")
+          s"The deadline for 2025 to 2026 returns and payments for all ATED-eligible properties that you own on 1 April $yearPassedToView is 30 April $yearPassedToView")
         assert(doc.select(".govuk-body").get(1).text() contains
           "Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds)")
       }
