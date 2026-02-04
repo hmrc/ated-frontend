@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -25,7 +24,7 @@ import javax.inject.Inject
 import models._
 import play.api.i18n.{I18nSupport, Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -37,8 +36,8 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
                                             serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
-                                            val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            val dataCacheService: DataCacheService,
+                                            val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with WithUnsafeDefaultFormBinding {

@@ -17,13 +17,13 @@
 package controllers.auth
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import models.StandardAuthRetrievals
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import play.twirl.api.Html
+import services.DataCacheService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
@@ -31,28 +31,32 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait ClientHelper extends Logging {
 
-  val dataCacheConnector: DataCacheConnector
+  val dataCacheService: DataCacheService
   val appConfig: ApplicationConfig
 
-  def ensureClientContext(result: Future[Result])
-                         (implicit authorisedRequest: StandardAuthRetrievals,
-                          req: Request[AnyContent],
-                          hc: HeaderCarrier,
-                          ec: ExecutionContext,
-                          messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
-    dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
+  def ensureClientContext(result: Future[Result])(implicit
+      authorisedRequest: StandardAuthRetrievals,
+      req: Request[AnyContent],
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      messages: Messages,
+      appConfig: ApplicationConfig): Future[Result] = {
+    dataCacheService.fetchAndGetData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
-      case _ => logger.warn(s"[ClientHelper][compareClient] - Client different from context")
-        Future.successful(Ok(appConfig.templateError(
-          "ated.selected-client-error.wrong.client.title",
-          "ated.selected-client-error.wrong.client.header",
-          "ated.selected-client-error.wrong.client.message",
-          None,
-          Some("ated.selected-client-error.wrong.client.HrefLink"),
-          Some("ated.selected-client-error.wrong.client.HrefMessage"),
-          Some("ated.selected-client-error.wrong.client.PostHrefMessage"),
-          Html("")
-        )))
+      case _ =>
+        logger.warn(s"[ClientHelper][compareClient] - Client different from context")
+        Future.successful(
+          Ok(appConfig.templateError(
+            "ated.selected-client-error.wrong.client.title",
+            "ated.selected-client-error.wrong.client.header",
+            "ated.selected-client-error.wrong.client.message",
+            None,
+            Some("ated.selected-client-error.wrong.client.HrefLink"),
+            Some("ated.selected-client-error.wrong.client.HrefMessage"),
+            Some("ated.selected-client*-error.wrong.client.PostHrefMessage"),
+            Html("")
+          )))
+
     }
   }
 

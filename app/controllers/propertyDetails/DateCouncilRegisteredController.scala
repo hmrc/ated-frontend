@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -36,12 +35,12 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerComponents,
-                                                       authAction: AuthAction,
-                                                       serviceInfoService: ServiceInfoService,
-                                                       val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                       template: views.html.propertyDetails.dateCouncilRegistered)
+                                                authAction: AuthAction,
+                                                serviceInfoService: ServiceInfoService,
+                                                val propertyDetailsService: PropertyDetailsService,
+                                                val dataCacheService: DataCacheService,
+                                                val backLinkCacheService: BackLinkCacheService,
+                                                template: views.html.propertyDetails.dateCouncilRegistered)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding with StoreNewBuildDates {
@@ -59,7 +58,7 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val dcr: Option[LocalDate] = propertyDetails.value.flatMap(_.localAuthRegDate)
                 Ok(template(id,
                   propertyDetails.periodKey,
@@ -85,9 +84,9 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>
-                dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap { _ =>
+                dataCacheService.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap { _ =>
                     storeNewBuildDatesFromCache(id).flatMap { _ =>
-                      dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
+                      dataCacheService.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
                         case Some(DateFirstOccupiedKnown(Some(true))) =>
                           redirectWithBackLink(
                             EarliestStartDateInUseControllerId,

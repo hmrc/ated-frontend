@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AtedConnector, DataCacheConnector}
+import connectors.AtedConnector
 import javax.inject.Inject
 import models._
 import java.time.ZonedDateTime
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
                                              atedConnector: AtedConnector,
-                                             dataCacheConnector: DataCacheConnector) extends FrontendController(mcc) with Logging {
+                                             dataCacheService: DataCacheService) extends FrontendController(mcc) with Logging {
   implicit val ec: ExecutionContext = mcc.executionContext
 
 
@@ -94,8 +94,8 @@ class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
     atedConnector.submitDraftChangeLiabilityReturn(oldFormBundleNo) flatMap { changeLiabilityResponse =>
       changeLiabilityResponse.status match {
         case OK =>
-          dataCacheConnector.clearCache() flatMap { _ =>
-              dataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
+          dataCacheService.clearCache() flatMap { _ =>
+              dataCacheService.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
                 data = changeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
         case _ => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))

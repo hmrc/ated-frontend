@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
@@ -41,8 +40,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                                                  changeLiabilityReturnService: ChangeLiabilityReturnService,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
-                                                 val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val dataCacheService: DataCacheService,
+                                                 val backLinkCacheService: BackLinkCacheService,
                                                  template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 
@@ -58,8 +57,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
-          answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-          periodKey <- dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId)
+          answer <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
+          periodKey <- dataCacheService.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId)
           changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
           serviceInfoContent <- serviceInfoService.getPartial
           backLink <- currentBackLink
@@ -83,7 +82,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
+          dataCacheService.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
             currentBackLink.map(backLink =>
               Ok(template(None, periodKey, propertyDetailsAddressForm, None, serviceInfoContent, backLink, fromConfirmAddressPage = false))
             )

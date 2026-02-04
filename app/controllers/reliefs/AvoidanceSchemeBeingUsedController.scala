@@ -17,15 +17,13 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms.isTaxAvoidanceForm
 
 import javax.inject.Inject
 import models.IsTaxAvoidance
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
@@ -38,12 +36,12 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
                                                    authAction: AuthAction,
                                                    avoidanceSchemesController: AvoidanceSchemesController,
                                                    val reliefsService: ReliefsService,
-                                                   val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   val dataCacheService: DataCacheService,
+                                                   val backLinkCacheService: BackLinkCacheService,
                                                    template: views.html.reliefs.avoidanceSchemeBeingUsed,
                                                    val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                                   (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with ReliefHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "AvoidanceSchemeBeingUsedController"

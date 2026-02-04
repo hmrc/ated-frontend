@@ -19,7 +19,6 @@ package controllers.subscriptionData
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, DetailsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -51,7 +50,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

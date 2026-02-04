@@ -18,7 +18,6 @@ package controllers.propertyDetails
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms._
@@ -41,9 +40,9 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         addressLookupService: AddressLookupService,
                                         authAction: AuthAction,
                                         serviceInfoService: ServiceInfoService,
-                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                        val backLinkCacheService: BackLinkCacheService,
                                         val propertyDetailsService: PropertyDetailsService,
-                                        val dataCacheConnector: DataCacheConnector,
+                                        val dataCacheService: DataCacheService,
                                         template: views.html.propertyDetails.addressLookup,
                                         templateResults: views.html.propertyDetails.addressLookupResults)
                                        (implicit val appConfig: ApplicationConfig)
