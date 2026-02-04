@@ -1216,9 +1216,9 @@ ated.bank-details.error-key.accountName.empty = Enter the name of the bank accou
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
 ated.bank-details.error-key.accountNumber.empty = Enter an account number
 ated.bank-details.error-key.accountNumber.max-len = The account number cannot be more than 18 characters
-ated.bank-details.error-key.accountNumber.invalid = Enter a valid account number
+ated.bank-details.error-key.accountNumber.invalid = Enter a valid account number like 00733445
 ated.bank-details.error-key.sortCode.empty = Enter a sort code
-ated.bank-details.error-key.sortCode.invalid = Enter a valid sort code
+ated.bank-details.error-key.sortCode.invalid = Enter a valid sort code like 309430
 ated.bank-details.error-key.hasUKBankAccount.empty = Select yes if your bank account is in the UK
 ated.bank-details.error-key.hasBankDetails.empty = Select yes if you have a bank account where we could pay a refund
 
