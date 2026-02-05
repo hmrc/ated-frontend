@@ -18,7 +18,7 @@ package services
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{DataCacheConnector, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 import models._
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers
@@ -42,12 +42,12 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
   implicit  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
  class Setup {
    val testPropertyDetailsService: PropertyDetailsService = new PropertyDetailsService(
      mockPropertyDetailsConnector,
-     mockDataCacheConnector
+     mockDataCacheService
    )
  }
 
@@ -221,7 +221,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       val propValue = new PeriodChooseRelief("reliefDescription")
 
       "add the chosen relief to the data cache" in new Setup {
-        when(mockDataCacheConnector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.eq(propValue))
+        when(mockDataCacheService.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.eq(propValue))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propValue))
 
         val result: Future[PeriodChooseRelief] = testPropertyDetailsService.storeChosenRelief(propValue)
@@ -239,7 +239,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
       "add the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](ArgumentMatchers.any())
+        when(mockDataCacheService.fetchAndGetData[PeriodChooseRelief](ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -251,7 +251,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
       "add and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
-        when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](ArgumentMatchers.any())
+        when(mockDataCacheService.fetchAndGetData[PeriodChooseRelief](ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))

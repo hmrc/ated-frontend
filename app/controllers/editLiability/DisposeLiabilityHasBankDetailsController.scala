@@ -17,14 +17,12 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms.hasBankDetailsForm
 import javax.inject.Inject
 import models.HasBankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DisposeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,12 +34,12 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                                                          disposeLiabilityHasUkBankAccountController: DisposeLiabilityHasUkBankAccountController,
                                                          disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                          serviceInfoService: ServiceInfoService,
-                                                         val dataCacheConnector: DataCacheConnector,
-                                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                                         val dataCacheService: DataCacheService,
+                                                         val backLinkCacheService: BackLinkCacheService,
                                                          template: views.html.editLiability.disposeLiabilityHasBankDetails)
                                                         (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

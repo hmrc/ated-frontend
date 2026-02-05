@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector}
 
 import javax.inject.Inject
 import models._
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DetailsService @Inject()(atedConnector: AtedConnector,
                                mandateFrontendConnector: AgentClientMandateFrontendConnector,
-                               dataCacheConnector: DataCacheConnector)
+                               dataCacheService: DataCacheService)
                               (implicit val ec: ExecutionContext)extends Logging {
 
 
@@ -140,6 +140,6 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
   }
 
   def cacheClientReference(atedRef: String)(implicit hc: HeaderCarrier): Future[String] = {
-      dataCacheConnector.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
+      dataCacheService.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
   }
 }

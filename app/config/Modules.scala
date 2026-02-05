@@ -18,16 +18,22 @@ package config
 
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
+import repositories.{CacheRepository, SessionCacheRepository}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 class Modules extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
-    bindControllers
+    bindControllers ++ configureRepository
   }
 
   private def bindControllers: Seq[Binding[_]] = Seq(
     bind[AuthConnector].to(classOf[DefaultAuthConnector])
   )
+
+  private def configureRepository: Seq[Binding[_]] = Seq {
+    bind[CacheRepository].to(classOf[SessionCacheRepository])
+  }
+
 }

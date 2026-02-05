@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AddressLookupConnector, DataCacheConnector}
+import connectors.AddressLookupConnector
 
 import javax.inject.Inject
 import models._
@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnector,
-                                     dataCacheConnector: DataCacheConnector)
+                                     dataCacheService: DataCacheService)
                                     (implicit val ec: ExecutionContext){
 
   val ADDRESS_LOOKUP_SEARCH_RESULTS = "ADDRESS-LOOKUP-SEARCH-RESULTS"
@@ -78,10 +78,10 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
   }
 
   def retrieveCachedSearchResults()(implicit hc: HeaderCarrier): Future[Option[AddressSearchResults]] = {
-    dataCacheConnector.fetchAndGetFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
+    dataCacheService.fetchAndGetData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
   }
 
   private def storeSearchResults(searchResults: AddressSearchResults)(implicit headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {
-    dataCacheConnector.saveFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS, searchResults)
+    dataCacheService.saveFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS, searchResults)
   }
 }

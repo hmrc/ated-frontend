@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}
@@ -31,41 +30,46 @@ import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesControllerComponents,
-                                                  authAction: AuthAction,
-                                                  serviceInfoService: ServiceInfoService,
-                                                  val propertyDetailsService: PropertyDetailsService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector,
-                                                  view: views.html.propertyDetails.dateCouncilRegisteredKnown)
-                                                 (implicit val appConfig: ApplicationConfig)
-
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding with StoreNewBuildDates {
+class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControllerComponents,
+                                                      authAction: AuthAction,
+                                                      serviceInfoService: ServiceInfoService,
+                                                      val propertyDetailsService: PropertyDetailsService,
+                                                      val dataCacheService: DataCacheService,
+                                                      val backLinkCacheService: BackLinkCacheService,
+                                                      view: views.html.propertyDetails.dateCouncilRegisteredKnown)(implicit
+    val appConfig: ApplicationConfig)
+    extends FrontendController(mcc)
+    with PropertyDetailsHelpers
+    with ClientHelper
+    with WithUnsafeDefaultFormBinding
+    with StoreNewBuildDates {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId: String = DateCouncilRegisteredKnownControllerId
+  val controllerId: String          = DateCouncilRegisteredKnownControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsCacheResponse(id) {
-            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
-                    val councilRegisteredDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isLocalAuthRegDateKnown)
-                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(councilRegisteredDateKnown))
 
-                    Ok(view(id,
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) { case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+            currentBackLink.flatMap { backLink =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
+                  val councilRegisteredDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isLocalAuthRegDateKnown)
+
+                  val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(councilRegisteredDateKnown))
+
+                  Ok(
+                    view(
+                      id,
                       dateCouncilRegisteredKnownForm.fill(displayData),
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                       serviceInfoContent,
-                      backLink)
-                    )
-                  }
+                      backLink))
                 }
               }
+            }
           }
         }
       }
@@ -76,42 +80,44 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dateCouncilRegisteredKnownForm.bindFromRequest().fold(
-            formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
-            form => {
-              dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{
-                case DateCouncilRegisteredKnown(Some(true)) =>
-                  redirectWithBackLink(
-                    DateCouncilRegisteredControllerId,
-                    controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id),
-                    Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
-                  )
-                case _ =>
-                  // Date not known => Clear any previously store date from cache
-                  dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap{_ =>
-                    // Fetch status of First occupied date
-                    dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
-                      // First occupied date known => store date from current cached values
-                      case Some(DateFirstOccupiedKnown(Some(true))) =>
-                        storeNewBuildDatesFromCache(id).flatMap{ _ =>
+          dateCouncilRegisteredKnownForm
+            .bindFromRequest()
+            .fold(
+              formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
+              form => {
+                dataCacheService.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap {
+                  case DateCouncilRegisteredKnown(Some(true)) =>
+                    redirectWithBackLink(
+                      DateCouncilRegisteredControllerId,
+                      controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id),
+                      Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                    )
+                  case _ =>
+                    // Date not known => Clear any previously store date from cache
+                    dataCacheService.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap { _ =>
+                      // Fetch status of First occupied date
+                      dataCacheService.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
+                        // First occupied date known => store date from current cached values
+                        case Some(DateFirstOccupiedKnown(Some(true))) =>
+                          storeNewBuildDatesFromCache(id).flatMap { _ =>
+                            redirectWithBackLink(
+                              NewBuildValueControllerId,
+                              controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                              Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                            )
+                          }
+                        case _ =>
+                          // No First occupied date and no council registration date => Inform user via kickout page
                           redirectWithBackLink(
-                            NewBuildValueControllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                            NoStartDateControllerId,
+                            controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
                             Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                           )
-                        }
-                      case _ =>
-                        // No First occupied date and no council registration date => Inform user via kickout page
-                        redirectWithBackLink(
-                          NoStartDateControllerId,
-                          controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
-                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
-                        )
+                      }
                     }
                 }
               }
-            }
-          )
+            )
         }
       }
     }
