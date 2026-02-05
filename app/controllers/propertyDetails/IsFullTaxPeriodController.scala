@@ -17,14 +17,13 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.{AtedUtils, PeriodUtils}
@@ -38,8 +37,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           propertyDetailsTaxAvoidanceSchemeController : PropertyDetailsTaxAvoidanceSchemeController,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
-                                          val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                          val dataCacheService: DataCacheService,
+                                          val backLinkCacheService: BackLinkCacheService,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (implicit val appConfig: ApplicationConfig)
 
@@ -55,7 +54,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { answer =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { answer =>
                 val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
                 currentBackLink.flatMap(backLink =>
                   answer match {

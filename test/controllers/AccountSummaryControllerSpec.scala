@@ -18,7 +18,7 @@ package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -35,7 +35,8 @@ import play.api.test.Injecting
 import play.twirl.api.Html
 import services._
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
@@ -53,7 +54,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
@@ -69,7 +70,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     super.beforeEach()
     reset(mockAppConfig.asInstanceOf[AnyRef],
       mockDateService.asInstanceOf[AnyRef],
-      mockDataCacheConnector.asInstanceOf[AnyRef],
+      mockDataCacheService.asInstanceOf[AnyRef],
       mockSummaryReturnsService.asInstanceOf[AnyRef],
       mockSubscriptionDataService.asInstanceOf[AnyRef],
       mockMandateFrontendConnector.asInstanceOf[AnyRef],
@@ -82,6 +83,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   }
 
   val periodKey2015: Int = 2015
+  val httpValue = 200
 
   class Setup {
 
@@ -98,7 +100,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockSubscriptionDataService,
       mockMandateFrontendConnector,
       mockDetailsService,
-      mockDataCacheConnector,
+      mockDataCacheService,
       mockDateService,
       mockServiceInfoService,
       injectedViewInstance
@@ -111,9 +113,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                                   clientBannerPartial: HtmlPartial = HtmlPartial.Success(Some("thepartial"), Html("")),
                                   clientMandateDetails: ClientMandateDetails = clientMandateDetails
                                 ): Unit = {
-      val httpValue = 200
-
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
@@ -137,6 +137,18 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
+
       setupCommonMocks(returnsSummaryWithDraft, correspondence, safeId, clientBannerPartial, clientMandateDetails)
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -147,6 +159,9 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
+
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       setupCommonMocks(returnsSummaryWithDraft, correspondence)
       when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -158,6 +173,16 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+      when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
       setupCommonMocks(returnsSummaryWithDraft, correspondence)
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
       test(result)
@@ -256,6 +281,18 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "show the agent info for authorised delegated user" in new Setup {
         val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
+        val userId = s"user-${UUID.randomUUID}"
+        val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+        setAuthMocks(authMock)
+        when(mockDataCacheService.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
+        when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+        when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful("XN1200000100001"))
+        when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
+        when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
         getWithAuthorisedDelegatedUser(data, None) {
           result =>
             status(result) must be(OK)

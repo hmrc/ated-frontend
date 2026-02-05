@@ -17,11 +17,10 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,8 +29,8 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
                                                      authAction: AuthAction,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
-                                                     val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     val dataCacheService: DataCacheService,
+                                                     val backLinkCacheService: BackLinkCacheService,
                                                      template: views.html.propertyDetails.propertyDetailsDeclaration,
                                                      templateError: views.html.global_error)
                                                     (implicit val appConfig: ApplicationConfig)

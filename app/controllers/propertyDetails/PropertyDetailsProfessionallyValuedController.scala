@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -35,8 +34,8 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
                                                               propertyDetailsAcquisitionController: PropertyDetailsAcquisitionController,
                                                               serviceInfoService: ServiceInfoService,
                                                               val propertyDetailsService: PropertyDetailsService,
-                                                              val dataCacheConnector: DataCacheConnector,
-                                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                                              val dataCacheService: DataCacheService,
+                                                              val backLinkCacheService: BackLinkCacheService,
                                                               template: views.html.propertyDetails.propertyDetailsProfessionallyValued)
                                                              (implicit val appConfig: ApplicationConfig)
 
@@ -53,7 +52,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
                   Ok(template(id,
                     propertyDetails.periodKey,
@@ -75,7 +74,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
                 Ok(template(id,
                   propertyDetails.periodKey,

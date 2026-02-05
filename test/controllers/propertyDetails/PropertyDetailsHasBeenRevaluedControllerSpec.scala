@@ -32,8 +32,8 @@ class PropertyDetailsHasBeenRevaluedControllerSpec extends PropertyDetailsTestFi
     injectedViewInstance,
     mockServiceInfoService,
     mockPropertyDetailsService,
-    mockBackLinkCacheConnector,
-    mockDataCacheConnector,
+    mockBackLinkCacheService,
+    mockDataCacheService,
     mockDateOfChangeController,
     mockExitController
   )

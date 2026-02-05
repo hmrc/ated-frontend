@@ -19,7 +19,6 @@ package controllers.reliefs
 import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.AddressLookupController
 import org.jsoup.Jsoup
@@ -34,7 +33,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, ReliefsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -51,8 +50,8 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockChooseReliefsController: ChooseReliefsController = mock[ChooseReliefsController]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -77,8 +76,8 @@ class Setup {
     mockAddressLookupController,
     mockServiceInfoService,
     mockReliefsService,
-    mockDataCacheConnector,
-    mockBackLinkCacheConnector,
+    mockDataCacheService,
+    mockBackLinkCacheService,
     injectedViewInstance
   )
 
@@ -88,9 +87,9 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+    when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber = "")
       .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -110,10 +109,10 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+    when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
-    when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
+    when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testChangeReliefReturnController.submit(periodKey, formBundleNumber = "")
       .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
@@ -163,7 +162,7 @@ class Setup {
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
             val inputJson: JsValue = Json.parse( """{"changeRelief": ""}""")
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+            when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
             submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)

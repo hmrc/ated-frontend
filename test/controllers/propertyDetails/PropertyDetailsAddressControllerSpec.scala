@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, ChangeLiabilityReturnService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -55,9 +54,9 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
   val mockPropertyDetailsTitleController: PropertyDetailsTitleController = mock[PropertyDetailsTitleController]
   val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -81,8 +80,8 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       mockChangeLiabilityReturnService,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -100,10 +99,10 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.saveFormData[Boolean]
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheService.saveFormData[Boolean]
         (ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       val result = testPropertyDetailsAddressController.createNewDraft(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -116,9 +115,9 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
@@ -132,9 +131,9 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
@@ -147,9 +146,11 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
@@ -171,10 +172,10 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPropertyDetailsAddressController.addressLookupRedirect(id, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -189,7 +190,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
     def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       id match {
         case Some(x) =>
@@ -375,7 +376,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
         "for invalid data, return BAD_REQUEST with fromConfirmAddress false" in new Setup {
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = false) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -385,7 +386,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
         "for invalid data, return BAD_REQUEST with fromConfirmAddress true" in new Setup {
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = true) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -394,7 +395,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
         "for valid data with no id, return OK with fromConfirmAddress false" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
             result =>
@@ -404,7 +405,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
         "for valid data with no id, return OK with fromConfirmAddress true" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
             result =>
@@ -414,7 +415,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
         "for valid data, return OK with fromConfirmAddress false" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
             result =>
@@ -424,7 +425,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
         "for valid data, return OK with fromConfirmAddress true" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
             result =>

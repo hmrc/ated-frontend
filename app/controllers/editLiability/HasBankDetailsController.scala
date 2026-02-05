@@ -17,13 +17,12 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.ControllerIds
 import forms.BankDetailForms.hasBankDetailsForm
 import models.HasBankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ChangeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, ChangeLiabilityReturnService, DataCacheService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
@@ -36,11 +35,11 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          bankDetailsController: HasUkBankAccountController,
                                          serviceInfoService: ServiceInfoService,
-                                         val dataCacheConnector: DataCacheConnector,
-                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         val dataCacheService: DataCacheService,
+                                         val backLinkCacheService: BackLinkCacheService,
                                          template: views.html.editLiability.hasBankDetails)
                                         (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

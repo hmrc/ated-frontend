@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -36,12 +35,12 @@ import play.api.i18n.{Messages, MessagesImpl}
 
 @Singleton
 class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
-                                                       authAction: AuthAction,
-                                                       serviceInfoService: ServiceInfoService,
-                                                       val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                       template: views.html.propertyDetails.dateFirstOccupied)
+                                            authAction: AuthAction,
+                                            serviceInfoService: ServiceInfoService,
+                                            val propertyDetailsService: PropertyDetailsService,
+                                            val dataCacheService: DataCacheService,
+                                            val backLinkCacheService: BackLinkCacheService,
+                                            template: views.html.propertyDetails.dateFirstOccupied)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
@@ -59,8 +58,8 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetFormData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
                   val dfo: Option[LocalDate] = dateFirstOccupied.map(_.dateFirstOccupied).getOrElse(propertyDetails.value.flatMap(_.newBuildDate))
                   Ok(template(id,
                     propertyDetails.periodKey,
@@ -87,7 +86,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>
-                dataCacheConnector.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, form).flatMap{_ =>
+                dataCacheService.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, form).flatMap{_ =>
                   redirectWithBackLink(
                     DateCouncilRegisteredKnownControllerId,
                     controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),

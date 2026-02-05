@@ -19,14 +19,13 @@ package controllers.editLiability
 import java.util.UUID
 import builders._
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
 import java.time.format.DateTimeFormatter
 import java.time.{ZonedDateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, _}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -34,7 +33,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -52,7 +51,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -78,7 +77,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       mockSubscriptionDataService,
       mockAuthAction,
       mockServiceInfoService,
-      mockDataCacheConnector,
+      mockDataCacheService,
       injectedViewInstance
     )
 
@@ -87,7 +86,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
+      when(mockDataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel]
         (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
       val result = testDisposeLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -97,7 +96,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
        val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
+      when(mockDataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel]
         (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       val result = testDisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -109,7 +108,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)
-    reset(mockDataCacheConnector)
+    reset(mockDataCacheService)
   }
 
   val oldFormBundleNum = "123456789012"

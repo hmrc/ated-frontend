@@ -19,7 +19,6 @@ package controllers.reliefs
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{ReliefReturnResponse, SubmitReturnsResponse}
 import java.time.format.DateTimeFormatter
@@ -34,7 +33,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, DataCacheService, ReliefsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -51,8 +50,8 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -79,7 +78,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
-      mockDataCacheConnector,
+      mockDataCacheService,
       mockReliefsService,
       injectedViewInstance
     )
@@ -92,7 +91,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val reliefReturnResponse = ReliefReturnResponse(reliefDescription = "Farmhouses",formBundleNumber = "form-bundle-123")
       val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, reliefReturnResponse = Some(Seq(reliefReturnResponse)), None)
-      when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      when(mockDataCacheService.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
       val result = testReliefsSentController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -105,7 +104,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      when(mockDataCacheService.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testReliefsSentController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
