@@ -35,6 +35,30 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "sortCode" -> "112233"
     )
 
+  val validUkDataWithSpaceAtEndOfSortCode: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "12345678",
+    "sortCode" -> "112233    "
+  )
+
+  val validUkDataWithSpaceAtStartOfSortCode: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "12345678",
+    "sortCode" -> "    112233"
+  )
+
+  val validUKDataWithSpaceInMiddleOfSortCode: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "12345678",
+    "sortCode" -> "112 233"
+  )
+
+  val validUkDataWithSpaceInMiddleOfSortCodeWithDashes: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "12345678",
+    "sortCode" -> "11-22 33"
+  )
+
   val nonValidUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name",
     "accountNumber" -> "aaaaaa",
@@ -107,6 +131,63 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
           }
         )
       }
+
+      "supplied with sort code with blank spaces at end for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndOfSortCode)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with sort code with blank spaces at start for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtStartOfSortCode)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with sort code with blank spaces in middle for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUKDataWithSpaceInMiddleOfSortCode)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with sort code with blank spaces and dashes for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceInMiddleOfSortCodeWithDashes)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
 
       "supplied with valid data for non uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validNonUkData)).fold(

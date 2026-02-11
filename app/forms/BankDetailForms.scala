@@ -31,8 +31,6 @@ object BankDetailForms {
 
   private val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
-  private val sortCodeRegEx = """^[0-9]{2}\s?\-?\–?[0-9]{2}\s?\-?\–?[0-9]{2}$"""
-
   private def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
 
   private def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
@@ -40,7 +38,8 @@ object BankDetailForms {
     optional(text)
       .transform[Option[SortCode]](
         {
-          case Some(text) if text.matches(sortCodeRegEx) => Some(SortCode.fromString(sanitiseSortCode(text)))
+          case Some(sortCodeString) if SortCodeFields.isValid(sanitiseSortCode(sortCodeString))=>
+             Some(SortCode.fromString(sanitiseSortCode(sortCodeString)))
           case _ => None
         }, {
           case Some(a) => Some(sanitiseSortCode(a.toString))
