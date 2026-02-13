@@ -66,6 +66,14 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "sortCode" -> "112233"
   )
 
+
+  val validAccountNumberWithSpaces: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> " 123 45678 ",
+    "sortCode" -> "112233"
+  )
+
+
   val validUkDataWithSpaceAtStartAN: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name",
     "accountNumber" -> "   12345678",
@@ -133,6 +141,20 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "pass through validation" when {
       "supplied with valid data for uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkData)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with valid data for uk accounts with spaces in account number" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validAccountNumberWithSpaces)).fold(
           formWithErrors => {
             fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
 
