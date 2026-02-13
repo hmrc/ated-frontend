@@ -135,17 +135,21 @@ object BankDetailForms {
 
     def validateAccountNumber: Seq[Option[FormError]] = {
       val accountNumber = bankDetails.data.get("accountNumber").map(x => sanitiseAccountNumber(x))
-      if (accountNumber.getOrElse("").isEmpty) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
-      }
-      else if (accountNumber.nonEmpty && accountNumber.getOrElse("").length > 18) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.max-len")))
-      }
-      else if (accountNumber.nonEmpty && !accountNumber.get.matches("""^[0-9]+$""")) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.invalid")))
-      }
-      else Seq()
-    }
+
+      accountNumber match {
+
+        case None | Some("") =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
+
+        case Some(acc) if !acc.matches("^\\d{6,8}$") =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.max-len")))
+
+        case Some(acc) if !acc.forall(_.isDigit) =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.invalid")))
+
+        case _ =>
+          Seq()
+      }}
 
     def validateSortCode: Seq[Option[FormError]] = {
       val sortCode = bankDetails.data.get("sortCode").map(x => sanitiseSortCode(x))
