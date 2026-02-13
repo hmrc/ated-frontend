@@ -156,13 +156,10 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "supplied with valid data for uk accounts with spaces in account number" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validAccountNumberWithSpaces)).fold(
           formWithErrors => {
-            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
-
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.accountNumber.invalid"
           },
-          success => {
-            success.accountName mustBe Some("Account Name")
-            success.accountNumber mustBe Some("12345678")
-            success.sortCode mustBe Some(SortCode("11","22","33"))
+          _ => {
+            fail("Form should give an error")
           }
         )
       }

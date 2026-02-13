@@ -141,7 +141,7 @@ object BankDetailForms {
         case None | Some("") =>
           Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
 
-        case Some(acc) if !acc.matches("^\\d{6,8}$") =>
+        case Some(acc) if acc.length > 18 =>
           Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.max-len")))
 
         case Some(acc) if !acc.forall(_.isDigit) =>
