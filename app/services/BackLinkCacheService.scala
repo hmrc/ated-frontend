@@ -1,0 +1,54 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package services
+
+import models.BackLinkModel
+import repositories.SessionCacheRepository
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.DataKey
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+
+@Singleton
+class BackLinkCacheService @Inject()(
+    sessionCache: SessionCacheRepository
+)(implicit ec: ExecutionContext) {
+
+  private val sourceId: String = "ATED_Back_Link"
+
+  def dataKey(pageId: String): DataKey[BackLinkModel] = DataKey[BackLinkModel](s"$sourceId$pageId")
+
+  def fetchAndGetBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    sessionCache.getFromSession[BackLinkModel](dataKey(pageId)).map(_.flatMap(_.backLink))
+  }
+
+  def saveBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    sessionCache.putSession(dataKey(pageId), BackLinkModel(returnUrl)).map(_ => returnUrl)
+  }
+
+  def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] =
+    if (pageIds.nonEmpty) {
+      Future.sequence {
+        val cleared = pageIds.map(pageId => saveBackLink(pageId, None))
+        cleared
+      }
+    } else {
+      Future.successful(Nil)
+    }
+
+}

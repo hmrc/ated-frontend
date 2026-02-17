@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import java.time.LocalDate
@@ -34,7 +33,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,19 +46,22 @@ import scala.concurrent.Future
 class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier           = HeaderCarrier()
 
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockMcc: MessagesControllerComponents                                    = app.injector.instanceOf[MessagesControllerComponents]
+  val mockPropertyDetailsService: PropertyDetailsService                       = mock[PropertyDetailsService]
+  val mockDataCacheService: DataCacheService                               = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService                         = mock[BackLinkCacheService]
   val mockPropertyDetailsNewBuildController: PropertyDetailsNewBuildController = mock[PropertyDetailsNewBuildController]
-  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+
+  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController =
+    mock[PropertyDetailsProfessionallyValuedController]
+
+  val messagesApi: MessagesApi                   = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl       = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
+  val injectedViewInstance                       = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
   class Setup(year: Int = 2022) {
 
@@ -76,16 +78,16 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       mockPropertyDetailsProfessionallyValuedController,
       mockServiceInfoService,
       mockPropertyDetailsService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
-    val periodKey: Int = calculatePeakStartYear(LocalDate.parse(s"$year-03-16"))
+    val periodKey: Int          = calculatePeakStartYear(LocalDate.parse(s"$year-03-16"))
     val valuationPeriod: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testPropertyDetailsOwnedBeforeController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -93,15 +95,18 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
     }
 
     def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
+      when(mockDataCacheService.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(
+        mockDataCacheService
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsOwnedBeforeController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -109,11 +114,13 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
     }
 
     def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(
+        mockDataCacheService
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsOwnedBeforeController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -122,8 +129,8 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
     def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      val userId         = s"user-${UUID.randomUUID}"
+      val authMock       = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testPropertyDetailsOwnedBeforeController.save("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -131,20 +138,25 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
     def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.any(),
-        ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
-        thenReturn(Future.successful(OK))
+      val userId         = s"user-${UUID.randomUUID}"
+      when(
+        mockDataCacheService
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+      when(
+        mockPropertyDetailsService
+          .saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(OK))
 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsOwnedBeforeController.save("1", periodKey, None)
+      val result = testPropertyDetailsOwnedBeforeController
+        .save("1", periodKey, None)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
 
       test(result)
     }
+
   }
 
   "propertyDetails" when {
@@ -163,37 +175,34 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
         "show the chargeable property details view for valuation period 2017" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
-              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
 
         "show the chargeable property details view for different valuation period 2022" in new Setup(2023) {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
-              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
 
         "show the chargeable property details view for different valuation period 2012" in new Setup(2015) {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
-              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
       }
@@ -205,14 +214,13 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
       "show a back link which takes the user to the liability summary" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-        editFromSummary("1", propertyDetails) {
-          result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
+        editFromSummary("1", propertyDetails) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
 
-            document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
-            document.getElementsByClass("govuk-back-link").text must be("Back")
-            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
+          document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+          document.getElementsByClass("govuk-back-link").text must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
 
         }
       }
@@ -234,10 +242,9 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       "invalid data is submitted" must {
 
         "return a BAD_REQUEST" in new Setup {
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true)))) {
-            result =>
-              status(result) must be(BAD_REQUEST)
+          when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true)))) { result =>
+            status(result) must be(BAD_REQUEST)
           }
         }
       }
@@ -245,29 +252,26 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       "owned before is true" must {
         "redirect to the Professionally Valued Page" in new Setup {
           val bdValue: Int = 1500000
-          when(mockBackLinkCacheConnector.saveBackLink(
-            ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None)
-          )
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true), Some(BigDecimal(bdValue))))) {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/valued/view")
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true), Some(BigDecimal(bdValue))))) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/liability/create/valued/view")
           }
         }
 
         "owned before is false" must {
           "redirect to the New Build page" in new Setup {
-            when(mockBackLinkCacheConnector.saveBackLink(
-              ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None)
-            )
-            submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(false)))) {
-              result =>
-                status(result) must be(SEE_OTHER)
-                redirectLocation(result).get must include("/liability/create/new-build/view")
+            when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+              .thenReturn(Future.successful(None))
+            submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(false)))) { result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/new-build/view")
             }
           }
         }
       }
     }
   }
+
 }

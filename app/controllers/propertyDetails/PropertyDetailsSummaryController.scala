@@ -17,13 +17,11 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
 
@@ -35,12 +33,12 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  propertyDetailsDeclarationController: PropertyDetailsDeclarationController,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
-                                                 val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val dataCacheService: DataCacheService,
+                                                 val backLinkCacheService: BackLinkCacheService,
                                                  template: views.html.propertyDetails.propertyDetailsSummary)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   override val controllerId = "PropertyDetailsSummaryController"

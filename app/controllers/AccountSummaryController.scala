@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthAction
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -40,7 +40,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          subscriptionDataService: SubscriptionDataService,
                                          mandateFrontendConnector: AgentClientMandateFrontendConnector,
                                          detailsService: DetailsService,
-                                         dataCacheConnector: DataCacheConnector,
+                                         dataCacheService: DataCacheService,
                                          dateService: DateService,
                                          serviceInfoService: ServiceInfoService,
                                          template: views.html.accountSummary)
@@ -55,7 +55,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
       val peakPeriodStartingYear = PeriodUtils.calculatePeakStartYear(currentDate)
 
       for {
-        _ <- dataCacheConnector.clearCache()
+        _ <- dataCacheService.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
         currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
         atedReference <- detailsService.cacheClientReference(authContext.atedReferenceNumber)

@@ -17,7 +17,6 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceSchemeController}
 import forms.PropertyDetailsForms
@@ -27,7 +26,7 @@ import javax.inject.Inject
 import models._
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
@@ -38,8 +37,8 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                                                    propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
                                                    serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
-                                                   val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   val dataCacheService: DataCacheService,
+                                                   val backLinkCacheService: BackLinkCacheService,
                                                    template: views.html.editLiability.editLiabilityDatesLiable)
                                                   (implicit val appConfig: ApplicationConfig)
 

@@ -18,7 +18,6 @@ package controllers.editLiability
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import java.time.LocalDate
@@ -34,7 +33,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -53,8 +52,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
+  val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController = mock[DisposeLiabilityHasBankDetailsController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -76,8 +75,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       mockAuthAction,
       mockDisposeLiabilityHasBankDetailsController,
       mockServiceInfoService,
-      mockDataCacheConnector,
-      mockBackLinkCacheConnector,
+      mockDataCacheService,
+      mockBackLinkCacheService,
       injectedViewInstance
     )
 
@@ -85,11 +84,11 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some("http://backlink")))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
@@ -101,7 +100,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
@@ -113,7 +112,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val disposeLiabilityReturn = DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012")
       when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(
@@ -129,8 +128,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     reset(mockDisposeLiabilityReturnService)
     reset(mockDelegationService)
-    reset(mockDataCacheConnector)
-    reset(mockBackLinkCacheConnector)
+    reset(mockDataCacheService)
+    reset(mockBackLinkCacheService)
     reset(mockDisposeLiabilityHasBankDetailsController)
   }
 
@@ -229,7 +228,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - missing day and month, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -245,7 +244,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid date - missing day and year, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -261,7 +260,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - missing month and year, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "wooooooooow", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -277,7 +276,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - day out of range, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "32", "dateOfDisposal.month": "1", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -293,7 +292,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - month out of range, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "13", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -309,7 +308,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - missing day, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -325,7 +324,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - missing month, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -341,7 +340,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - missing year, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -357,7 +356,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - year less than 4 digits, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "123", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -373,7 +372,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid data - non numeric inputs, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "a", "dateOfDisposal.month": "b", "dateOfDisposal.year": "c", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -389,7 +388,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for empty date of disposal, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -406,7 +405,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for invalid date of disposal, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "04", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -423,7 +422,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for valid date of disposal with incorrect period, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "5", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -440,7 +439,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       "for valid, redirect to bank details page" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "30", "dateOfDisposal.month": "6", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>

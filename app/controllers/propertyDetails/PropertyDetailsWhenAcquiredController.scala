@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models.PropertyDetailsWhenAcquiredDates
@@ -38,8 +37,8 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
                                                       propertyDetailsValueAcquiredController: PropertyDetailsValueAcquiredController,
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val dataCacheService: DataCacheService,
+                                                      val backLinkCacheService: BackLinkCacheService,
                                                       template: html.propertyDetails.propertyDetailsWhenAcquired)
                                                      (implicit val appConfig: ApplicationConfig)
 
@@ -54,7 +53,7 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate))
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,

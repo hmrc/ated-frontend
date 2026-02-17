@@ -17,14 +17,13 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails._
 import forms.PropertyDetailsForms.hasValueChangedForm
 import javax.inject.Inject
 import models.HasValueChanged
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
@@ -37,8 +36,8 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        authAction: AuthAction,
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val dataCacheService: DataCacheService,
+                                                       val backLinkCacheService: BackLinkCacheService,
                                                        template: views.html.editLiability.editLiabilityHasValueChanged)
                                                       (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
@@ -53,7 +52,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(oldFormBundleNo) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 currentBackLink.map { backLink =>
                   val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
                   val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
@@ -94,7 +93,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
             formWithErrors => {
               propertyDetailsCacheResponse(oldFormBundleNo) {
                 case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                     currentBackLink.map { backLink =>
                       val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
                       BadRequest(template(previousValue, oldFormBundleNo,

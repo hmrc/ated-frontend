@@ -17,14 +17,13 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{BackLinkController, ControllerIds}
+import controllers.ControllerIds
 import javax.inject.Inject
 import models.{PropertyDetails, StandardAuthRetrievals}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
-import services.{PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
@@ -36,11 +35,11 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
                                                subscriptionDataService: SubscriptionDataService,
                                                authAction: AuthAction,
                                                serviceInfoService: ServiceInfoService,
-                                               val dataCacheConnector: DataCacheConnector,
-                                               val backLinkCacheConnector: BackLinkCacheConnector,
+                                               val dataCacheService: DataCacheService,
+                                               val backLinkCacheService: BackLinkCacheService,
                                                template: views.html.editLiability.editLiabilitySummary)
                                               (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with I18nSupport with ControllerIds {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with I18nSupport with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = editLiabilitySummaryId

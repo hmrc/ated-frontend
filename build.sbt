@@ -50,8 +50,9 @@ lazy val microservice = Project(appName, file("."))
     )
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(
-      resolvers ++= Seq())
-    .disablePlugins(JUnitXmlReportPlugin)
+      scalacOptions += "-Wconf:src=routes/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
+    )
 
 
 lazy val it = project

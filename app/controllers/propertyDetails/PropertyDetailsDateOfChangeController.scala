@@ -17,10 +17,9 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._
@@ -37,8 +36,8 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                                                       serviceInfoService: ServiceInfoService,
                                                       template: views.html.propertyDetails.propertyDetailsDateOfChange,
                                                       val propertyDetailsService: PropertyDetailsService,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheService: BackLinkCacheService,
+                                                      val dataCacheService: DataCacheService,
                                                       newValuationController: PropertyDetailsNewValuationController)
                                                      (implicit val appConfig: ApplicationConfig)
 
@@ -54,8 +53,8 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {}
               currentBackLink.flatMap { backlink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
                     val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
                     Ok(template(id,
                       propertyDetails.periodKey,
@@ -86,7 +85,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             dateOfChange => {
-              dataCacheConnector.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
+              dataCacheService.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
               redirectWithBackLink(
                 newValuationController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),

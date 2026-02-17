@@ -19,7 +19,6 @@ package controllers.subscriptionData
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import services.{DataCacheService, DetailsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -49,7 +48,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]

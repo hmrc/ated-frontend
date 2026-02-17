@@ -17,11 +17,10 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 import utils.AtedConstants.SelectedPreviousReturn
@@ -34,8 +33,8 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
                                                  authAction: AuthAction,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
-                                                 val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val dataCacheService: DataCacheService,
+                                                 val backLinkCacheService: BackLinkCacheService,
                                                  view: views.html.propertyDetails.earliestStartDateInUse)
                                                 (implicit val appConfig: ApplicationConfig)
 
@@ -50,7 +49,7 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())
                 val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
                 val dynamicDate = AtedUtils.getEarliestDate(newBuildDate, localRegDate)

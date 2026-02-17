@@ -17,14 +17,12 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.ReliefsTaxAvoidance
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
 
@@ -36,12 +34,12 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          subscriptionDataService: SubscriptionDataService,
                                          serviceInfoService: ServiceInfoService,
                                          val reliefsService: ReliefsService,
-                                         val dataCacheConnector: DataCacheConnector,
-                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         val dataCacheService: DataCacheService,
+                                         val backLinkCacheService: BackLinkCacheService,
                                          template: views.html.reliefs.reliefsSummary,
                                          val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                         (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+  extends FrontendController(mcc) with BackLinkService with ReliefHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   override val controllerId: String = "ReliefsSummaryController"

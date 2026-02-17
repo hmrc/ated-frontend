@@ -18,7 +18,7 @@ package services
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{DataCacheConnector, PropertyDetailsConnector}
+import connectors.PropertyDetailsConnector
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -41,12 +41,12 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheService: DataCacheService = mock[DataCacheService]
 
   class Setup {
     val testPropertyDetailsService: PropertyDetailsService = new PropertyDetailsService(
       mockPropertyDetailsConnector,
-      mockDataCacheConnector
+      mockDataCacheService
     )
   }
 

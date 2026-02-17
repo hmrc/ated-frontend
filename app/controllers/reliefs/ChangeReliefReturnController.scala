@@ -17,14 +17,12 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.AddressLookupController
 import forms.AtedForms.editReliefForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,12 +33,12 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              addressLookupController: AddressLookupController,
                                              serviceInfoService: ServiceInfoService,
                                              val reliefsService: ReliefsService,
-                                             val dataCacheConnector: DataCacheConnector,
-                                             val backLinkCacheConnector: BackLinkCacheConnector,
+                                             val dataCacheService: DataCacheService,
+                                             val backLinkCacheService: BackLinkCacheService,
                                              template: views.html.reliefs.changeReliefReturn)
                                             (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "ChangeReliefReturnController"

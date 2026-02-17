@@ -17,13 +17,12 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.{AtedUtils, PeriodUtils}
@@ -35,8 +34,8 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                                                 propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController,
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
-                                                val dataCacheConnector: DataCacheConnector,
-                                                val backLinkCacheConnector: BackLinkCacheConnector,
+                                                val dataCacheService: DataCacheService,
+                                                val backLinkCacheService: BackLinkCacheService,
                                                 template: views.html.propertyDetails.periodsInAndOutRelief)
                                                (implicit val appConfig: ApplicationConfig)
 
@@ -52,7 +51,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
                     PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
