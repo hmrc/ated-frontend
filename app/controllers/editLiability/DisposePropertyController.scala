@@ -17,8 +17,6 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.{disposeLiabilityForm, validateForm}
 
@@ -26,7 +24,7 @@ import javax.inject.Inject
 import models.DisposeLiability
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DisposeLiabilityReturnService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
@@ -37,11 +35,11 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthAction,
                                           disposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController,
                                           serviceInfoService: ServiceInfoService,
-                                          val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                          val dataCacheService: DataCacheService,
+                                          val backLinkCacheService: BackLinkCacheService,
                                           template: views.html.editLiability.dataOfDisposal)
                                          (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

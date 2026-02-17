@@ -17,12 +17,11 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
@@ -32,14 +31,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControllerComponents,
-                                                      authAction: AuthAction,
-                                                      propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
-                                                      propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
-                                                      serviceInfoService: ServiceInfoService,
-                                                      val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      template: views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme)
+                                                            authAction: AuthAction,
+                                                            propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
+                                                            propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                            serviceInfoService: ServiceInfoService,
+                                                            val propertyDetailsService: PropertyDetailsService,
+                                                            val dataCacheService: DataCacheService,
+                                                            val backLinkCacheService: BackLinkCacheService,
+                                                            template: views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
@@ -54,7 +53,7 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val displayData = PropertyDetailsTaxAvoidanceScheme(propertyDetails.period.flatMap(_.isTaxAvoidance))
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsTaxAvoidanceSchemeForm.fill(displayData),
@@ -75,7 +74,7 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsTaxAvoidanceScheme(propertyDetails.period.flatMap(_.isTaxAvoidance))
 
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)

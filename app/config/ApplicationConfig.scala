@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CountryCodeUtils
 
 import javax.inject.Inject
+import scala.concurrent.duration.Duration
 
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
@@ -66,5 +67,8 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
 
   lazy val val2022Date: Boolean = conf.getBoolean("feature.valuation2022DateActive")
+
+  lazy val mongoDbExpireAfterMinutes: Duration = conf.getDuration("mongodb.session.expireAfter")
+  lazy val mongoUri: String = conf.getString("mongodb.uri")
 
 }

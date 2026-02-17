@@ -17,11 +17,10 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 import utils.AtedConstants.SelectedPreviousReturn
@@ -33,8 +32,8 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
                                               serviceInfoService: ServiceInfoService,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val dataCacheConnector: DataCacheConnector,
-                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              val dataCacheService: DataCacheService,
+                                              val backLinkCacheService: BackLinkCacheService,
                                               view: views.html.propertyDetails.newBuildNoStartDate)
                                              (implicit val appConfig: ApplicationConfig)
 
@@ -49,7 +48,7 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 currentBackLink.map(backLink =>
                   Ok(view(id, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
                 )

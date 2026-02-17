@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -25,7 +24,7 @@ import play.api.i18n.{Messages, MessagesImpl}
 
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
@@ -34,9 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
                                               serviceInfoService: ServiceInfoService,
-                                              val dataCacheConnector: DataCacheConnector,
+                                              val dataCacheService: DataCacheService,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              val backLinkCacheService: BackLinkCacheService,
                                               template: views.html.propertyDetails.periodInReliefDates)
                                              (implicit val appConfig: ApplicationConfig)
 

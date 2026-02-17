@@ -17,14 +17,12 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
 import javax.inject.Inject
 import models.TaxAvoidance
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, ServiceInfoService}
+import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -35,13 +33,13 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
                                            serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
-                                           val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                           val dataCacheService: DataCacheService,
+                                           val backLinkCacheService: BackLinkCacheService,
                                            template: views.html.reliefs.avoidanceSchemes,
                                            val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ReliefHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "AvoidanceSchemesController"
