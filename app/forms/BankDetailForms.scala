@@ -33,7 +33,7 @@ object BankDetailForms {
 
   private def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
 
-  private def sanitiseAccountNumber(accountNumber: String): String = accountNumber.replaceAll("""\\s+""", "").trim
+  private def sanitiseAccountNumber(accountNumber: String): String = accountNumber.trim
 
   private def accountNumberClean: Mapping[Option[String]] = {
 
