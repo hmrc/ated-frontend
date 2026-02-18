@@ -183,6 +183,35 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         )
       }
 
+      "supplied with AN with blank spaces at end for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndAN)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with AN with blank spaces at start for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtStartAN)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+
       "supplied with sort code with blank spaces at end for uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndOfSortCode)).fold(
           formWithErrors => {
@@ -238,37 +267,6 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
           }
         )
       }
-
-
-      "supplied with AN with blank spaces at end for uk accounts" in {
-        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndAN)).fold(
-          formWithErrors => {
-            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
-
-          },
-          success => {
-            success.accountName mustBe Some("Account Name")
-            success.accountNumber mustBe Some("12345678")
-            success.sortCode mustBe Some(SortCode("11","22","33"))
-          }
-        )
-      }
-
-      "supplied with AN with blank spaces at start for uk accounts" in {
-        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtStartAN)).fold(
-          formWithErrors => {
-            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
-
-          },
-          success => {
-            success.accountName mustBe Some("Account Name")
-            success.accountNumber mustBe Some("12345678")
-            success.sortCode mustBe Some(SortCode("11","22","33"))
-          }
-        )
-      }
-
-
 
       "supplied with valid data for non uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validNonUkData)).fold(
