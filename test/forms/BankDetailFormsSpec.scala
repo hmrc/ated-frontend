@@ -59,6 +59,33 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "sortCode" -> "11-22 33"
   )
 
+
+  val validUkDataWithSpaceAtEndAN: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "12345678   ",
+    "sortCode" -> "112233"
+  )
+
+
+  val validAccountNumberWithSpaces: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> " 123 45678 ",
+    "sortCode" -> "112233"
+  )
+
+  val validAccountNumberWithSpacesBothLeadingAndTrailing: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> " 12345678 ",
+    "sortCode" -> "112233"
+  )
+
+
+  val validUkDataWithSpaceAtStartAN: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "   12345678",
+    "sortCode" -> "112233"
+  )
+
   val nonValidUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name",
     "accountNumber" -> "aaaaaa",
@@ -132,6 +159,59 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         )
       }
 
+      "supplied with valid data for uk accounts with Leading and trailing spaces in account number" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validAccountNumberWithSpacesBothLeadingAndTrailing)).fold(
+          formWithErrors => {
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.accountNumber.invalid"
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with valid data for uk accounts with spaces in account number" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validAccountNumberWithSpaces)).fold(
+          formWithErrors => {
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.accountNumber.invalid"
+          },
+          _ => {
+            fail("Form should give an error")
+          }
+        )
+      }
+
+      "supplied with AN with blank spaces at end for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndAN)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+      "supplied with AN with blank spaces at start for uk accounts" in {
+        BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtStartAN)).fold(
+          formWithErrors => {
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
+
+          },
+          success => {
+            success.accountName mustBe Some("Account Name")
+            success.accountNumber mustBe Some("12345678")
+            success.sortCode mustBe Some(SortCode("11","22","33"))
+          }
+        )
+      }
+
+
       "supplied with sort code with blank spaces at end for uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validUkDataWithSpaceAtEndOfSortCode)).fold(
           formWithErrors => {
@@ -187,7 +267,6 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
           }
         )
       }
-
 
       "supplied with valid data for non uk accounts" in {
         BankDetailForms.validateBankDetails("", bankDetailsForm.bind(validNonUkData)).fold(

@@ -17,7 +17,7 @@
 package forms
 
 import models._
-import play.api.data.Forms._
+import play.api.data.Forms.{text, _}
 import play.api.data.format.Formatter
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError, Mapping}
@@ -32,6 +32,23 @@ object BankDetailForms {
   private val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
   private def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
+
+  private def sanitiseAccountNumber(accountNumber: String): String = accountNumber.trim
+
+  private def accountNumberClean: Mapping[Option[String]] = {
+
+    optional(text)
+      .transform[Option[String]](
+      {
+        case Some(text) => Some(sanitiseAccountNumber(text))
+        case _ => None
+      },
+      {
+        case Some(a) => Some(a)
+        case _ => None
+      }
+    )
+  }
 
   private def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
 
@@ -93,7 +110,7 @@ object BankDetailForms {
   val bankDetailsForm: Form[BankDetails] = Form(mapping(
     "hasUKBankAccount" -> optional(boolean),
     "accountName" -> optional(text).verifying(accountNameConstraint),
-    "accountNumber" -> optional(text),
+    "accountNumber" -> accountNumberClean,
     "sortCode" -> sortCodeTuple,
     "buildingNumber" -> optional(text),
     "bicSwiftCode" -> optional(of[BicSwiftCode]),
@@ -117,18 +134,22 @@ object BankDetailForms {
     }
 
     def validateAccountNumber: Seq[Option[FormError]] = {
-      val accountNumber = bankDetails.data.get("accountNumber").map(_.trim)
-      if (accountNumber.getOrElse("").isEmpty) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
-      }
-      else if (accountNumber.nonEmpty && accountNumber.getOrElse("").length > 18) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.max-len")))
-      }
-      else if (accountNumber.nonEmpty && !accountNumber.get.matches("""^[0-9]+$""")) {
-        Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.invalid")))
-      }
-      else Seq()
-    }
+      val accountNumber = bankDetails.data.get("accountNumber").map(x => sanitiseAccountNumber(x))
+
+      accountNumber match {
+
+        case None | Some("") =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.empty")))
+
+        case Some(acc) if acc.length > 18 =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.max-len")))
+
+        case Some(acc) if !acc.forall(_.isDigit) =>
+          Seq(Some(FormError("accountNumber", "ated.bank-details.error-key.accountNumber.invalid")))
+
+        case _ =>
+          Seq()
+      }}
 
     def validateSortCode: Seq[Option[FormError]] = {
       val sortCode = bankDetails.data.get("sortCode").map(x => sanitiseSortCode(x))
