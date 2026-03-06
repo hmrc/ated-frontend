@@ -58,7 +58,7 @@ class DisposeLiabilityHasUkBankAccountController @Inject()(mcc: MessagesControll
                 oldFormBundleNo,
                 serviceInfoContent,
                 Some(controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.view(oldFormBundleNo).url))))
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
@@ -79,7 +79,7 @@ class DisposeLiabilityHasUkBankAccountController @Inject()(mcc: MessagesControll
                   serviceInfoContent,
                   Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
