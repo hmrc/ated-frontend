@@ -291,6 +291,8 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar with
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
+        response.get.address.exists(addr => addr.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence) must be(true)
+        response.get.address.size mustBe 1
         response.get.changeIndicators.contactDetailsChanged must be(true)
         response.get.changeIndicators.nameChanged must be(true)
         response.get.changeIndicators.correspondenceChanged must be(false)
@@ -303,6 +305,8 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar with
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
+        response.get.address.exists(addr => addr.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence) must be(true)
+        response.get.address.size mustBe 1
         response.get.changeIndicators.contactDetailsChanged must be(true)
         response.get.changeIndicators.nameChanged must be(true)
         response.get.changeIndicators.correspondenceChanged must be(false)
@@ -315,6 +319,8 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar with
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
+        response.get.address.exists(addr => addr.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence) must be(true)
+        response.get.address.size mustBe 1
         response.get.changeIndicators.contactDetailsChanged must be(true)
         response.get.changeIndicators.nameChanged must be(true)
         response.get.changeIndicators.correspondenceChanged must be(false)
@@ -333,10 +339,12 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar with
 
       "return Some if correspondence address is found" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson).as[SubscriptionData]
-        val updatedDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val updatedDetails: AddressDetails = AddressDetails(addressType = "Correspondence", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createUpdateCorrespondenceAddressRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
+        response.get.address.exists(addr => addr.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence) must be(true)
+        response.get.address.size mustBe 1
         response.get.changeIndicators.contactDetailsChanged must be(false)
         response.get.changeIndicators.correspondenceChanged must be(true)
         response.get.changeIndicators.nameChanged must be(false)

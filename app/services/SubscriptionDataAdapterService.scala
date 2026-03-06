@@ -82,20 +82,18 @@ class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector)(imp
                                                     name2 = Some(editedContactDetails.lastName),
                                                     addressDetails = editedCorrespondenceDetails,
                                                     contactDetails = editedContactDetail)
-      val filteredAddresses = oldData.address.filterNot(_.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence)
       val emailConsent = oldData.emailConsent.getOrElse(false)
       new UpdateSubscriptionDataRequest(emailConsent = emailConsent, changeIndicators = ChangeIndicators(nameChanged = true, contactDetailsChanged = true),
-        address = filteredAddresses :+ updatedAddress)
+        address = Seq(updatedAddress))
     }
   }
 
   def createUpdateCorrespondenceAddressRequest(oldData: SubscriptionData, updatedAddressDetails: AddressDetails): Option[UpdateSubscriptionDataRequest] = {
     getCorrespondenceAddress(Some(oldData)).map { foundCorrespondence =>
       val updatedAddress = foundCorrespondence.copy(addressDetails = updatedAddressDetails)
-      val filteredAddresses = oldData.address.filterNot(_.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence)
       val emailConsent = oldData.emailConsent.getOrElse(false)
       new UpdateSubscriptionDataRequest(emailConsent = emailConsent, changeIndicators = ChangeIndicators(correspondenceChanged = true), address =
-        filteredAddresses :+ updatedAddress)
+        Seq(updatedAddress))
     }
   }
 
