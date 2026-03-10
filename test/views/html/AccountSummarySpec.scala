@@ -82,7 +82,6 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
       "have correct deadline info text" in {
         val yearPassedToView = staticYearOf2025
-        val nextTaxYear = staticYearOf2025+1
         assert(doc.select(".govuk-body").get(0).text() contains
           s"The deadline for 2025 to 2026 returns and payments for all ATED-eligible properties that you own on 1 April $yearPassedToView is 30 April $yearPassedToView")
         assert(doc.select(".govuk-body").get(1).text() contains

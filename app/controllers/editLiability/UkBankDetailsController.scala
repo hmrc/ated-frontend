@@ -58,7 +58,7 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                   serviceInfoContent,
                   backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
@@ -77,7 +77,7 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                   serviceInfoContent,
                   AtedUtils.getSummaryBackLink(oldFormBundleNo, AtedUtils.getEditSubmittedMode(x))))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
