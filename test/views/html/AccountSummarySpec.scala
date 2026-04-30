@@ -33,7 +33,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val injectedViewInstance: accountSummary = inject[views.html.accountSummary]
-  val staticYearOf2025 = 2025
+  val staticYearOf2026 = 2026
 
   val view: HtmlFormat.Appendable = injectedViewInstance(
     currentYearReturnsForDisplay,
@@ -44,8 +44,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     Some(clientMandateDetails),
     Html(""),
     cancelAgentUrl,
-    staticYearOf2025,
-    staticYearOf2025,
+    staticYearOf2026,
+    staticYearOf2026,
     fromAccountSummary = true
   )
 
@@ -81,9 +81,9 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have correct deadline info text" in {
-        val yearPassedToView = staticYearOf2025
+        val yearPassedToView = staticYearOf2026
         assert(doc.select(".govuk-body").get(0).text() contains
-          s"The deadline for 2025 to 2026 returns and payments for all ATED-eligible properties that you own on 1 April $yearPassedToView is 30 April $yearPassedToView")
+          s"The deadline for 2026 to 2027 returns and payments for all ATED-eligible properties that you own on 1 April $yearPassedToView is 30 April $yearPassedToView")
         assert(doc.select(".govuk-body").get(1).text() contains
           "Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds)")
       }
@@ -130,6 +130,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show the Create a new return for current tax year button" in {
+        println(currentTaxYear)
         assert(doc.select(
           "#create-return-1").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
         )
