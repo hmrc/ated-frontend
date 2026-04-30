@@ -227,9 +227,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
                 doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
-                doc.getElementsByAttributeValue("for", "period-8").text() must be(s"2017 to 2018")
-                doc.getElementsByAttributeValue("for", "period-7").text() must be(s"2018 to 2019")
-                doc.getElementsByAttributeValue("for", "period-6").text() must be(s"2019 to 2020")
+                doc.getElementsByAttributeValue("for", "period-8").text() must be(s"2018 to 2019")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be(s"2019 to 2020")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be(s"2020 to 2021")
                 assert(doc.getElementById(s"period-${staticYear}_field") === null)
             }
           }
