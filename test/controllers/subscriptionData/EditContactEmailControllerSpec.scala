@@ -17,10 +17,10 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
+import forms.AtedForms.emailLength
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -179,14 +179,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "Authorised users" must {
         "validate form" must {
 
-          "Email address must not be more than 241 characters if entered" in new Setup {
-            val emailTest: String = "a" * 240 + "@gmail.com"
+          "Email addresses must not contain more than the allowed number of characters"  in new Setup {
+            val emailTest: String = "a" * (emailLength - "@mail.com".length + 1) + "@mail.com"
             val inputJson: JsValue = Json.parse( s"""{"emailAddress": "$emailTest", "emailConsent": true }""")
 
             submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("Email address must not be more than 241 characters")
+                contentAsString(result) must include("Email address must not be more than 132 characters")
             }
           }
 

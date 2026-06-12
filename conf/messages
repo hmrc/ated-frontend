@@ -886,7 +886,7 @@ ated.contact-details-phoneNumber.error = Enter a telephone number
 ated.contact-details-emailAddress.error = Enter an email address
 ated.contact-phoneNumber.length = Telephone number must not be more than 24 characters
 ated.contact-phoneNumber.invalidText =Telephone number is not valid
-ated.contact-email.length = Email address must not be more than 241 characters
+ated.contact-email.length = Email address must not be more than 132 characters
 ated.contact-email.error = Email address is not valid
 # this is error thrown for save failure
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.
