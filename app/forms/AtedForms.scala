@@ -32,19 +32,14 @@ import scala.util.matching.Regex
 
 object AtedForms {
 
-  val ZERO = 0
   val countryUK = "GB"
-  val ELEVEN = 11
-  val SIXTY = 60
-  val numRegex = """[0-9]{8}"""
   val addressLineLength = 35
   val PostcodeLength = 10
   val countryLength = 2
-  val emailLength = 241
+  val emailLength = 132
   val lengthZero = 0
   val nameLength = 35
   val phoneLength = 24
-  val faxLength = 24
   val businessNameLength = 105
   val telephoneRegex: Regex = """^[A-Z0-9)\/(\-*#]+$""".r
   val emailRegex: Regex =
@@ -76,7 +71,7 @@ object AtedForms {
           .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
         "countryCode" -> text
           .verifying("ated.address.country", x => x.length > lengthZero)
-          .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+          .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= countryLength))
           .verifying("ated.error.address.country.non-uk", x => !x.matches(countryUK))
 
       )(RegisteredAddressDetails.apply)(RegisteredAddressDetails.unapply)
@@ -101,7 +96,7 @@ object AtedForms {
         .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
       "countryCode" -> text
         .verifying("ated.address.country", x => x.length > lengthZero)
-        .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= countryLength))
     )(AddressDetails.apply)(AddressDetails.unapply)
   )
 
