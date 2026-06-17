@@ -172,16 +172,23 @@ case object DateTupleCustomError {
             } else Seq()
           }
           case "year" => {
-            dateFieldValue.trim.toInt
+            val year = dateFieldValue.trim.toInt
             if (dateFieldValue.trim.length != 4) {
               Seq(FormError(s"${formField}.year", s"ated.error.date.year.length", Seq(messageKey.toLowerCase)))
-            } else Seq()
+            } else if (dateNotInRange(year)) {
+              Seq(FormError(s"${formField}.year", s"ated.error.date.notInRange", Seq(messageKey.capitalize)))
+            }
+            else Seq()
           }
         }
       } catch {
         case _: Throwable => Seq(FormError(s"$formField.day", s"ated.error.date.invalid", Seq(messageKey)))
       }
     }
+
+  def dateNotInRange(inputYear: Int): Boolean = {
+    if (inputYear < 1900 || inputYear > 2100) true else false
+  }
 
 }
 
