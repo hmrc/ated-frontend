@@ -264,7 +264,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Edit address"))
-              assert(document.getElementsByClass("govuk-heading-xl").text.contains("Edit address") === true)
+              assert(document.getElementsByClass("govuk-fieldset__legend--xl").text.contains("Edit address") === true)
               document.getElementsByClass("govuk-button").text must be("Save and continue")
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")

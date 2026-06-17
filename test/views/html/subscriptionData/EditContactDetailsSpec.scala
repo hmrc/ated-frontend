@@ -35,7 +35,7 @@ class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAut
   }
 
   "have correct heading and caption" in {
-    doc.select("h2").text must include("This section is: Manage your ATED service")
+    doc.select("h1 .govuk-caption-xl").text must include("This section is: Manage your ATED service")
     doc.select("h1").text must include("Edit your ATED contact details")
   }
 
@@ -48,7 +48,7 @@ class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAut
   "Edit contact details page" must {
 
     "display info text correctly" in {
-      doc must haveElementWithIdAndText(messages("ated.contact-details.subheader"), "contact-details-subheader")
+      doc must haveElementWithIdAndText(messages("ated.contact-details.subheader"), "edit-contact-hint")
     }
     "display first name label correctly" in {
       doc.getElementsByAttributeValue("for", "firstName").text mustBe messages("ated.contact-details.firstName")
