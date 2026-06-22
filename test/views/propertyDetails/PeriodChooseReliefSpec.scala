@@ -32,7 +32,7 @@ import testhelpers.MockAuthUtil
 import utils.ReliefsUtils
 import views.html.propertyDetails.periodChooseRelief
 
-class periodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
+class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

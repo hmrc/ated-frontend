@@ -27,9 +27,9 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "play-partials-play-30"       % "10.2.0",
     "uk.gov.hmrc"       %% "domain-play-30"              % "11.0.0",
     "uk.gov.hmrc"       %% "http-caching-client-play-30" % "12.2.0",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30"  % "12.32.0",
+    "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30"  % "13.8.0",
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30"          % "2.12.0",
-    "org.jsoup"          % "jsoup"                       % "1.22.1"
+    "org.jsoup"          % "jsoup"                       % "1.22.2"
   )
 
   val test: Seq[ModuleID] = Seq(

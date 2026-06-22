@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
-class propertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
+class PropertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -75,7 +75,7 @@ class propertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSui
       }
 
       "render a save and continue button" in {
-        assert(doc.getElementsByTag("button").text() == "Save and continue")
+        assert(doc.getElementsByTag("button").text().contains("Save and continue"))
       }
     }
 

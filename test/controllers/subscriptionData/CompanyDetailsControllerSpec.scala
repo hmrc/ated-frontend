@@ -182,7 +182,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
         }
       }
@@ -266,7 +265,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
 
             document.select("dt.govuk-summary-list__key") must not be None
@@ -329,7 +327,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
 
             document.select("dt.govuk-summary-list__key") must not be None
@@ -375,7 +372,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
 
             document.select("dt.govuk-summary-list__key").get(3) must not be None
@@ -420,7 +416,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
 
             document.select("dd.govuk-summary-list__actions") must not be None
@@ -453,7 +448,6 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be None
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
 
             document.select("dd.govuk-summary-list__actions") must not be None

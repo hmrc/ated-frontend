@@ -29,11 +29,11 @@ class Modules extends Module {
   }
 
   private def bindControllers: Seq[Binding[_]] = Seq(
-    bind[AuthConnector].to(classOf[DefaultAuthConnector])
+    bind[AuthConnector].to(classOf[DefaultAuthConnector]).eagerly()
   )
 
   private def configureRepository: Seq[Binding[_]] = Seq {
-    bind[CacheRepository].to(classOf[SessionCacheRepository])
+    bind[CacheRepository].to(classOf[SessionCacheRepository]).eagerly()
   }
 
 }

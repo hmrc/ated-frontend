@@ -31,7 +31,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.selectPeriod
 
-class selectPeriodSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class SelectPeriodSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

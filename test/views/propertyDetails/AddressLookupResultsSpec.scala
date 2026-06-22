@@ -32,7 +32,7 @@ import testhelpers.MockAuthUtil
 import utils.AtedUtils
 import views.html.propertyDetails.addressLookupResults
 
-class addressLookupResultsSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class AddressLookupResultsSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

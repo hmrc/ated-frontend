@@ -32,7 +32,7 @@ import testhelpers.MockAuthUtil
 import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsTitle
 
-class propertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class PropertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

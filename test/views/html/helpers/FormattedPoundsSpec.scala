@@ -23,7 +23,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 
-class formattedPoundsSpec extends PlaySpec with GuiceOneAppPerTest {
+class FormattedPoundsSpec extends PlaySpec with GuiceOneAppPerTest {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)

@@ -25,7 +25,7 @@ import play.api.test.FakeRequest
 import play.api.i18n.{Messages, MessagesApi}
 import views.html.unauthorised
 
-class unauthorisedViewSpec extends PlaySpec with GuiceOneAppPerSuite {
+class UnauthorisedViewSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

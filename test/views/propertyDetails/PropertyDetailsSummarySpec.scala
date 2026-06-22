@@ -35,7 +35,7 @@ import utils.PeriodUtils
 import utils.PeriodUtils._
 import views.html.propertyDetails.propertyDetailsSummary
 
-class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
+class PropertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

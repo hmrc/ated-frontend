@@ -33,7 +33,7 @@ import testhelpers.MockAuthUtil
 import utils.{AtedConstants, PeriodUtils}
 import views.html.formBundleReturn
 
-class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

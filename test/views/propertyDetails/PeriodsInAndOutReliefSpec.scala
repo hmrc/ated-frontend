@@ -33,7 +33,7 @@ import testhelpers.MockAuthUtil
 import utils.AtedUtils
 import views.html.propertyDetails.periodsInAndOutRelief
 
-class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
+class PeriodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

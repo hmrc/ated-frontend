@@ -155,7 +155,7 @@ class Setup {
               document.getElementById("addressDetails.addressLine4").attr("value") must be("")
               document.getElementById("addressDetails.postalCode").attr("value") must be("")
               document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
-              document.getElementsByTag("button").text() must be("Save")
+              document.getElementsByTag("button").text() must be("Menu Save")
           }
         }
 
@@ -180,7 +180,7 @@ class Setup {
               document.getElementById("addressDetails.addressLine4").attr("value") must be("bpline4")
               document.getElementById("addressDetails.postalCode").attr("value") must be("postCode")
               document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
-              document.getElementsByTag("button").text() must be("Save")
+              document.getElementsByTag("button").text() must be("Menu Save")
           }
         }
       }

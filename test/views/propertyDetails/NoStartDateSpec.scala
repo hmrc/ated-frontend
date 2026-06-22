@@ -30,7 +30,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.newBuildNoStartDate
 
-class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class NoStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

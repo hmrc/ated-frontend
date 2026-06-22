@@ -32,7 +32,7 @@ import testhelpers.MockAuthUtil
 import utils.AtedConstants._
 import views.html.periodSummary
 
-class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class PeriodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

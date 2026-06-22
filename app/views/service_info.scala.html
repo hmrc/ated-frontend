@@ -21,22 +21,4 @@
 @this(hmrcNotificationBadge : HmrcNotificationBadge)
 
 @(navLinks: Seq[ListLinks])
-<nav id="secondary-nav" aria-labelledby="bta-menu" class="hmrc-account-menu govuk-!-display-none-print">
-    <p class="govuk-visually-hidden" id="bta-menu">Business tax account</p>
-    <ul class="hmrc-account-menu__main govuk-grid-column-full">
-        @for( nav <- navLinks) {
-        @if(nav.showBoolean.contains(false)){} else {
-        <li>
-            <a href="@nav.url" class="hmrc-account-menu__link" id="nav-bar-link-@nav.message.replace(' ','-')" >
-                @nav.message
-                @nav.alerts match {
-                case Some(alert) if(alert != "0") => { @hmrcNotificationBadge(NotificationBadge(alert))}
-                case _ => {}
-                }
-                }
-            </a>
-        </li>
-        }
 
-    </ul>
-</nav>
