@@ -163,6 +163,10 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
     }
   }
 
+  override def beforeEach(): Unit = {
+    stubServiceNavigationUrls(mockAppConfig)
+  }
+
   ".view" when {
 
     "the user is unauthorised" must {

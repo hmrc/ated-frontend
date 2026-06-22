@@ -88,8 +88,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           "Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds)")
       }
 
-      "have the correct banner link" in {
-        assert(doc.select(".govuk-header__service-name").attr("href") === "/ated/home")
+      "have the correct service navigation link" in {
+        assert(doc.select(".govuk-service-navigation__service-name").text() === "Submit and view your ATED returns")
       }
     }
 

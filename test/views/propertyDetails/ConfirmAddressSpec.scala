@@ -31,7 +31,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.confirmAddress
 
-class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

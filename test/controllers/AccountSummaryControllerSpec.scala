@@ -80,6 +80,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     when(mockDateService.now()).thenReturn(LocalDate.now())
     when(mockAppConfig.atedPeakStartDay).thenReturn("27")
     when(mockAppConfig.urBannerLink).thenReturn("https://test")
+
+    stubServiceNavigationUrls(mockAppConfig)
   }
 
   val periodKey2015: Int = 2015
@@ -247,9 +249,9 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
 
             document.getElementsByClass("hmrc-user-research-banner__title")
-              .text() must be("Help make GOV.UK better")
+              .text() must be("You may receive a voucher for feedback")
             document.getElementsByClass("hmrc-user-research-banner__link")
-              .text() must be("Sign up to take part in research (opens in new tab)")
+              .text() must be("Join our research panel (opens in new tab)")
             document.getElementsByClass("hmrc-user-research-banner__close")
               .text() must include("Hide message. I do not want to take part in research")
         }

@@ -41,6 +41,7 @@ import scala.concurrent.Future
 abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig                         = mock[ApplicationConfig]
+  stubServiceNavigationUrls(mockAppConfig)
   implicit lazy val hc: HeaderCarrier                                   = HeaderCarrier()
   val mockMcc: MessagesControllerComponents                             = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService                = mock[PropertyDetailsService]
@@ -137,6 +138,10 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
       partAcqDispDate = partAcqDispDate
     )
     verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(any(), eqs(expectedPropertyDetails))(any(), any())
+  }
+
+  def beforeEach(): Unit = {
+    stubServiceNavigationUrls(mockAppConfig)
   }
 
 }

@@ -21,6 +21,7 @@ import forms.PropertyDetailsForms.propertyDetailsNewBuildForm
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers.contain
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -29,7 +30,7 @@ import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.propertyDetailsNewBuild
 
-class propertyDetailsNewBuildSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
+class PropertyDetailsNewBuildSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -79,7 +80,7 @@ class propertyDetailsNewBuildSpec extends PlaySpec with GuiceOneAppPerSuite with
       }
 
       "render a save and continue button" in {
-        assert(doc.getElementsByTag("button").text() == "Save and continue")
+        assert(doc.getElementsByTag("button").text().contains("Save and continue"))
       }
     }
 

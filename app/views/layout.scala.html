@@ -23,6 +23,8 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.UserResearchBanner
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.NavigationItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.servicenavigation.{ServiceNavigation, ServiceNavigationItem}
 
 @this(
     hmrcStandardPage: HmrcStandardPage,
@@ -88,6 +90,15 @@
     @scripts
 }
 
+@serviceNavItems = @{
+    Seq(
+        ServiceNavigationItem(Text(messages("btaNavLinks.home")), appConfig.btaHomeUrl),
+        ServiceNavigationItem(Text(messages("btaNavLinks.manageAccount")), appConfig.btaManageAccountUrl),
+        ServiceNavigationItem(Text(messages("btaNavLinks.messages")), appConfig.btaMessagesUrl),
+        ServiceNavigationItem(Text(messages("btaNavLinks.helpAndContact")), appConfig.btaHelpAndContactUrl)
+    )
+}
+
 @hmrcStandardPage(
     HmrcStandardPageParams(
         serviceURLs = ServiceURLs(
@@ -103,7 +114,12 @@
                 case None => twoThirdsMainContent(_)
                 }),
             ),
-    pageTitle = pageTitle,
-    banners = Banners(userResearchBanner = urBannerWithUrl)
+        pageTitle = pageTitle,
+        banners = Banners(userResearchBanner = urBannerWithUrl),
+        serviceNavigation = Some(ServiceNavigation(
+            serviceName = Some(messages("service.name")),
+            serviceUrl  = Some(routes.HomeController.home(None).url),
+            navigation  = serviceNavItems.filter(_.href.nonEmpty)
+        ))
     )
 )(content)

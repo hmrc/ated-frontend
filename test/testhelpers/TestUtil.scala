@@ -16,7 +16,9 @@
 
 package testhelpers
 
+import config.ApplicationConfig
 import models.{DelegationModel, Link, PrincipalTaxIdentifiers}
+import org.mockito.Mockito.when
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.domain.AtedUtr
 
@@ -63,4 +65,11 @@ trait TestUtil {
   val principalTaxIdentifiers: PrincipalTaxIdentifiers = PrincipalTaxIdentifiers(None, None, None, None, None, None, Some(AtedUtr("XN1200000100001")))
   val delegationModel: DelegationModel = DelegationModel("attorney", "principalName", link, accounts = principalTaxIdentifiers, None, Some("Id"))
 
+  def stubServiceNavigationUrls(mockAppConfig: ApplicationConfig): Unit = {
+    when(mockAppConfig.btaHomeUrl).thenReturn("/business-account")
+    when(mockAppConfig.btaManageAccountUrl).thenReturn("/business-account/manage-account")
+    when(mockAppConfig.btaMessagesUrl).thenReturn("/business-account/messages")
+    when(mockAppConfig.btaHelpAndContactUrl).thenReturn("/help-and-contact")
+    when(mockAppConfig.urBannerLink).thenReturn("/feedback")
+  }
 }

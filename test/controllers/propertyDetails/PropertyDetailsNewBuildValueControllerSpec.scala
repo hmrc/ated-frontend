@@ -146,7 +146,9 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
 
   }
 
-  override def beforeEach(): Unit = {}
+  override def beforeEach(): Unit = {
+    stubServiceNavigationUrls(mockAppConfig)
+  }
 
   "PropertyDetailsNewBuildValueController" must {
     "propertyDetails" must {

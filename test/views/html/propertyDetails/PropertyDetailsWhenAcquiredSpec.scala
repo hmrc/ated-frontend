@@ -27,6 +27,7 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  stubServiceNavigationUrls(appConfig)
   val injectedViewInstance: propertyDetailsWhenAcquired = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsWhenAcquired]
 
   private val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm

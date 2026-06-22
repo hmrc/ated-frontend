@@ -1,4 +1,22 @@
 /*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views.propertyDetails
+
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,20 +45,19 @@ import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.propertyDetailsNewValuation
 
-class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with MockAuthUtil with GuiceOneAppPerSuite {
+class PropertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with MockAuthUtil with GuiceOneAppPerSuite {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val messages: Messages                           = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals     = organisationStandardRetrievals
 
   val injectedView = app.injector.instanceOf[propertyDetailsNewValuation]
 
-
-  "propertyDetailsNewValuationSpec" when {
+  "PropertyDetailsNewValuationSpec" when {
     "page will " should {
       val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm, Some("back"))
-      val doc = Jsoup.parse(view.toString())
+      val doc  = Jsoup.parse(view.toString())
       "have proper tile" in {
         assert(doc.title() == "What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
       }
@@ -63,14 +80,14 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
         assert(doc.select(".govuk-input").attr("type") == "text")
       }
       "render a save and continue button" in {
-        assert(doc.getElementsByTag("button").text() == "Save and continue")
+        assert(doc.getElementsByTag("button").text().contains("Save and continue"))
       }
 
     }
 
     "the page has been submitted with empty value" should {
       val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "")), Some("back"))
-      val doc = Jsoup.parse(view.toString)
+      val doc  = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
         assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
@@ -94,7 +111,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     "the page has been submitted with wrong value- non numeric" should {
       val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "test data")), Some("back"))
-      val doc = Jsoup.parse(view.toString)
+      val doc  = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
         assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
@@ -118,7 +135,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     "the page has been submitted with min value" should {
       val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "10.50")), Some("back"))
-      val doc = Jsoup.parse(view.toString)
+      val doc  = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
         assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
@@ -142,7 +159,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     "the page has been submitted with max value" should {
       val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "10504545454545")), Some("back"))
-      val doc = Jsoup.parse(view.toString)
+      val doc  = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
         assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")

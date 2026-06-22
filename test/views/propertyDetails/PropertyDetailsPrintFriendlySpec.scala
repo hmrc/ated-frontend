@@ -33,7 +33,7 @@ import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
 
-class propertyDetailsPrintFriendlySpec extends AnyFeatureSpecLike with GuiceOneServerPerSuite with MockitoSugar
+class PropertyDetailsPrintFriendlySpec extends AnyFeatureSpecLike with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

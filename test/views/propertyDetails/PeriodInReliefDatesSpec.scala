@@ -31,7 +31,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.periodInReliefDates
 
-class periodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
+class PeriodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

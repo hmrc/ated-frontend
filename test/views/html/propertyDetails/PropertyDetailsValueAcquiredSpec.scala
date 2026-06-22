@@ -28,6 +28,7 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  stubServiceNavigationUrls(appConfig)
   val injectedViewInstance: propertyDetailsValueAcquired = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsValueAcquired]
   private val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm
   override def view: Html = injectedViewInstance("0", 0,form, None, Html(""), Some("backLink"), testDate)
