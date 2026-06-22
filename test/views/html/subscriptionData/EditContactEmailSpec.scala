@@ -35,7 +35,7 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
   }
 
   "have correct heading and caption" in {
-    doc.select("h2").text must include("This section is: Manage your ATED service")
+    doc.select(".govuk-caption-xl").text must include("This section is: Manage your ATED service")
     doc.select("h1").text must include("Edit your ATED email address")
   }
 

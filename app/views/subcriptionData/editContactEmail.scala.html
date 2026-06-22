@@ -51,15 +51,13 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
         @errorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsEmailForm))
     }
 
-    <header>
-        <h2 class="govuk-caption-xl hmrc-caption-xl">
-            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-            @messages("ated.contact-details-edit-email.subheader")
-        </h2>
-        <h1 class="govuk-heading-xl">
-            @messages("ated.contact-details-edit-email.header")
-        </h1>
-    </header>
+    <span class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages("ated.contact-details-edit-email.subheader")
+    </span>
+    <h1 class="govuk-heading-xl">
+        @messages("ated.contact-details-edit-email.header")
+    </h1>
 
     <p id="lede" class="govuk-body">@messages("ated.contact-details-email-lede")</p>
 
@@ -76,7 +74,7 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
         @radios(Radios(
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
-                    content = Text("ated.contact-details.email-consent.message"),
+                    content = Text(messages("ated.contact-details.email-consent.message")),
                     classes = "govuk-visually-hidden"
                 ))
             )),
