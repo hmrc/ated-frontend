@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
 
-@this(newMain: newMain, formHelper: FormWithCSRF, input: GovukInput, button: GovukButton, govukBackLink: GovukBackLink, govukErrorSummary: GovukErrorSummary)
+@this(newMain: newMain, formHelper: FormWithCSRF, fieldset: GovukFieldset, input: GovukInput, button: GovukButton, govukBackLink: GovukBackLink, govukErrorSummary: GovukErrorSummary)
 @(editContactDetailsForm: Form[models.EditContactDetails], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
@@ -37,30 +37,34 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsForm))
     }
 
-    <header>
-        <h2 class="govuk-caption-xl hmrc-caption-xl">
-            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-            @messages("ated.contact-details-edit.subheader")
-        </h2>
-        <h1 class="govuk-heading-xl">
-            @messages("ated.contact-details.header")
-        </h1>
-    </header>
-
-    <p id="contact-details-subheader" class="govuk-body"> @messages("ated.contact-details.subheader")</p>
-
   @formHelper(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
 
+    @fieldset(Fieldset(
+        describedBy = Some("edit-contact-hint"),
+        legend = Some(Legend(
+            content = HtmlContent(Html(s"""
+                |<span class="govuk-caption-xl hmrc-caption-xl">
+                |  <span class="govuk-visually-hidden">${messages("ated.screen-reader.section")}</span>
+                |    ${messages("ated.contact-details-edit.subheader")}
+                |</span>
+                |${messages("ated.contact-details.header")}
+            """.stripMargin)),
+            classes = "govuk-fieldset__legend--xl",
+            isPageHeading = true
+        )),
+        html = HtmlFormat.fill(Seq(
+            Html(s"""
+                |<div id="edit-contact-hint" class="govuk-hint">
+                |  ${messages("ated.contact-details.subheader")}
+                |</div>
+            """.stripMargin),
+            input(Input(label = Label(content = Text(messages("ated.contact-details.firstName"))), autocomplete = Some("given-name")).withFormField(editContactDetailsForm("firstName"))),
+            input(Input(label = Label(content = Text(messages("ated.contact-details.lastName"))), autocomplete = Some("family-name")).withFormField(editContactDetailsForm("lastName"))),
+            input(Input(label = Label(content = Text(messages("ated.contact-details.phoneNumber"))), autocomplete = Some("tel"), inputType = "tel").withFormField(editContactDetailsForm("phoneNumber")))
+        ))
+    ))
 
-      <div id="contact-address-form">
-
-        @input(Input(label = Label(content = Text(messages("ated.contact-details.firstName")))).withFormField(editContactDetailsForm("firstName")))
-        @input(Input(label = Label(content = Text(messages("ated.contact-details.lastName")))).withFormField(editContactDetailsForm("lastName")))
-        @input(Input(label = Label(content = Text(messages("ated.contact-details.phoneNumber"))), inputType = "tel").withFormField(editContactDetailsForm("phoneNumber")))
-
-      </div>
-
-      @button(Button(content = Text(messages("ated.save-changes"))))
+    @button(Button(content = Text(messages("ated.save-changes"))))
 
   }
 
