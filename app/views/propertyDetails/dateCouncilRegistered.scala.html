@@ -50,16 +50,6 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateCouncilRegistered" -> "dateCouncilRegistered.day")))
     }
 
-    <header>
-        <h2 class="govuk-caption-xl hmrc-caption-xl">
-            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-        </h2>
-        <h1 class="govuk-heading-xl">
-                @messages("ated.property-details.council-registered-date.header")
-        </h1>
-    </header>
-
     @formHelper(action = controllers.propertyDetails.routes.DateCouncilRegisteredController.save(id, periodKey, mode)) {
 
         @govukDateInput(DateInput(
@@ -69,8 +59,15 @@
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(
-                content = Text(messages("ated.property-details.council-registered-date.header")),
-                classes = "govuk-visually-hidden"
+                content = HtmlContent(Html(s"""
+                    |<span class="govuk-caption-xl hmrc-caption-xl">
+                    |  <span class="govuk-visually-hidden">${messages("ated.screen-reader.section")}</span>
+                    |    ${messages(AtedUtils.getPropertyDetailsPreHeader(mode))}
+                    |</span>
+                    |${messages("ated.property-details.council-registered-date.header")}
+                """.stripMargin)),
+                classes = "govuk-fieldset__legend--xl",
+                isPageHeading = true
               ))
             )),
         ).withDayMonthYearFormField(propertyDetailsForm("dateCouncilRegistered")))
