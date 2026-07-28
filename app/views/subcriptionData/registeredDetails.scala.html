@@ -23,18 +23,6 @@
 @this(newMain: newMain, formHelper: FormWithCSRF, input: GovukInput, errorSummary: GovukErrorSummary, select: GovukSelect, govukBackLink: GovukBackLink, button: GovukButton, fieldset: GovukFieldset)
 @(registeredDetailsForm: Form[models.RegisteredDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@pageScripts = {
-
-    <script @CSPNonce.attr type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/location-autocomplete.min.js")'></script>
-    <script @CSPNonce.attr type="text/javascript">
-      openregisterLocationPicker({
-        defaultValue: '',
-        selectElement: document.getElementById('addressDetails.countryCode'),
-        url: '@controllers.routes.Assets.versioned("location-autocomplete-graph.json")'
-      })
-    </script>
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -44,7 +32,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.registered-details.title"), Some(registeredDetailsForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts), back = Some(backLinkHtml)) {
+@newMain(title = titleBuilder(messages("ated.registered-details.title"), Some(registeredDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(registeredDetailsForm.hasErrors) {
         @errorSummary(ErrorSummary().withFormErrorsAsText(registeredDetailsForm))
@@ -72,6 +60,12 @@
       @input(Input(label = Label(content = Text(messages("ated.addressLine4"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine4")))
       @select(Select(
           label = Label(content = Text(messages("ated.country"))),
+          attributes = Map(
+              "data-show-all-values" -> "false",
+              "data-auto-select" -> "false",
+              "data-default-value" -> "",
+              "data-module" -> "hmrc-accessible-autocomplete"
+          ),
           items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
               case (code, country) => SelectItem(
                   value = Some(code),

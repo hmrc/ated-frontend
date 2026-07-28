@@ -25,6 +25,9 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.NavigationItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.servicenavigation.{ServiceNavigation, ServiceNavigationItem}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteCss
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteJavascript
+@import play.twirl.api.HtmlFormat
 
 @this(
     hmrcStandardPage: HmrcStandardPage,
@@ -32,7 +35,9 @@
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     attorneyBanner: attorneyBanner,
     twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
-    twoThirdsMainContent: TwoThirdsMainContent
+    twoThirdsMainContent: TwoThirdsMainContent,
+    autocompleteCss: HmrcAccessibleAutocompleteCss,
+    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
 @(beforeContent: Option[Html] = None,
@@ -88,6 +93,11 @@
     <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
     <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/print.css")' type="text/css">
     @scripts
+   <script @CSPNonce.attr>
+            if (window.HMRCFrontend) {
+                window.HMRCFrontend.initAll()
+            }
+    </script>
 }
 
 @serviceNavItems = @{
@@ -106,9 +116,15 @@
             signOutUrl = Some(signOutUrl),
             ),
         templateOverrides = TemplateOverrides(
-            additionalHeadBlock = Some(headBlock),
+            additionalHeadBlock = Some(HtmlFormat.fill(Seq(
+                headBlock,
+                autocompleteCss()
+            ))),
             beforeContentBlock =  Some(beforeContentBlock),
-            additionalScriptsBlock = Some(additionalScripts),
+            additionalScriptsBlock = Some( HtmlFormat.fill(Seq(
+                additionalScripts,
+                autocompleteJavascript()
+            ))),
             mainContentLayout = Some(sideBar match {
                 case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)
                 case None => twoThirdsMainContent(_)
