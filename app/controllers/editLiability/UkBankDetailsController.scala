@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import forms.BankDetailForms.bankDetailsForm
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, BackLinkService, ChangeLiabilityReturnService, DataCacheService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
 import utils.AtedUtils.sanitiseBankDetails
@@ -40,7 +39,7 @@ class UkBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                         val backLinkCacheService: BackLinkCacheService,
                                         template: views.html.editLiability.ukBankDetails)
                                        (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
 

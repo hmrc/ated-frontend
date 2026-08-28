@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
@@ -38,7 +37,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.reliefs.changeReliefReturn)
                                             (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkService with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId = "ChangeReliefReturnController"

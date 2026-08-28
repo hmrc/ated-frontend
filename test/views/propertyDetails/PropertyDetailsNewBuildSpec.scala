@@ -21,7 +21,6 @@ import forms.PropertyDetailsForms.propertyDetailsNewBuildForm
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.matchers.must.Matchers.contain
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}

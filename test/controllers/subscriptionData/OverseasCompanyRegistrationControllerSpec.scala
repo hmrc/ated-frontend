@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -31,8 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{ServiceInfoService, SubscriptionDataService}
@@ -103,12 +101,12 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
     }
 
     def submitWithAuthorisedUserSuccess(input: Option[Identification] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+                                       (fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockSubscriptionDataService.updateOverseasCompanyRegistration(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(input))
-      val result = testOverseasCompanyRegistrationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testOverseasCompanyRegistrationController.submit.apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
 
@@ -172,10 +170,14 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
           "overseas company registration number must not be more than 60 chars and issuing institution must not be more than 40 chars" in new Setup {
             val regNumber: String = "a" * 61
             val issuingInst: String = "a" * 41
-            val inputJson: JsValue = Json.parse(s"""{"businessUniqueId": "$regNumber", "issuingInstitution": "$issuingInst", "countryCode": "FR" }""")
 
-            submitWithAuthorisedUserSuccess()(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedUserSuccess()(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "businessUniqueId" -> regNumber,
+                "issuingInstitution" -> issuingInst,
+                "countryCode" -> "FR")
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("The overseas company registration number cannot be more than 60 characters")
                 contentAsString(result) must include("The institution that issued the overseas company registration number cannot be more than 40 characters")
@@ -184,10 +186,13 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
 
           "If input is valid, submit must redirect" in new Setup {
 
-            val inputJson: JsValue = Json.parse(s"""{"businessUniqueId": "AAAAAAAA", "issuingInstitution": "Some Place", "countryCode": "FR" }""")
-
-            submitWithAuthorisedUserSuccess()(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedUserSuccess()(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "businessUniqueId" -> "AAAAAAAA",
+                "issuingInstitution" -> "Some Place",
+                "countryCode" -> "FR")
+            ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated/company-details")
             }

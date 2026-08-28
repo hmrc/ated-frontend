@@ -1,21 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.*
@@ -55,7 +38,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.{BtaNavigationLinks, confirmPastReturn}
 
-import java.util.UUID
 import scala.concurrent.Future
 
 class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
@@ -97,9 +79,9 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       mockDataCacheService,
       template
     )
+    val userId = "user-7c6d5c8d-3f4f-4c2a-9f3f-0d7d8a1e2b9c"
 
     def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -114,7 +96,6 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
     def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any, fromConfirmAddress: Boolean = false): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
@@ -139,20 +120,13 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testExistingReturnQuestionController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-      val result = testExistingReturnQuestionController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSessionNoUser)
-      test(result)
-    }
-
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
+    def submitWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(
@@ -164,10 +138,9 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
         .thenReturn(Future.successful(None))
       val result = testExistingReturnQuestionController
         .submit(periodKey, returnTypeCharge)
-        .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
-
   }
 
   override def beforeEach(): Unit = {}
@@ -232,9 +205,12 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       "for authorised user" must {
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"yesNo": ""}""")
             when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "yesNo" -> "")
+            ) { result =>
               status(result) must be(BAD_REQUEST)
               val doc = Jsoup.parse(contentAsString(result))
               doc.getElementsByClass("govuk-error-summary__list").html() must include("Select yes if you filed a return for this property last year")
@@ -242,16 +218,22 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
           }
 
           "with returnType=CR - chargeable return, status is OK" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"yesNo": "true"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "yesNo" -> "true")
+            ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/existing-return/select/2015/CR")
             }
           }
 
           "with returnType=anything else, status is Redirect" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"yesNo": "false"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "yesNo" -> "false")
+            ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/liability/address-lookup/view/2015")
             }

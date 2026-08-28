@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +32,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
                                            template: views.html.subcriptionData.editContactEmail)
                                           (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) {
 
   given ec: ExecutionContext = mcc.executionContext
 

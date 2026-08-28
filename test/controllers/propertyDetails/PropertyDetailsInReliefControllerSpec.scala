@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -32,8 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -127,7 +125,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue, mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -136,7 +134,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsInReliefController.save("1", periodKey, mode)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -202,19 +200,26 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
-
-          val inputJson: JsValue = Json.parse("""{"isInRelief": "2"}""")
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isInRelief"   -> "2"
+            )
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson) {
+          submitWithAuthorisedFormUser(fakeRequest) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
         "for valid data set to true forward to the Periods In Relief Page" in new Setup {
-          val inputJson: JsValue = Json.toJson(PropertyDetailsInRelief(Some(true)))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isInRelief"   -> "true"
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson) {
+          submitWithAuthorisedFormUser(fakeRequest) {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/periods-in-relief/view")
@@ -222,9 +227,13 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
         }
 
         "for valid data set to false forward to the Dates Liable Page" in new Setup {
-          val inputJson: JsValue = Json.toJson(PropertyDetailsInRelief(Some(false)))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isInRelief"   -> "false"
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson) {
+          submitWithAuthorisedFormUser(fakeRequest) {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/dates-liable/view")
@@ -232,9 +241,13 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
         }
 
         "for valid Edit Liability Data set to false forward to the Edit Liability Dates Liable Page" in new Setup {
-          val inputJson: JsValue = Json.toJson(PropertyDetailsInRelief(Some(false)))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isInRelief"   -> "false"
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson, Some(AtedUtils.EDIT_SUBMITTED)) {
+          submitWithAuthorisedFormUser(fakeRequest, Some(AtedUtils.EDIT_SUBMITTED)) {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated/liability/1/change/dates-liable")

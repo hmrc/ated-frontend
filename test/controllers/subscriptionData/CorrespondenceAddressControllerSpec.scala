@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{DataCacheService, DetailsService, ServiceInfoService, SubscriptionDataService}
@@ -97,13 +96,13 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     }
 
     def submitWithAuthorisedUserSuccess(testAddress: Option[AddressDetails] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+                                       (fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(testAddress))
-      val result = testCorrespondenceAddressController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testCorrespondenceAddressController.submit.apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -229,41 +228,49 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           "Authorised users" must {
             "validate form" must {
               "If registration details entered are valid, save and continue button must redirect to contact details page if the save worked" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "sadsdf",
-                    |"addressLine1": "sdfsdf",
-                    |"addressLine2": "asd",
-                    |"addressLine3": "asd",
-                    |"addressLine4": "asd",
-                    |"postalCode": "XX1 1XX",
-                    |"countryCode": "GB"}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
-                  result =>
-                    status(result) must be(SEE_OTHER)
-                    redirectLocation(result).get must include("/ated/company-details")
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("XX1 1XX"),
+                  countryCode = "GB"
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) { result =>
+                  status(result) mustBe SEE_OTHER
+                  redirectLocation(result).get must include("/ated/company-details")
                 }
               }
 
               "If registration details entered are valid but the save fails, throw a global error" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "sadsdf",
-                    |"addressLine1": "sdfsdf",
-                    |"addressLine2": "asd",
-                    |"addressLine3": "asd",
-                    |"addressLine4": "asd",
-                    |"postalCode": "XX11XX",
-                    |"countryCode": "GB"}""".stripMargin)
 
-                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
-                  result =>
-                    val document = Jsoup.parse(contentAsString(result))
-                    status(result) must be(OK)
-                    document.title() must be ("Sorry, there is a problem with the service")
-                }
-                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(None)(fakeRequest) {
                   result =>
                     val document = Jsoup.parse(contentAsString(result))
                     status(result) must be(OK)
@@ -277,107 +284,161 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
 
               "If address line 1 in correspondence details entered is with spaces  but the save fails, throw a validation error" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "sadsdf",
-                    |"addressLine1": " ",
-                    |"addressLine2": " ",
-                    |"addressLine3": "asd",
-                    |"addressLine4": "asd",
-                    |"postalCode": "XX11XX",
-                    |"countryCode": "GB"}""".stripMargin)
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> " ",
+                    "addressLine2" -> " ",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX11XX",
+                    "countryCode" -> "GB"
+                  )
 
-                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+                submitWithAuthorisedUserSuccess(None)(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                 }
               }
 
               "not be empty" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "",
+                    "addressLine2" -> "",
+                    "addressLine3" -> "",
+                    "addressLine4" -> "",
+                    "postalCode" -> "",
+                    "countryCode" -> ""
+                  )
 
-                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+                submitWithAuthorisedUserSuccess(None)(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                      contentAsString(result) must include("Enter address line 1")
-                      contentAsString(result) must include("Enter address line 2")
-                      contentAsString(result) must include("Enter a country")
+                    contentAsString(result) must include("Enter address line 1")
+                    contentAsString(result) must include("Enter address line 2")
+                    contentAsString(result) must include("Enter a country")
                 }
               }
 
               "If entered, Address line 1 must be maximum of 35 characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("XX1 1XX"),
+                  countryCode = "GB"
+                )
+  
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+  
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Address line 1 cannot be more than 35 characters")
                 }
               }
 
-
               "If entered, Address line 2 must be maximum of 35 characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("XX1 1XX"),
+                  countryCode = "GB"
+                )
+  
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+  
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Address line 2 cannot be more than 35 characters")
                 }
               }
+
               "If entered, Address line 3 must be maximum of 35 characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("XX1 1XX"),
+                  countryCode = "GB"
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 }
               }
+
               "If entered, Address line 4 must be maximum of 35 characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDWWWWWWWWWWWWWWW",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD"),
+                  postalCode = Some("XX1 1XX"),
+                  countryCode = "GB"
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                    "postalCode" -> "XX1 1XX",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Address line 4 cannot be more than 35 characters")
@@ -385,36 +446,59 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
                "Postcode must not be more than 9 characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "asssaa34aaaaaa",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                 val addressDetails = AddressDetails(
+                   addressType = "Permanent",
+                   addressLine1 = "Line One",
+                   addressLine2 = "Line Two",
+                   addressLine3 = Some("Line Three"),
+                   addressLine4 = Some("Line Four"),
+                   postalCode = Some("asssaa34aaaaaa"),
+                   countryCode = "GB"
+                 )
+
+                 val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                   .withMethod("POST")
+                   .withFormUrlEncodedBody(
+                     "addressType" -> "Permanent",
+                     "addressLine1" -> "Line One",
+                     "addressLine2" -> "Line Two",
+                     "addressLine3" -> "Line Three",
+                     "addressLine4" -> "Line Four",
+                     "postalCode" -> "asssaa34aaaaaa",
+                     "countryCode" -> "GB"
+                   )
+
+                 submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("The postcode cannot be more than 9 characters")
                 }
               }
 
-
               "Postcode must not contain special characters" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "aaa,uu",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("aaa,uu"),
+                  countryCode = "GB"
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "aaa,uu",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Enter a valid postcode")
@@ -422,17 +506,29 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
               "Postcode must entered if country code is UK" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "Correspondence",
-                    |"addressLine1": "AddlineOne",
-                    |"addressLine2": "AddlineTwo",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": "GB"}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some(""),
+                  countryCode = "GB"
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "",
+                    "countryCode" -> "GB"
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                     status(result) must be(BAD_REQUEST)
                     contentAsString(result) must include("Enter a UK postcode if UK is selected in the country field.")
@@ -440,26 +536,38 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
               "Country Code must be selected" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "",
-                    |"addressLine1": "",
-                    |"addressLine2": "",
-                    |"addressLine3": "",
-                    |"addressLine4": "",
-                    |"postalCode": "",
-                    |"countryCode": ""}""".stripMargin)
-                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
-                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                val addressDetails = AddressDetails(
+                  addressType = "Permanent",
+                  addressLine1 = "Line One",
+                  addressLine2 = "Line Two",
+                  addressLine3 = Some("Line Three"),
+                  addressLine4 = Some("Line Four"),
+                  postalCode = Some("aaa,uu"),
+                  countryCode = ""
+                )
+
+                val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+                  .withMethod("POST")
+                  .withFormUrlEncodedBody(
+                    "addressType" -> "Permanent",
+                    "addressLine1" -> "Line One",
+                    "addressLine2" -> "Line Two",
+                    "addressLine3" -> "Line Three",
+                    "addressLine4" -> "Line Four",
+                    "postalCode" -> "aaa,uu",
+                    "countryCode" -> ""
+                  )
+
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(fakeRequest) {
                   result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Enter a country")
                 }
-               }
-             }
+              }
+            }
           }
         }
       }
-     }
     }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -31,8 +30,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -117,7 +115,8 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       test(result)
     }
 
-    def submitWithAuthorisedUser(id: String, inputJson: JsValue, mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(id: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], mode: Option[String] = None)(test: Future[Result] => Any):
+    Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
@@ -132,7 +131,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       setAuthMocks(authMock)
       val result = testPropertyDetailsTitleController
         .save(id, periodKey, mode)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
@@ -224,18 +223,26 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
         "for invalid data, return BAD_REQUEST" in new Setup {
 
-          val inputJson: JsValue = Json.parse("""{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser("1", inputJson) { result =>
+          submitWithAuthorisedUser("1", FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "rentalBusiness" -> "true",
+              "isAvoidanceScheme" -> "true"
+            )
+          ) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
 
         "for invalid data that is too long, return BAD_REQUEST" in new Setup {
-
-          val inputJson: PropertyDetailsTitle = PropertyDetailsTitle("a" * 41)
+          val title: String = "a" * 41
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser("1", Json.toJson(inputJson)) { result =>
+          submitWithAuthorisedUser("1", FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "titleNumber" -> title
+            )) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
@@ -244,25 +251,40 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           val propertyDetails = PropertyDetailsTitle("new Title")
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser("1", Json.toJson(propertyDetails)) { result =>
+          submitWithAuthorisedUser("1", FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "titleNumber" -> "new Title")
+          ) { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
         "for valid data, forward onto the acquisition page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val title: PropertyDetailsTitle = propDetails.title.value
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser("1", Json.toJson(propDetails.title)) { result =>
+          submitWithAuthorisedUser("1", FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "titleNumber" -> title.titleNumber)
+          ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/owned-before/view")
           }
         }
         "for valid data when editing a previous return, forward onto the value page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val title: PropertyDetailsTitle = propDetails.title.value
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser("1", Json.toJson(propDetails.title), Some("editSubmitted")) { result =>
+          submitWithAuthorisedUser("1", FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "titleNumber" -> title.titleNumber),
+            Some("editSubmitted")
+          ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/1/change/value")
           }
@@ -270,5 +292,4 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
   }
-
 }

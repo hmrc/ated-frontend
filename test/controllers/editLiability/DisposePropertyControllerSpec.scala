@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
@@ -108,7 +107,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       test(result)
     }
 
-    def saveWithAuthorisedUser(oldFormBundleNum: String, inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def saveWithAuthorisedFormUser(oldFormBundleNum: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -119,7 +118,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(disposeLiabilityReturn)))
       val result = testDisposePropertyController.save(oldFormBundleNum)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -226,11 +225,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     "save" must {
 
       "for invalid data - missing day and month, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "",
+            "dateOfDisposal.month"-> "",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -242,11 +245,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid date - missing day and year, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "",
+            "dateOfDisposal.month"-> "12",
+            "dateOfDisposal.year"-> "",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -258,11 +265,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - missing month and year, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "wooooooooow", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "wooooooooow",
+            "dateOfDisposal.month"-> "",
+            "dateOfDisposal.year"-> "",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -274,11 +285,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - day out of range, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "32", "dateOfDisposal.month": "1", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "32",
+            "dateOfDisposal.month"-> "1",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -290,11 +305,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - month out of range, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "13", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "31",
+            "dateOfDisposal.month"-> "13",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -306,11 +325,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - missing day, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "",
+            "dateOfDisposal.month"-> "12",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -322,11 +345,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - missing month, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "1",
+            "dateOfDisposal.month"-> "",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -338,11 +365,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - missing year, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "1",
+            "dateOfDisposal.month"-> "1",
+            "dateOfDisposal.year"-> "",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -354,11 +385,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - year less than 4 digits, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "123", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "1",
+            "dateOfDisposal.month"-> "1",
+            "dateOfDisposal.year"-> "123",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -370,11 +405,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid data - non numeric inputs, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "a", "dateOfDisposal.month": "b", "dateOfDisposal.year": "c", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "a",
+            "dateOfDisposal.month"-> "b",
+            "dateOfDisposal.year"-> "c",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -386,11 +425,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for empty date of disposal, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "",
+            "dateOfDisposal.month"-> "",
+            "dateOfDisposal.year"-> "",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -403,11 +446,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for invalid date of disposal, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "04", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "31",
+            "dateOfDisposal.month"-> "04",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2015")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -420,11 +467,15 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for valid date of disposal with incorrect period, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "5", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "31",
+            "dateOfDisposal.month"-> "5",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2017")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -437,12 +488,16 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "for valid, redirect to bank details page" in new Setup {
-        val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "30", "dateOfDisposal.month": "6", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfDisposal.day" -> "30",
+            "dateOfDisposal.month"-> "6",
+            "dateOfDisposal.year"-> "2015",
+            "periodKey"-> "2015")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/has-bank-details"))
             verify(mockDisposeLiabilityReturnService, times(1))

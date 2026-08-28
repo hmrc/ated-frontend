@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
@@ -103,16 +101,16 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
     }
 
     def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetails] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+                                     (fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockSubscriptionDataService.editContactDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
-      val result = testEditContactDetailsController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-      test(result)
+      val result = testEditContactDetailsController.submit.apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
+  
+        test(result)
+      }
     }
-  }
 
   override def beforeEach(): Unit = {
   }
@@ -217,11 +215,14 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
             "First name is not valid when entered spaces" in new Setup {
               val phoneNum: String = "a" * 24
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": " ", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val contactAddress = EditContactDetails(" ", "TestLastName", phoneNum)
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> " ",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> phoneNum)
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Enter a first name")
               }
@@ -229,12 +230,15 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
             "First name is not valid when exceeds 35 chars" in new Setup {
               val phoneNum: String = "a" * 24
-              val firstNameMax = "n" * 36
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "$firstNameMax", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val firstNameMax: String = "n" * 36
+              val contactAddress = EditContactDetails(firstNameMax, "TestLastName", phoneNum)
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> firstNameMax,
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> phoneNum)
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("First name cannot be more than 35 characters")
               }
@@ -242,12 +246,15 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
             "Last name is not valid when exceeds 35 chars" in new Setup {
               val phoneNum: String = "a" * 24
-              val lastNameMax = "n" * 36
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "$lastNameMax", "phoneNumber": "$phoneNum"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val lastNameMax: String = "n" * 36
+              val contactAddress = EditContactDetails("TestFirstName", lastNameMax, phoneNum)
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> lastNameMax,
+                  "phoneNumber" -> phoneNum)
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Last name cannot be more than 35 characters")
               }
@@ -255,33 +262,42 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
             "Telephone number must not be more than 24 characters" in new Setup {
               val phoneNum: String = "a" * 25
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val contactAddress = EditContactDetails("TestFirstName", "TestLastName", phoneNum)
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> phoneNum)
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Telephone number must not be more than 24 characters")
               }
             }
 
             "Telephone number must not have invalid characters" in new Setup {
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "@@@@@@@@"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val contactAddress = EditContactDetails("TestFirstName", "TestLastName", "@@@@@@@@")
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> "@@@@@@@@")
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Telephone number is not valid")
               }
             }
 
             "Telephone number must not have lower case characters" in new Setup {
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "0191222x123"}""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val contactAddress = EditContactDetails("TestFirstName", "TestLastName", "0191222x123")
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> "0191222x123")
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Telephone number is not valid")
               }
@@ -289,23 +305,27 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
 
             "If edited contact address is valid, submit must redirect" in new Setup {
-
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
-              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
-
-              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              val contactAddress = EditContactDetails("TestFirstName", "TestLastName", "9999999999")
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> "9999999999")
+              ) { result =>
                   status(result) must be(SEE_OTHER)
                   redirectLocation(result).get must include("/ated/company-details")
               }
             }
 
             "If contact address is valid but the save fails, throw a validation error" in new Setup {
-
-              val inputJson: JsValue = Json.parse(s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
-
-              submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
-                result =>
+              submitWithAuthorisedUserSuccess(None)(FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "firstName" -> "TestFirstName",
+                  "lastName" -> "TestLastName",
+                  "phoneNumber" -> "9999999999")
+              ) { result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("Something has gone wrong, try again later.")
               }

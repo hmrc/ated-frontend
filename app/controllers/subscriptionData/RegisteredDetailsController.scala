@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.CountryCodeUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +35,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                                             val environment: Environment,
                                             template: views.html.subcriptionData.registeredDetails)
                                            (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with CountryCodeUtils {
 
   given ec : ExecutionContext = mcc.executionContext
 

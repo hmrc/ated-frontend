@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package controllers.propertyDetails
 
 import builders.SessionBuilder
-import models.PropertyDetailsNewValuation
-import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.propertyDetails.propertyDetailsNewValuation
@@ -59,8 +58,11 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
     }
 
     "for page errors, return BAD_REQUEST" in new Setup {
-      val inputJson: JsValue = Json.obj()
-      val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+
+      val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody()
+      val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("There is a problem")
     }
@@ -77,9 +79,13 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
 
     "redirect to next page: date-of-revalue" when {
       "user inputs valid value" in new Setup {
-        val inputJson: JsValue = Json.toJson(PropertyDetailsNewValuation(Some(12345678)))
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody(
+          "revaluedValue"   -> "12345678",
+        )
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("/ated/liability/create/date-of-revalue/view/1")
       }

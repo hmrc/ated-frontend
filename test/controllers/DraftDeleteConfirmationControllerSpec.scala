@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import forms.AtedForms.YesNoQuestion
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -29,8 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.*
@@ -82,9 +79,9 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
       mockDataCacheService,
       injectedViewInstance
     )
+    val userId = "user-a12e4b7f-9d8c-4f3b-8c1a-5e7d9f2b4a6c"
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testDraftDeleteConfirmationController.view(Some("123456"), periodKey, "draft")
@@ -93,7 +90,6 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
     }
 
     def viewWithAuthorisedUser(returnType: String, id: Option[String] = None)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -103,8 +99,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue, returnType: String, id: Option[String] = None)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+    def submitWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], returnType: String, id: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -114,10 +109,10 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
       when(mockPropertyDetailsService.clearDraftReliefs(ArgumentMatchers.eq("123456"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       val result = testDraftDeleteConfirmationController.submit(id, periodKey, returnType)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
-    }
   }
+}
 
   override def beforeEach(): Unit = {
   }
@@ -168,8 +163,13 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
     "submit" must {
 
       "throw a BAD_REQUEST, when nothing is selected" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(None)), "relief", Some("12345")) {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> ""),
+          "relief",
+          Some("12345")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: Are you sure you want to delete this draft return?"))
@@ -177,48 +177,76 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
       }
 
       "redirect it to period sumary page, for yes in relief" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "relief", Some("12345")) {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "true"),
+          "relief",
+          Some("12345")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/period-summary/2017")
         }
       }
 
       "redirect it to period sumary page, for yes in charge" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "charge", Some("12345")) {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "true"),
+          "charge",
+          Some("12345")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/period-summary/2017")
         }
       }
 
       "redirect it to chargable summary page, for no" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "charge", Some("12345")) {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "false"),
+          "charge",
+          Some("12345")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/summary/12345")
         }
       }
 
       "redirect it to relief summary page, for no" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "relief", Some("12345")) {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "false"),
+          "relief",
+          Some("12345")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/reliefs/2017/relief-summary")
         }
       }
 
       "throw runtime exception for charge, when no id is passed and yes is selceted" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "charge") {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "true"),
+          "charge"
+        ) { result =>
             val thrown = the[RuntimeException] thrownBy await(result)
             thrown.getMessage must include("No id found for draft return")
         }
       }
 
       "throw runtime exception for charge, when no id is passed and no is selceted" in new Setup {
-        submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "charge") {
-          result =>
+        submitWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "yesNo" -> "false"),
+          "charge"
+        ) { result =>
             val thrown = the[RuntimeException] thrownBy await(result)
             thrown.getMessage must include("No id found for draft return")
         }

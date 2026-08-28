@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testEditLiabilityDatesLiableController.save("1", periodKey)
-        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withMethod("POST").withFormUrlEncodedBody(formBody: _*), userId))
       test(result)
     }
 
@@ -220,12 +220,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty start and end dates - return BAD_REQUEST" in new Setup {
           val startAndEndDatesList = List(
-            ("startDate.day", ""),
-            ("startDate.month", ""),
-            ("startDate.year", ""),
-            ("endDate.day", ""),
-            ("endDate.month", ""),
-            ("endDate.year", ""))
+            "startDate.day" -> "",
+            "startDate.month" -> "",
+            "startDate.year" -> "",
+            "endDate.day" -> "",
+            "endDate.month" -> "",
+            "endDate.year" -> "")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(startAndEndDatesList) {
             result =>
@@ -239,12 +239,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty day values for start and end dates - return BAD_REQUEST" in new Setup {
           val startAndEndDatesList = List(
-            ("startDate.day", ""),
-            ("startDate.month", "6"),
-            ("startDate.year", "2015"),
-            ("endDate.day", ""),
-            ("endDate.month", "8"),
-            ("endDate.year", "2015"))
+            "startDate.day" -> "",
+            "startDate.month" -> "6",
+            "startDate.year" -> "2015",
+            "endDate.day" -> "",
+            "endDate.month" -> "8",
+            "endDate.year" -> "2015")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(startAndEndDatesList) {
@@ -259,12 +259,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty month values for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", ""),
-            ("startDate.year", "2015"),
-            ("endDate.day", "1"),
-            ("endDate.month", ""),
-            ("endDate.year", "2015"))
+            "startDate.day" -> "1",
+            "startDate.month" -> "",
+            "startDate.year" -> "2015",
+            "endDate.day" -> "1",
+            "endDate.month" -> "",
+            "endDate.year" -> "2015")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -279,12 +279,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty year values for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", "6"),
-            ("startDate.year", ""),
-            ("endDate.day", "1"),
-            ("endDate.month", "8"),
-            ("endDate.year", ""))
+            "startDate.day" -> "1",
+            "startDate.month" -> "6",
+            "startDate.year" -> "",
+            "endDate.day" -> "1",
+            "endDate.month" -> "8",
+            "endDate.year" -> "")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -299,12 +299,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty day & month values for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", ""),
-            ("startDate.month", ""),
-            ("startDate.year", "2016"),
-            ("endDate.day", ""),
-            ("endDate.month", ""),
-            ("endDate.year", "2016"))
+            "startDate.day" -> "",
+            "startDate.month" -> "",
+            "startDate.year" -> "2016",
+            "endDate.day" -> "",
+            "endDate.month" -> "",
+            "endDate.year" -> "2016")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -319,12 +319,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty day & year values for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", ""),
-            ("startDate.month", "6"),
-            ("startDate.year", ""),
-            ("endDate.day", ""),
-            ("endDate.month", "8"),
-            ("endDate.year", ""))
+            "startDate.day" -> "",
+            "startDate.month" -> "6",
+            "startDate.year" -> "",
+            "endDate.day" -> "",
+            "endDate.month" -> "8",
+            "endDate.year" -> "")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -339,12 +339,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- empty month & year values for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", ""),
-            ("startDate.year", ""),
-            ("endDate.day", "1"),
-            ("endDate.month", ""),
-            ("endDate.year", ""))
+            "startDate.day" -> "1",
+            "startDate.month" -> "",
+            "startDate.year" -> "",
+            "endDate.day" -> "1",
+            "endDate.month" -> "",
+            "endDate.year" -> "")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -359,12 +359,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- invalid day value start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "41"),
-            ("startDate.month", "6"),
-            ("startDate.year", "2016"),
-            ("endDate.day", "99"),
-            ("endDate.month", "8"),
-            ("endDate.year", "2016"))
+            "startDate.day" -> "41",
+            "startDate.month" -> "6",
+            "startDate.year" -> "2016",
+            "endDate.day" -> "99",
+            "endDate.month" -> "8",
+            "endDate.year" -> "2016")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -379,12 +379,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- invalid month value start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", "16"),
-            ("startDate.year", "2016"),
-            ("endDate.day", "1"),
-            ("endDate.month", "18"),
-            ("endDate.year", "2016"))
+            "startDate.day" -> "1",
+            "startDate.month" -> "16",
+            "startDate.year" -> "2016",
+            "endDate.day" -> "1",
+            "endDate.month" -> "18",
+            "endDate.year" -> "2016")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -392,19 +392,20 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
               document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for the liability start date between 1 and 12")
+              document.getElementsByClass("govuk-list govuk-error-summary__list")
+                .text must include("Enter a month for the liability start date between 1 and 12")
               document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for the liability end date between 1 and 12")
           }
         }
 
         "for invalid data, -- value that does not contain 4-digit value for year for start and end dates - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", "6"),
-            ("startDate.year", "20167"),
-            ("endDate.day", "1"),
-            ("endDate.month", "8"),
-            ("endDate.year", "201333"))
+            "startDate.day" -> "1",
+            "startDate.month" -> "6",
+            "startDate.year" -> "20167",
+            "endDate.day" -> "1",
+            "endDate.month" -> "8",
+            "endDate.year" -> "201333")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -419,12 +420,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- Relief Start and End dates have incorrect combination of day & month fields - return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "30"),
-            ("startDate.month", "2"),
-            ("startDate.year", "2016"),
-            ("endDate.day", "31"),
-            ("endDate.month", "9"),
-            ("endDate.year", "2016"))
+            "startDate.day" -> "30",
+            "startDate.month" -> "2",
+            "startDate.year" -> "2016",
+            "endDate.day" -> "31",
+            "endDate.month" -> "9",
+            "endDate.year" -> "2016")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -459,12 +460,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- Relief Start and End dates have invalid values, -- return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "29"),
-            ("startDate.month", "2"),
-            ("startDate.year", "2017"),
-            ("endDate.day", "29"),
-            ("endDate.month", "2"),
-            ("endDate.year", "2017"))
+            "startDate.day" -> "29",
+            "startDate.month" -> "2",
+            "startDate.year" -> "2017",
+            "endDate.day" -> "29",
+            "endDate.month" -> "2",
+            "endDate.year" -> "2017")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -479,12 +480,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- Relief Start and End dates have inappropriate order and range, -- return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "25"),
-            ("startDate.month", "2"),
-            ("startDate.year", "2024"),
-            ("endDate.day", "2"),
-            ("endDate.month", "2"),
-            ("endDate.year", "2024"))
+            "startDate.day" -> "25",
+            "startDate.month" -> "2",
+            "startDate.year" -> "2024",
+            "endDate.day" -> "2",
+            "endDate.month" -> "2",
+            "endDate.year" -> "2024")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -499,12 +500,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- Relief Start and End dates both out of chargeable period, -- return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", "6"),
-            ("startDate.year", "2020"),
-            ("endDate.day", "1"),
-            ("endDate.month", "8"),
-            ("endDate.year", "2020"))
+            "startDate.day" -> "1",
+            "startDate.month" -> "6",
+            "startDate.year" -> "2020",
+            "endDate.day" -> "1",
+            "endDate.month" -> "8",
+            "endDate.year" -> "2020")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -519,12 +520,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for invalid data, -- Only one of Relief Start and End dates is out of chargeable period and the other with invalid date, -- return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("startDate.day", "23"),
-            ("startDate.month", "04"),
-            ("startDate.year", "2022"),
-            ("endDate.day", "45"),
-            ("endDate.month", "07"),
-            ("endDate.year", "2022"))
+            "startDate.day" -> "23",
+            "startDate.month" -> "04",
+            "startDate.year" -> "2022",
+            "endDate.day" -> "45",
+            "endDate.month" -> "07",
+            "endDate.year" -> "2022")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
           submitWithAuthorisedUser(formBody) {
@@ -539,12 +540,12 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "for valid data forward to the TaxAvoidance Page" in new Setup {
           val formBody = List(
-            ("startDate.day", "1"),
-            ("startDate.month", "6"),
-            ("startDate.year", "2015"),
-            ("endDate.day", "1"),
-            ("endDate.month", "8"),
-            ("endDate.year", "2015"))
+            "startDate.day" -> "1",
+            "startDate.month" -> "6",
+            "startDate.year" -> "2015",
+            "endDate.day" -> "1",
+            "endDate.month" -> "8",
+            "endDate.year" -> "2015")
 
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {

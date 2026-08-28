@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -138,7 +136,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       val authMock       = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -153,7 +151,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
           ArgumentMatchers.any())).thenReturn(Future.successful(OK))
       val result = testPropertyDetailsProfessionallyValuedController
         .save("1", periodKey, None)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
@@ -224,7 +222,12 @@ class PropertyDetailsProfessionallyValuedControllerSpec
 
         "for invalid data, return BAD_REQUEST" in new Setup {
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsProfessionallyValued(None))) { result =>
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isValuedByAgent" -> ""
+            )
+          submitWithAuthorisedUser(fakeRequest) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
@@ -232,7 +235,12 @@ class PropertyDetailsProfessionallyValuedControllerSpec
         "When the data is valid forward to the Period Page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsProfessionallyValued(Some(false)))) { result =>
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isValuedByAgent" -> "false"
+            )
+          submitWithAuthorisedUser(fakeRequest) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/acquisition")
           }

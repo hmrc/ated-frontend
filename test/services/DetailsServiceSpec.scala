@@ -75,7 +75,9 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAtedConnector, mockMandateFrontendConnector, mockDataCacheService)
+    reset(mockAtedConnector)
+    reset(mockMandateFrontendConnector)
+    reset(mockDataCacheService)
   }
 
   val successResponseInd: JsValue = Json.parse(

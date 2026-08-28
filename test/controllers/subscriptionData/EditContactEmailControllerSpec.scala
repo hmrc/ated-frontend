@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
@@ -106,12 +105,12 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
     }
 
     def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetailsEmail] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+                                       (fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockSubscriptionDataService.editEmailWithConsent(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
-      val result = testEditContactEmailController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testEditContactEmailController.submit.apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
 
@@ -185,20 +184,24 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
           "Email addresses must not contain more than the allowed number of characters" in new Setup {
             val emailTest: String = "a" * (emailLength - "@mail.com".length + 1) + "@mail.com"
-            val inputJson: JsValue = Json.parse(s"""{"emailAddress": "$emailTest", "emailConsent": true }""")
-
-            submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedUserSuccess(None)(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "emailAddress" -> emailTest,
+                "emailConsent" -> "true")
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Email address must not be more than 132 characters")
             }
           }
 
           "Email address must be a valid email address format" in new Setup {
-            val inputJson: JsValue = Json.parse(s"""{ "emailAddress": "abcdef@com", "emailConsent": true }""")
-
-            submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedUserSuccess(None)(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "emailAddress" -> "abcdef@com",
+                "emailConsent" -> "true")
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Email address is not valid")
             }
@@ -206,11 +209,14 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
           }
 
           "If edited contact address is valid, submit must redirect" in new Setup {
-            val inputJson: JsValue = Json.parse(s"""{ "emailAddress": "aa@mail.com", "emailConsent": true }""")
-            val contactAddress: EditContactDetailsEmail = inputJson.as[EditContactDetailsEmail]
-
-            submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            val consentToEmail = true
+            val contactAddress = EditContactDetailsEmail("aa@mail.com", consentToEmail)
+            submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "emailAddress" -> "aa@mail.com",
+                "emailConsent" -> "true")
+            ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated/company-details")
             }

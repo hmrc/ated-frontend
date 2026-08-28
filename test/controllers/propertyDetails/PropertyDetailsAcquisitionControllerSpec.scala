@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -131,17 +129,18 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsAcquisition(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).
-        thenReturn(Future.successful(OK))
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsAcquisition(
+        ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsAcquisitionController.save("1", periodKey, None)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -243,27 +242,34 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
       "Authorised users" must {
 
         "for invalid data, return BAD_REQUEST" in new Setup {
-
-          val inputJson: JsValue = Json.parse("""{"anAcquisition": "2"}""")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson) {
-            result =>
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "anAcquisition" -> "2")
+          ) { result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
         "When the acquisition is true forward to the Has Been Revalued Page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsAcquisition(Some(true)))) {
-            result =>
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "anAcquisition" -> "true")
+          ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/has-been-revalued/view/")
           }
         }
         "When the acquisition is false forward to the Owned Before Page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsAcquisition(Some(false)))) {
-            result =>
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "anAcquisition" -> "false")
+          ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/full-tax-period/view")
           }

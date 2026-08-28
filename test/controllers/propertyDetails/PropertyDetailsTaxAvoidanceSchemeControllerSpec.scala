@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
@@ -127,7 +126,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
@@ -138,7 +137,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsTaxAvoidanceSchemeController.save("1", periodKey, None)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -179,25 +178,27 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
-          val badTaxAvoidance: JsValue = Json.parse("""{"foo":"bar"}""")
 
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some("")))
-
-          submitWithAuthorisedUser(badTaxAvoidance) {
-            result =>
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "foo" -> "bar")
+          ) { result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
         "for valid data, return OK" in new Setup {
-          val taxAvoidance: PropertyDetailsTaxAvoidanceScheme = PropertyDetailsTaxAvoidanceScheme(Some(false))
 
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-
-          submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
-            result =>
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isTaxAvoidance" -> "false")
+          ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/supporting-info/view")
           }

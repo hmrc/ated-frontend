@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
@@ -46,7 +45,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         template: views.html.propertyDetails.addressLookup,
                                         templateResults: views.html.propertyDetails.addressLookupResults)
                                        (using val appConfig: ApplicationConfig)
-extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithUnsafeDefaultFormBinding {
+extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
 

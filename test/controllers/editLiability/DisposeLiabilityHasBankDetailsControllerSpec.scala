@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,16 @@ import java.util.UUID
 import builders._
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models.{BankDetailsModel, DisposeLiabilityReturn, HasBankDetails}
+import models.{BankDetailsModel, DisposeLiabilityReturn}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.*
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
@@ -110,7 +109,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       test(result)
     }
 
-    def saveWithAuthorisedUser(oldFormBundleNum: String, inputJson: JsValue, disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)
+    def saveWithAuthorisedFormUser(oldFormBundleNum: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)
                               (test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -125,7 +124,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       when(mockDisposeLiabilityReturnService.calculateDraftDisposal(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(disposeLiabilityReturn))
       val result = testDisposeLiabilityHasBankDetailsController.save(oldFormBundleNum)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -194,10 +193,12 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
     "save" must {
 
       "for invalid data, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse( """{"hasBankDetails": "2"}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "2")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnHasBankDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -205,13 +206,15 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       }
 
       "for valid, redirect to liability summary page if we have bank details" in new Setup {
-        val bankDetails: HasBankDetails = HasBankDetails(Some(true))
-        val inputJson: JsValue = Json.toJson(bankDetails)
         val disposeLiabilityReturn: Option[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "true"),
+          disposeLiabilityReturn
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/has-uk-bank-account"))
             verify(mockDisposeLiabilityReturnService, times(1))
@@ -220,13 +223,15 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
       }
 
       "for valid, redirect to liability summary page if we have no bank details" in new Setup {
-        val bankDetails: HasBankDetails = HasBankDetails(Some(false))
-        val inputJson: JsValue = Json.toJson(bankDetails)
         val disposeLiabilityReturn: Option[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson, disposeLiabilityReturn) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "false"),
+          disposeLiabilityReturn
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/summary"))
             verify(mockDisposeLiabilityReturnService, times(1))
@@ -234,12 +239,14 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
         }
       }
       "for invalid, redirect to account summary page" in new Setup {
-        val bankDetails: HasBankDetails = HasBankDetails(Some(true))
-        val inputJson: JsValue = Json.toJson(bankDetails)
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson, None) {
-          result =>
+        saveWithAuthorisedFormUser(oldFormBundleNum, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "true"),
+          None
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/account-summary"))
             verify(mockDisposeLiabilityReturnService, times(1))

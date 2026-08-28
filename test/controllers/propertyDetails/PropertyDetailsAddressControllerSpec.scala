@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, ChangeLiabilityReturnService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -188,7 +186,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(id: Option[String], fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -205,7 +203,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsAddressController.save(id, periodKey, None, fromConfirmAddressPage)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -375,60 +373,96 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
         "for invalid data, return BAD_REQUEST with fromConfirmAddress false" in new Setup {
 
-          val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = false) {
-            result =>
+          submitWithAuthorisedUser(None, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "rentalBusiness" -> "true",
+              "isAvoidanceScheme" -> "true"),
+            fromConfirmAddressPage = false
+          ) { result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
         "for invalid data, return BAD_REQUEST with fromConfirmAddress true" in new Setup {
 
-          val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = true) {
-            result =>
+          submitWithAuthorisedUser(None, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "rentalBusiness" -> "true",
+              "isAvoidanceScheme" -> "true"),
+            fromConfirmAddressPage = true
+          ) { result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
         "for valid data with no id, return OK with fromConfirmAddress false" in new Setup {
-          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
-            result =>
+          submitWithAuthorisedUser(None, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "line_1" -> "addr1",
+              "line_2" -> "addr2",
+              "line_3" -> "addr3",
+              "line_4" -> "addr4",
+              "postcode" -> "XX1 1XX"),
+            fromConfirmAddressPage = false
+          ) { result =>
               status(result) must be(SEE_OTHER)
           }
         }
 
         "for valid data with no id, return OK with fromConfirmAddress true" in new Setup {
-          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
-            result =>
+          submitWithAuthorisedUser(None, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "line_1" -> "addr1",
+              "line_2" -> "addr2",
+              "line_3" -> "addr3",
+              "line_4" -> "addr4",
+              "postcode" -> "XX1 1XX"),
+            fromConfirmAddressPage = true
+          ) { result =>
               status(result) must be(SEE_OTHER)
           }
         }
 
         "for valid data, return OK with fromConfirmAddress false" in new Setup {
-          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
-            result =>
+          submitWithAuthorisedUser(Some("1"), FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "line_1" -> "addr1",
+              "line_2" -> "addr2",
+              "line_3" -> "addr3",
+              "line_4" -> "addr4",
+              "postcode" -> "XX1 1XX"),
+            fromConfirmAddressPage = false
+          ) { result =>
               status(result) must be(SEE_OTHER)
           }
         }
 
         "for valid data, return OK with fromConfirmAddress true" in new Setup {
-          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
-            result =>
+          submitWithAuthorisedUser(Some("1"), FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "line_1" -> "addr1",
+              "line_2" -> "addr2",
+              "line_3" -> "addr3",
+              "line_4" -> "addr4",
+              "postcode" -> "XX1 1XX"),
+            fromConfirmAddressPage = true
+          ) { result =>
               status(result) must be(SEE_OTHER)
           }
         }

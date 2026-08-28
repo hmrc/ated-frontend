@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import builders.SessionBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import views.html.propertyDetails.propertyDetailsDateOfChange
 
 class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixture {
@@ -74,11 +75,15 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
 
     "redirect to next page: new-valuation" when {
       "user enters valid date" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfChange" -> Json.obj("day" -> "1", "month" -> "4", "year" -> "2015")
-        )
+
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfChange.day" -> "1",
+            "dateOfChange.month" -> "4",
+            "dateOfChange.year" -> "2015")
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/new-valuation/view")
       }
@@ -86,11 +91,14 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
 
     "return BAD_REQUEST with error message for invalid date" when {
       "user enters an invalid date (31st of February)" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfChange" -> Json.obj("day" -> "31", "month" -> "2", "year" -> "2024")
-        )
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfChange.day" -> "31",
+            "dateOfChange.month" -> "2",
+            "dateOfChange.year" -> "2024")
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
       }
@@ -98,11 +106,14 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
 
     "return BAD_REQUEST with error message for missing date fields" when {
       "user omits some date fields" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfChange" -> Json.obj("day" -> "", "month" -> "4", "year" -> "2024")
-        )
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfChange.day" -> "",
+            "dateOfChange.month" -> "4",
+            "dateOfChange.year" -> "2024")
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
       }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -33,8 +32,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, ServiceInfoService, SummaryReturnsService}
@@ -84,8 +82,9 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       injectedViewInstance
     )
 
+    val userId = "user-7c6d5c8d-3f4f-4c2a-9f3f-0d7d8a1e2b9c"
+
     def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -104,7 +103,6 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
     }
 
     def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -121,15 +119,13 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
     }
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def submitWithAuthorisedUser(prevReturns: Seq[PreviousReturns], fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
+    def submitWithAuthorisedFormUser(prevReturns: Seq[PreviousReturns], fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -143,9 +139,10 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
       when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
-      val result = testReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
+
 
   }
 
@@ -200,9 +197,12 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
         val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2015-04-02"), true))
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"returnType": ""}""")
             when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(prevReturns, FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "returnType" -> "")
+            ) { result =>
               status(result) must be(BAD_REQUEST)
               val doc = Jsoup.parse(contentAsString(result))
               doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
@@ -210,31 +210,44 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
             }
           }
           "with returnType=RR - relief return Redirect to choose relief page" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"returnType": "RR"}""")
-            submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(prevReturns, FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "returnType" -> "RR")
+            ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/reliefs/2015/choose")
             }
           }
           "with returnType=CR - chargeable return, status is OK" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"returnType": "CR"}""")
-            submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUser(prevReturns, FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "returnType" -> "CR")
+            ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/existing-return/confirmation/2015/charge")
             }
           }
 
           "with returnType=CR - chargeable return and previous submitted details found from ETMP, status is OK" in new Setup {
-            val inputJson: JsValue = Json.parse("""{"returnType": "CR"}""")
-            submitWithAuthorisedUser(Nil, FakeRequest().withJsonBody(inputJson)) { result =>
+              submitWithAuthorisedFormUser(Nil, FakeRequest()
+                .withMethod("POST")
+                .withFormUrlEncodedBody(
+                  "returnType" -> "CR")
+              ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/liability/address-lookup/view/2015")
             }
           }
         }
+
         "with returnType=anything else, status is Redirect" in new Setup {
-          val inputJson: JsValue = Json.parse("""{"returnType": "INVALID"}""")
-          submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) { result =>
+          submitWithAuthorisedFormUser(prevReturns, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "returnType" -> "INVALID")
+          ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must be("/ated/return-type/2015")
           }

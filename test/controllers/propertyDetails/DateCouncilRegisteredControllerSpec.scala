@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.Helpers.*
 import services.*
 import testhelpers.MockAuthUtil
@@ -37,11 +37,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.propertyDetails.dateCouncilRegistered
 import play.twirl.api.HtmlFormat
-
+import play.api.test.FakeRequest
 import scala.concurrent.Future
 import models.{DateCouncilRegistered, DateCouncilRegisteredKnown, DateFirstOccupied, DateFirstOccupiedKnown}
 import java.time.LocalDate
-import play.api.libs.json.{JsValue, Json}
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDate, NewBuildFirstOccupiedDateKnown}
 
 class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
@@ -108,7 +107,7 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       test(result)
     }
 
-    def saveWithAuthorisedUser(inputJson: JsValue, test: Future[Result] => Any): Any = {
+    def saveWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], test: Future[Result] => Any): Any = {
 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -133,7 +132,7 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
-      val result = dateCouncilRegisteredKnownController.save("1", 2016, Some("mode")).apply(SessionBuilder.buildRequestWithSession(userId).withJsonBody(inputJson))
+      val result = dateCouncilRegisteredKnownController.save("1", 2016, Some("mode")).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -170,46 +169,67 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
     "Authorised users when" must {
 
       "save function called with valid date - Redirect to next page" in new Setup {
-
-        val inputJsonWithValidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithValidDate, {
-          result =>
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "dateCouncilRegistered.day"   -> "02",
+              "dateCouncilRegistered.month" -> "05",
+              "dateCouncilRegistered.year"  -> "2016",
+              "periodKey"                   -> "2016"
+            )
+          saveWithAuthorisedFormUser(fakeRequest, { result =>
             status(result) must be(SEE_OTHER)
-           })
+          })
       }
 
       "save function called with invalid dates - empty date fields - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "", "dateCouncilRegistered.month": "", "dateCouncilRegistered.year": "", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "",
+            "dateCouncilRegistered.month" -> "",
+            "dateCouncilRegistered.year"  -> "",
+            "periodKey"                   -> "2016"
+          )
+          saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax cannot be empty")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax cannot be empty")
         })
       }
 
       "save function called with invalid dates - mising day field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must include the day")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must include the day")
         })
       }
 
       "save function called with invalid dates - mising month field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -219,75 +239,110 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       }
 
       "save function called with invalid dates - mising year field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must include the year")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must include the year")
         })
       }
 
       "save function called with invalid dates - mising day and month fields - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "", "dateCouncilRegistered.month": "", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "",
+            "dateCouncilRegistered.month" -> "",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must include the day and month")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must include the day and month")
         })
       }
 
       "save function called with invalid dates - mising day and year fields - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must include the day and year")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must include the day and year")
         })
       }
 
       "save function called with invalid dates - mising month and year fields - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "", "dateCouncilRegistered.year": "", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "",
+            "dateCouncilRegistered.year"  -> "",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must include the month and year")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must include the month and year")
         })
       }
 
       "save function called with invalid dates - invalid value for day field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "32", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "32",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for date when the local council registered the property for council tax between 1 and 31")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Enter a day for date when the local council registered the property for council tax between 1 and 31")
         })
       }
 
       "save function called with invalid dates - invalid value for month field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "23", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "23",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -297,10 +352,15 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       }
 
       "save function called with invalid dates - value that does not contain 4-digit value for year field - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "20344", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "20344",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -310,10 +370,15 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       }
 
       "save function called with invalid dates - value has incorrect combination of day & month fields - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          """{"dateCouncilRegistered.day": "31", "dateCouncilRegistered.month": "02", "dateCouncilRegistered.year": "2016", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "31",
+            "dateCouncilRegistered.month" -> "02",
+            "dateCouncilRegistered.year"  -> "2016",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -325,40 +390,59 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       "save function called with invalid dates - future date value - must return BAD_REQUEST" in new Setup {
 
         val futureYear = LocalDate.now.plusYears(1).getYear
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          s"""{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": ${futureYear}, "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> s"${futureYear}",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax cannot be in the future")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax cannot be in the future")
         })
       }
 
       "save function called with invalid dates - invalid chars - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          s"""{"dateCouncilRegistered.day": "02", "dateCouncilRegistered.month": "05", "dateCouncilRegistered.year": "abcd", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "02",
+            "dateCouncilRegistered.month" -> "05",
+            "dateCouncilRegistered.year"  -> "abcd",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must be a valid date")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must be a valid date")
         })
       }
 
       "save function called with invalid dates - invalid date 29/02 - must return BAD_REQUEST" in new Setup {
-
-        val inputJsonWithInvalidDate: JsValue = Json.parse(
-          s"""{"dateCouncilRegistered.day": "29", "dateCouncilRegistered.month": "02", "dateCouncilRegistered.year": "2027", "periodKey": 2016}""".stripMargin)
-        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateCouncilRegistered.day"   -> "29",
+            "dateCouncilRegistered.month" -> "02",
+            "dateCouncilRegistered.year"  -> "2027",
+            "periodKey"                   -> "2016"
+          )
+        saveWithAuthorisedFormUser(fakeRequest, {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must be a valid date")
+            document.getElementsByClass("govuk-list govuk-error-summary__list")
+              .text must include("Date when the local council registered the property for council tax must be a valid date")
         })
       }
     }

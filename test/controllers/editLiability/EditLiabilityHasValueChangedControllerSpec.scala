@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceSchemeController}
-import models.{HasValueChanged, PropertyDetails}
+import models.PropertyDetails
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -30,8 +30,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -123,7 +122,7 @@ class EditLiabilityHasValueChangedControllerSpec
       test(result)
     }
 
-    def saveWithAuthorisedUser(propertyDetails: Option[PropertyDetails], inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def saveWithAuthorisedFormUser(propertyDetails: Option[PropertyDetails], fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -143,7 +142,7 @@ class EditLiabilityHasValueChangedControllerSpec
         .thenReturn(Future.successful(OK))
       val result = testEditLiabilityHasValueChangedController
         .save("12345678901")
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
@@ -193,30 +192,40 @@ class EditLiabilityHasValueChangedControllerSpec
 
       "for invalid data, return BAD_REQUEST" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
-        val inputJson: JsValue = Json.parse("""{"startDate.day": "31", "startDate.month": "6", "startDate.year": "2015", "periodKey": 2015}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(Some(changeLiabilityReturn), inputJson) { result =>
+        saveWithAuthorisedFormUser(Some(changeLiabilityReturn), FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "startDate.day" -> "31",
+            "startDate.month" -> "6",
+            "startDate.year" -> "2015",
+            "periodKey" -> "2015")
+        ) { result =>
           status(result) must be(BAD_REQUEST)
         }
       }
 
       "for valid date when we have indicated that the value has changed, save and redirect to change in acquisition page" in new Setup {
-        val value1             = HasValueChanged(Some(true))
-        val inputJson: JsValue = Json.toJson(value1)
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(None, inputJson) { result =>
+        saveWithAuthorisedFormUser(None, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasValueChanged" -> "true")
+        ) { result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result) must be(Some("/ated/liability/create/owned-before/view/12345678901"))
         }
       }
 
       "for valid date when we have indicated that the value has NOT changed, save and redirect to change in period page" in new Setup {
-        val value1             = HasValueChanged(Some(false))
-        val inputJson: JsValue = Json.toJson(value1)
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(None, inputJson) { result =>
+        saveWithAuthorisedFormUser(None, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasValueChanged" -> "false")
+        ) { result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result) must be(Some("/ated/liability/create/full-tax-period/view/12345678901"))
         }

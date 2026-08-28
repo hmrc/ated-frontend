@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedConstants.NewBuildFirstOccupiedDate
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 import java.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
@@ -43,7 +43,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
                                             template: views.html.propertyDetails.dateFirstOccupied)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateFirstOccupiedControllerId

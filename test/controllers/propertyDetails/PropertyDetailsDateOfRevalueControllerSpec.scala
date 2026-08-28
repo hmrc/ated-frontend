@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import builders.SessionBuilder
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import utils.AtedConstants.HasPropertyBeenRevalued
@@ -59,8 +59,10 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "for page errors, return BAD_REQUEST" in new Setup {
       setupPropertyDetailServiceMockExpectations()
-      val inputJson: JsValue = Json.obj()
-      val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+      val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody()
+      val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("There is a problem")
     }
@@ -77,9 +79,12 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "collect information from cache and save to database" when {
       "save invoked for a valid period" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj("day" -> 1, "month" -> 4, "year" -> 2020)
-        )
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfRevalue.day" -> "1",
+            "dateOfRevalue.month" -> "4",
+            "dateOfRevalue.year" -> "2020")
         setupDataCacheServiceExpectations(
           newValuation = Some(BigDecimal.valueOf(1000000)),
           hasPropertyBeenRevalued = Some(true),
@@ -87,7 +92,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
         )
         setupPropertyDetailServiceMockExpectations()
 
-        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
 
@@ -99,16 +104,17 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "redirect to next page: full tax period" when {
       "user enters valid date" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj("day" -> "1", "month" -> "4", "year" -> "2015")
-        )
 
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfRevalue.day" -> "1",
+            "dateOfRevalue.month" -> "4",
+            "dateOfRevalue.year" -> "2015")
         setupPropertyDetailServiceMockExpectations()
 
-        val result = testController.save("1", 2015, None).
-          apply(
-            SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
-              userId))
+        val result = testController.save("1", 2015, None).apply(
+            SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
       }
@@ -116,14 +122,15 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "return BAD_REQUEST with error message for invalid date" when {
       "user enters an invalid date (31st of February)" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj("day" -> "31", "month" -> "2", "year" -> "2024")
-        )
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfRevalue.day" -> "31",
+            "dateOfRevalue.month" -> "2",
+            "dateOfRevalue.year" -> "2024")
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.save("1", 2015, None)
-          .apply(
-            SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
-              userId))
+        val result = testController.save("1", 2015, None).apply(
+            SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
       }
@@ -131,11 +138,13 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "return BAD_REQUEST with error message for missing date fields" when {
       "user omits some date fields" in new Setup {
-        val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj("day" -> "", "month" -> "4", "year" -> "2024")
-        )
-
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfRevalue.day" -> "",
+            "dateOfRevalue.month" -> "4",
+            "dateOfRevalue.year" -> "2024")
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
       }

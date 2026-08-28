@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.editLiability
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, ServiceInfoService}
@@ -56,8 +54,6 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val fakeDisposePropertyRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
-  val fakeChangeReturnRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"CR"}"""))
   given messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
@@ -97,7 +93,7 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+    def continueWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -105,7 +101,7 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testEditLiabilityTypeController.continue("12345678901", periodKey, editAllowed = true)
-        .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 }
@@ -169,10 +165,12 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
     "continue" must {
       "if user doesn't select any radio button, show form error with bad_request" in new Setup {
-        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType": ""}"""))
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        continueWithAuthorisedUser(fakeRequest) {
-          result =>
+        continueWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "editLiabilityType" -> "")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
         }
       }
@@ -180,8 +178,11 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         when(mockBackLinkCacheService.clearBackLinks(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
-        continueWithAuthorisedUser(fakeChangeReturnRequest) {
-          result =>
+        continueWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "editLiabilityType" -> "CR")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/address"))
         }
@@ -189,18 +190,23 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
       "if user select 'dispose property' any radio button, redirect to dispose property page" in new Setup {
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        continueWithAuthorisedUser(fakeDisposePropertyRequest) {
-          result =>
+        continueWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "editLiabilityType" -> "DP")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/dispose"))
         }
       }
       "for anything else, redirect to edit liability page" in new Setup {
-        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"X"}"""))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        continueWithAuthorisedUser(fakeRequest) {
-          result =>
+        continueWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "editLiabilityType" -> "X")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/edit/2015?editAllowed=true"))
         }

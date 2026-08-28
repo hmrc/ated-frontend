@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -136,7 +135,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
@@ -152,7 +151,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       setAuthMocks(authMock)
       val result = testPropertyDetailsOwnedBeforeController
         .save("1", periodKey, None)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -243,7 +242,12 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
         "return a BAD_REQUEST" in new Setup {
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true)))) { result =>
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isOwnedBeforePolicyYear" -> "true"
+            )
+          submitWithAuthorisedUser(fakeRequest) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
@@ -251,10 +255,15 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
       "owned before is true" must {
         "redirect to the Professionally Valued Page" in new Setup {
-          val bdValue: Int = 1500000
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true), Some(BigDecimal(bdValue))))) { result =>
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isOwnedBeforePolicyYear" -> "true",
+              "ownedBeforePolicyYearValue" -> "1500000"
+            )
+          submitWithAuthorisedUser(fakeRequest) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/valued/view")
           }
@@ -262,9 +271,14 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
         "owned before is false" must {
           "redirect to the New Build page" in new Setup {
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isOwnedBeforePolicyYear" -> "false"
+              )
             when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
               .thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(false)))) { result =>
+            submitWithAuthorisedUser(fakeRequest) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/new-build/view")
             }

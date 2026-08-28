@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{DataCacheService, DetailsService, ServiceInfoService, SubscriptionDataService}
@@ -98,13 +97,13 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
       testRegisteredDetailsController.edit()(SessionBuilder.buildRequestWithSession(userId))
     }
 
-    def submitWithAuthorisedUserSuccess(updatedDetails: Option[RegisteredDetails] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUserSuccess(updatedDetails: Option[RegisteredDetails]=None)
+                                     (fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockSubscriptionDataService.updateRegisteredDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(updatedDetails))
-      val result = testRegisteredDetailsController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testRegisteredDetailsController.submit().apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -206,17 +205,31 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
         "validate form" must {
 
           "If registration details entered are valid, save and continue button must redirect to contact details page if the save worked" in new Setup {
-            val inputJson: JsValue = Json.parse(
-              """{ "isEditable": true,
-                | "name": "sdfsdf",
-                |"addressDetails" : {
-                |"addressLine1": "sdfsdf",
-                |"addressLine2": "sdfsdf",
-                |"addressLine3": "sdfsdf",
-                |"addressLine4": "sdfsdf",
-                |"countryCode": "AR"}}""".stripMargin)
-            val registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
+            val registeredDetails = RegisteredDetails(
+              isEditable = true,
+              name = "sdfsdf",
+              addressDetails = RegisteredAddressDetails(
+                addressLine1 = "sdfsdf",
+                addressLine2 = "sdfsdf",
+                addressLine3 = Some("sdfsdf"),
+                addressLine4 = Some("sdfsdf"),
+                countryCode = "AR"
+              )
+            )
+
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isEditable" -> "true",
+                "name" -> "sdfsdf",
+                "addressDetails.addressLine1" -> "sdfsdf",
+                "addressDetails.addressLine2" -> "sdfsdf",
+                "addressDetails.addressLine3" -> "sdfsdf",
+                "addressDetails.addressLine4" -> "sdfsdf",
+                "addressDetails.countryCode" -> "AR"
+              )
+
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(fakeRequest) {
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated/company-details")
@@ -224,17 +237,20 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
 
           "If registration details entered are valid but the save fails, throw a validation error" in new Setup {
-            val inputJson: JsValue = Json.parse(
-              """{ "isEditable": true,
-                | "name": "sdfsdf",
-                |"addressDetails" : {
-                |"addressLine1": "sdfsdf",
-                |"addressLine2": "sdfsdf",
-                |"addressLine3": "sdfsdf",
-                |"addressLine4": "sdfsdf",
-                |"countryCode": "AR"}}""".stripMargin)
 
-            submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isEditable" -> "true",
+                "name" -> "sdfsdf",
+                "addressDetails.addressLine1" -> "sdfsdf",
+                "addressDetails.addressLine2" -> "sdfsdf",
+                "addressDetails.addressLine3" -> "sdfsdf",
+                "addressDetails.addressLine4" -> "sdfsdf",
+                "addressDetails.countryCode" -> "AR"
+              )
+
+            submitWithAuthorisedUserSuccess(None)(fakeRequest) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Something has gone wrong, try again later.")
@@ -242,18 +258,30 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
 
           "not be empty" in new Setup {
-            val inputJson: JsValue = Json.parse(
-              """{ "isEditable": true,
-                | "name": "",
-                |"addressDetails" : {
-                |"addressLine1": "",
-                |"addressLine2": "",
-                |"addressLine3": "",
-                |"addressLine4": "",
-                |"postalCode": "",
-                |"countryCode": ""}}""".stripMargin)
-            val registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
+            val registeredDetails = RegisteredDetails(
+              isEditable = true,
+              name = "",
+              addressDetails = RegisteredAddressDetails(
+                addressLine1 = "",
+                addressLine2 = "",
+                addressLine3 = Some(""),
+                addressLine4 = Some(""),
+                countryCode = ""
+              )
+            )
+
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isEditable" -> "true",
+                "name" -> "",
+                "addressDetails.addressLine1" -> "",
+                "addressDetails.addressLine2" -> "",
+                "addressDetails.addressLine3" -> "",
+                "addressDetails.addressLine4" -> "",
+                "addressDetails.countryCode" -> ""
+              )
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(fakeRequest) {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
@@ -265,18 +293,30 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
 
           "Details entered contains spaces" in new Setup {
-            val inputJson: JsValue = Json.parse(
-              """{ "isEditable": true,
-                | "name": " ",
-                |"addressDetails" : {
-                |"addressLine1": " ",
-                |"addressLine2": " ",
-                |"addressLine3": "",
-                |"addressLine4": "",
-                |"postalCode": "",
-                |"countryCode": ""}}""".stripMargin)
-            val registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
+            val registeredDetails = RegisteredDetails(
+              isEditable = true,
+              name = "  ",
+              addressDetails = RegisteredAddressDetails(
+                addressLine1 = " ",
+                addressLine2 = " ",
+                addressLine3 = Some(""),
+                addressLine4 = Some(""),
+                countryCode = ""
+              )
+            )
+
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isEditable" -> "true",
+                "name" -> " ",
+                "addressDetails.addressLine1" -> " ",
+                "addressDetails.addressLine2" -> " ",
+                "addressDetails.addressLine3" -> "",
+                "addressDetails.addressLine4" -> "",
+                "addressDetails.countryCode" -> ""
+              )
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(fakeRequest) {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
@@ -288,19 +328,31 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
 
           "If entered, data must not be too long" in new Setup {
-            val inputJson: JsValue = Json.parse(
-              """{ "isEditable": true,
-                |"name": "testName",
-                |"addressDetails" : {
-                |"addressLine1": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                |"addressLine2": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                |"addressLine3": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                |"addressLine4": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
-                |"postalCode": "12345678910",
-                |"countryCode": ""}}""".stripMargin)
-            val
-            registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
+            val registeredDetails = RegisteredDetails(
+              isEditable = true,
+              name = "testName",
+              addressDetails = RegisteredAddressDetails(
+                addressLine1 = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                addressLine2 = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                addressLine3 = Some("AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD"),
+                addressLine4 = Some("AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD"),
+                countryCode = ""
+              )
+            )
+
+            val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "isEditable" -> "true",
+                "name" -> "testName",
+                "addressDetails.addressLine1" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                "addressDetails.addressLine2" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                "addressDetails.addressLine3" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                "addressDetails.addressLine4" -> "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
+                "addressDetails.postalCode" -> "12345678910",
+                "addressDetails.countryCode" -> ""
+              )
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(fakeRequest) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 1 cannot be more than 35 characters")

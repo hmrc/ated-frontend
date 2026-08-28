@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import services.{BackLinkCacheService, BackLinkService, DataCacheService, Servic
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +38,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      template: views.html.returnType)
                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds {
 
   val controllerId: String = "ReturnTypeController"
   given ec: ExecutionContext = mcc.executionContext

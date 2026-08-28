@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -149,18 +148,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftIsFullTaxPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (using ArgumentMatchers.any(), ArgumentMatchers.any())).
-        thenReturn(Future.successful(OK))
+      when(mockPropertyDetailsService.saveDraftIsFullTaxPeriod(
+        ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(OK))
 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testIsFullTaxPeriodController.save("1", periodKey)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
     }
@@ -212,7 +211,8 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "show the chargeable property details value view with existing data" in new Setup {
-        val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02"))
+        val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder
+          .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02"))
           .map(_.copy(isFullPeriod = Some(false)))
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
         getDataWithAuthorisedUser(propertyDetails) {
@@ -259,30 +259,33 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     "Authorised users" must {
       "for invalid data, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse("""{"isFullPeriod": "2"}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-
-        submitWithAuthorisedUser(inputJson) {
-          result =>
+        submitWithAuthorisedUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "isFullPeriod" -> "2")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
         }
       }
       "for valid data set to false forward to the In Relief Page" in new Setup {
-        val inputJson: JsValue = Json.toJson(PropertyDetailsFullTaxPeriod(Some(false)))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-
-        submitWithAuthorisedUser(inputJson) {
-          result =>
+        submitWithAuthorisedUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "isFullPeriod" -> "false")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/in-relief/view")
         }
       }
       "for valid data set to true forward to the TaxAvoidance Page" in new Setup {
-        val inputJson: JsValue = Json.toJson(PropertyDetailsFullTaxPeriod(Some(true)))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-
-        submitWithAuthorisedUser(inputJson) {
-          result =>
+        submitWithAuthorisedUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "isFullPeriod" -> "true")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/tax-avoidance/view")
         }

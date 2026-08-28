@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import forms.BankDetailForms.bankDetailsForm
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, BackLinkService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils.sanitiseBankDetails
 
@@ -39,7 +38,7 @@ class DisposeLiabilityUkBankDetailsController @Inject()(mcc: MessagesControllerC
                                                         val backLinkCacheService: BackLinkCacheService,
                                                         template: views.html.editLiability.disposeLiabilityUkBankDetails)
                                                        (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with ClientHelper with BackLinkService with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with ClientHelper with BackLinkService {
 
   given ec: ExecutionContext = mcc.executionContext
 

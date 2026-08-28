@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package controllers.editLiability
 import builders._
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models.{BankDetailsModel, DisposeLiabilityReturn, HasUkBankAccount}
+import models.{BankDetailsModel, DisposeLiabilityReturn}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -30,8 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.OK
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
@@ -108,7 +107,7 @@ class DisposeLiabilityHasUkBankAccountControllerSpec
       test(result)
     }
 
-    def saveWithAuthorisedUser(inputJson: JsValue, disposeReturn: Option[DisposeLiabilityReturn] = None)
+    def saveWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], disposeReturn: Option[DisposeLiabilityReturn] = None)
                               (test: Future[Result] => Any): Unit = {
       setAuthMocks(authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet))
       when(mockServiceInfoService.getPartial(using any(), any(), any()))
@@ -121,7 +120,7 @@ class DisposeLiabilityHasUkBankAccountControllerSpec
         .thenReturn(Future.successful(disposeReturn))
       when(mockDisposeLiabilityReturnService.calculateDraftDisposal(any())(using any(), any()))
         .thenReturn(Future.successful(disposeReturn))
-      val request = SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId)
+      val request = SessionBuilder.updateRequestFormWithSession(fakeRequest, userId)
       val result = controller.save(oldFormBundleNum)(request)
       test(result)
     }
@@ -177,10 +176,12 @@ class DisposeLiabilityHasUkBankAccountControllerSpec
     "save" should {
 
       "return BAD_REQUEST for invalid data" in new Setup {
-        val invalidJson: JsValue = Json.parse("""{"hasUkBankAccount": "0"}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(any())(using any())).thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(invalidJson) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUkBankAccount" -> "0")
+        ) { result =>
           status(result) mustBe BAD_REQUEST
           verify(mockDisposeLiabilityReturnService, never())
             .calculateDraftDisposal(any())(using any(), any())
@@ -188,35 +189,43 @@ class DisposeLiabilityHasUkBankAccountControllerSpec
       }
 
       "redirect to UK bank details page if user has a UK bank account" in new Setup {
-        val inputJson: JsValue = Json.toJson(HasUkBankAccount(Some(true)))
         val returnData: Some[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
         when(mockBackLinkCacheService.saveBackLink(any(), any())(using any()))
           .thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(inputJson, returnData) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUkBankAccount" -> "true"),
+          returnData
+        ) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some("/ated/liability/123456789012/dispose/uk-bank-details")
         }
       }
 
       "redirect to non-UK bank details page if user does not have a UK bank account" in new Setup {
-        val inputJson: JsValue = Json.toJson(HasUkBankAccount(Some(false)))
         val returnData: Some[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
         when(mockBackLinkCacheService.saveBackLink(any(), any())(using any()))
           .thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(inputJson, returnData) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUkBankAccount" -> "false"),
+          returnData
+        ) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some("/ated/liability/123456789012/dispose/non-uk-bank-details")
         }
       }
 
       "redirect to UK bank account details page if dispose liability is not returned for a user with UK bank account" in new Setup {
-        val inputJson: JsValue = Json.toJson(HasUkBankAccount(Some(true)))
         when(mockBackLinkCacheService.saveBackLink(any(), any())(using any()))
           .thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(inputJson) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUkBankAccount" -> "true")
+        ) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some("/ated/liability/123456789012/dispose/uk-bank-details")
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -148,7 +148,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       test(result)
     }
 
-    def submitWithInvalidAgent(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
+    def submitWithInvalidAgent(inputJson: JsValue, mode: Option[String] = None)(
         test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
@@ -174,7 +174,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       test(result)
     }
 
-    def submitWithUnknownResponse(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
+    def submitWithUnknownResponse(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], mode: Option[String] = None)(
         test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
@@ -196,11 +196,11 @@ class PropertyDetailsSupportingInfoControllerSpec
       setAuthMocks(authMock)
       val result = testPropertyDetailsSupportingInfoController
         .save("1", periodKey, mode)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
         test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
@@ -226,11 +226,11 @@ class PropertyDetailsSupportingInfoControllerSpec
       setAuthMocks(authMock)
       val result = testPropertyDetailsSupportingInfoController
         .save("1", periodKey, mode)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
-    def submitWithAuthorisedUserEdit(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
+    def submitWithAuthorisedUserEdit(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(
         test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
@@ -256,7 +256,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       setAuthMocks(authMock)
       val result = testPropertyDetailsSupportingInfoController
         .save("1", periodKey, mode)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
 
@@ -358,18 +358,26 @@ class PropertyDetailsSupportingInfoControllerSpec
         "for invalid data, return BAD_REQUEST" in new Setup {
 
           val invalidData: String = "a" * 201
-          val inputJson: JsValue  = Json.toJson(PropertyDetailsSupportingInfo(invalidData))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "supportingInfo" -> invalidData
+            )
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson, None) { result =>
+          submitWithAuthorisedUser(fakeRequest, None) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
         "for valid data, return Forward to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode"))
-          val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "supportingInfo" -> ""
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson, Some(propertyDetails)) { result =>
+          submitWithAuthorisedUser(fakeRequest, Some(propertyDetails)) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/summary/")
           }
@@ -377,41 +385,51 @@ class PropertyDetailsSupportingInfoControllerSpec
 
         "for valid edit liability data forward to the Edit Liability Summary Page" in new Setup {
           val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
-          val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "supportingInfo" -> ""
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUserEdit(inputJson, Some(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED)) { result =>
+          submitWithAuthorisedUserEdit(fakeRequest, Some(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED)) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/1/change/summary")
           }
         }
 
         "for invalid agent, throw BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
           val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithInvalidAgent(inputJson, Some(propertyDetails)) { result =>
+          submitWithInvalidAgent(inputJson) { result =>
             status(result) must be(BAD_REQUEST)
           }
         }
 
         "for unknown status, throw INTERNAL_SERVER_ERROR" in new Setup {
-          val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
-          val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "supportingInfo" -> ""
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithUnknownResponse(inputJson, Some(propertyDetails)) { result =>
+          submitWithUnknownResponse(fakeRequest) { result =>
             status(result) must be(INTERNAL_SERVER_ERROR)
           }
         }
 
         "for valid data with no line items, return forward to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode")).copy(period = None)
-          val inputJson: JsValue               = Json.toJson(PropertyDetailsSupportingInfo(""))
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "supportingInfo" -> ""
+            )
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(inputJson, Some(propertyDetails)) { result =>
+          submitWithAuthorisedUser(fakeRequest, Some(propertyDetails)) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/summary/")
           }

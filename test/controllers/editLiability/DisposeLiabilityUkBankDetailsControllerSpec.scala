@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.OK
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
@@ -106,7 +105,7 @@ class DisposeLiabilityUkBankDetailsControllerSpec
       test(result)
     }
 
-    def saveWithAuthorisedUser(inputJson: JsValue, disposeReturn: Option[DisposeLiabilityReturn] = None)
+    def saveWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], disposeReturn: Option[DisposeLiabilityReturn] = None)
                               (test: Future[Result] => Any): Unit = {
       setAuthMocks(authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet))
       when(mockServiceInfoService.getPartial(using any(), any(), any()))
@@ -117,7 +116,7 @@ class DisposeLiabilityUkBankDetailsControllerSpec
         .thenReturn(Future.successful(disposeReturn))
       when(mockDisposeLiabilityReturnService.calculateDraftDisposal(any())(using any(), any()))
         .thenReturn(Future.successful(disposeReturn))
-      val request = SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId)
+      val request = SessionBuilder.updateRequestFormWithSession(fakeRequest, userId)
       val result = controller.save(oldFormBundleNum)(request)
       test(result)
     }
@@ -172,10 +171,13 @@ class DisposeLiabilityUkBankDetailsControllerSpec
     "save" should {
 
       "return BAD_REQUEST for invalid data" in new Setup {
-        val invalidJson: JsValue = Json.parse("""{"hasUkBankAccount": "0"}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(any())(using any())).thenReturn(Future.successful(None))
 
-        saveWithAuthorisedUser(invalidJson) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUkBankAccount" -> "0")
+        ) { result =>
           status(result) mustBe BAD_REQUEST
           verify(mockDisposeLiabilityReturnService, never())
             .calculateDraftDisposal(any())(using any(), any())
@@ -183,19 +185,19 @@ class DisposeLiabilityUkBankDetailsControllerSpec
       }
 
       "redirect to summary page on successful UK bank form submission" in new Setup {
-
-        val inputJson: JsValue = Json.parse(
-          """{
-            |"hasUKBankAccount": true,
-            |"accountName": "ACCOUNTNAME",
-            |"accountNumber": "123456567890",
-            |"sortCode": "112233"
-            |}""".stripMargin)
         val returnData: Some[DisposeLiabilityReturn] = Some(DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012"))
         when(mockBackLinkCacheService.saveBackLink(any(), any())(using any()))
           .thenReturn(Future.successful(None))
 
-        saveWithAuthorisedUser(inputJson, returnData) { result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasUKBankAccount" -> "true",
+            "accountName" -> "ACCOUNTNAME",
+            "accountNumber" -> "123456567890",
+            "sortCode"-> "112233"),
+          returnData
+        ) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some("/ated/liability/123456789012/dispose/summary")
         }

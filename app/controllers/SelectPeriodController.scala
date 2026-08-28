@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import services.{BackLinkCacheService, BackLinkService, DataCacheService, Servic
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.PeriodUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +40,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        template: views.html.selectPeriod)
                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkService with ClientHelper with ControllerIds{
 
   given ec : ExecutionContext = mcc.executionContext
   val controllerId = "SelectPeriodController"

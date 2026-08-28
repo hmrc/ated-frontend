@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package controllers.editLiability
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models.{BankDetailsModel, HasBankDetails, PropertyDetails}
+import models.{BankDetailsModel, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -30,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, ChangeLiabilityReturnService, DataCacheService, ServiceInfoService}
@@ -112,7 +110,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+  def saveWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -124,7 +122,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails
     (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(changeLiabilityReturn)))
-    val result = testHasBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+    val result = testHasBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
     test(result)
   }
 }
@@ -193,22 +191,26 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
     "save - for authorised user" must {
       "for invalid data, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse( """{"hasBankDetails": "2"}""")
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "2")
+        ) { result =>
              status(result) must be(BAD_REQUEST)
-            verify(mockChangeLiabilityReturnService, times(0))
+             verify(mockChangeLiabilityReturnService, times(0))
               .cacheChangeLiabilityReturnHasBankDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
 
       "for valid, redirect to change in value page" in new Setup {
-        val inputJson: JsValue = Json.toJson(HasBankDetails(Some(true)))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "true")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/has-uk-bank-account"))
             verify(mockChangeLiabilityReturnService, times(1))
@@ -217,11 +219,13 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       }
 
       "for valid, redirect to change in value page if we have no bank details" in new Setup {
-        val inputJson: JsValue = Json.toJson(HasBankDetails(Some(false)))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
+        saveWithAuthorisedFormUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "hasBankDetails" -> "false")
+        ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/view-summary"))
             verify(mockChangeLiabilityReturnService, times(1))

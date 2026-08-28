@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import play.api.{Environment, Logging}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -37,7 +36,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.subcriptionData.correspondenceAddress,
                                                 templateError: views.html.global_error)
                                                (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils with WithUnsafeDefaultFormBinding with Logging {
+  extends FrontendController(mcc) with CountryCodeUtils with Logging {
 
   given ec: ExecutionContext = mcc.executionContext
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, ServiceInfoService}
@@ -123,7 +122,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson], atedRef: Option[String] = None)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], atedRef: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -131,7 +130,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(atedRef))
       when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testSelectPeriodController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      val result = testSelectPeriodController.submit.apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -219,9 +218,12 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
           "with invalid form, return BadRequest" in new Setup {
 
             val staticYear: Int = 2025
-            val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
-              result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "returnType" -> ""),
+              Some("XN1200000100001")
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
 
@@ -235,36 +237,47 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
           }
 
           "with period=2015 Redirect to select return type page" in new Setup {
-            val inputJson: JsValue = Json.parse( """{"period": "2015"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
-              result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "period" -> "2015"),
+              Some("XN1200000100001")
+            ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must be("/ated/return-type/2015")
             }
           }
 
           "with period=2016 - Redirect to select return type page" in new Setup {
-            val inputJson: JsValue = Json.parse( """{"period": "2016"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
-              result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "period" -> "2016") ,
+              Some("XN1200000100001")
+            ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must be("/ated/return-type/2016")
             }
           }
 
           "with period=2017 - Redirect to select return type page" in new Setup {
-            val inputJson: JsValue = Json.parse( """{"period": "2017"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
-              result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "period" -> "2017") ,
+              Some("XN1200000100001")
+            ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must be("/ated/return-type/2017")
             }
           }
 
           "redirect to error page, if clients do not match" in new Setup {
-            val inputJson: JsValue = Json.parse( """{"period": "2016"}""")
-            submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedFormUser(FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "period" -> "2016")
+            ) { result =>
                 val document = Jsoup.parse(contentAsString(result))
                 status(result) must be(OK)
                 document.getElementById("message1").text() must include

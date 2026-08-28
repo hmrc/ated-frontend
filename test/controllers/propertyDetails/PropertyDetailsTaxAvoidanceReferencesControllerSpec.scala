@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
@@ -54,7 +53,8 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
   val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockPropertyDetailsSupportingInfoController: controllers.propertyDetails.PropertyDetailsSupportingInfoController = mock[controllers.propertyDetails.PropertyDetailsSupportingInfoController]
+  val mockPropertyDetailsSupportingInfoController: controllers.propertyDetails.PropertyDetailsSupportingInfoController =
+    mock[controllers.propertyDetails.PropertyDetailsSupportingInfoController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
@@ -126,7 +126,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -136,7 +136,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsTaxAvoidanceController.save("1", periodKey, None)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -229,15 +229,16 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
 
       "Authorised users" must {
         "for data, return OK" in new Setup {
-          val taxAvoidance: PropertyDetailsTaxAvoidanceReferences = PropertyDetailsTaxAvoidanceReferences(Some("12345678"), Some("12345678"))
-
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-
-          submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/supporting-info/view")
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "taxAvoidanceScheme" -> "12345678",
+              "taxAvoidancePromoterReference" -> "12345678")
+          ) { result =>
+                status(result) must be(SEE_OTHER)
+                redirectLocation(result).get must include("/liability/create/supporting-info/view")
           }
         }
       }

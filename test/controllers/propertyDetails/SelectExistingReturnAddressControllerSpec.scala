@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.*
@@ -145,8 +144,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
                                prevReturns: Option[Seq[PreviousReturns]],
                                answer: Option[Boolean],
                                pKey: Option[SelectPeriod],
-                               propertyDetails: Option[PropertyDetails],
-                               inputJson: JsValue)(test: Future[Result] => Any): Unit = {
+                               fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2014
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -167,7 +165,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
       (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(""))
       val result = testSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
   }
@@ -299,7 +297,12 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       }
 
       "submitting an invalid request should fail and return to the search results page" in new Setup {
-        saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
+        saveWithAuthorisedUser(None, prevReturns, None, None,
+          FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "selected" -> "")
+          ) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -308,8 +311,11 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       }
 
       "submitting an invalid request should fail and return to the search results page even with cached data" in new Setup {
-        saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
-          result =>
+        saveWithAuthorisedUser(None, prevReturns, None, None, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "selected" -> "")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
@@ -317,8 +323,11 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       }
 
       "submitting an invalid request should fail and return to the search results page even with no cached data" in new Setup {
-        saveWithAuthorisedUser(None, None, None, None, None, Json.toJson(AddressSelected(None))) {
-          result =>
+        saveWithAuthorisedUser(None, None, None, None, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "selected" -> "")
+        ) { result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
@@ -339,17 +348,22 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
           Some("1234"), true, true, LocalDate.parse("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
         val answer: Option[Boolean] = Some(true)
         val pkey: Option[SelectPeriod] = Some(SelectPeriod(Some("2018")))
-        val propertyDetails: Option[PropertyDetails] = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
 
-        saveWithAuthorisedUser(Some(viewReturn), prevReturns, answer, pkey, propertyDetails, Json.toJson(AddressSelected(Some("12345678")))) {
-          result =>
+        saveWithAuthorisedUser(Some(viewReturn), prevReturns, answer, pkey, FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "selected" -> "12345678")
+        ) { result =>
             status(result) must be(SEE_OTHER)
         }
       }
 
       "submitting an invalid form bundle number request should redirect to Account Summary Page" in new Setup {
-        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, None, None, None, Json.toJson(AddressSelected(Some("12345678")))) {
-          result =>
+        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, None, None, FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "selected" -> "12345678")
+        ) { result =>
             status(result) must be(SEE_OTHER)
         }
       }
