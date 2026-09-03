@@ -988,7 +988,7 @@ ated.address-lookup.search-results.header = Property address
 ated.address-lookup.no-address-found.text = No addresses were found for this postcode
 ated.address-lookup.address-not-in-list-link.title = I cannot find my address in the list
 ated.address-lookup.address-manual-entry-link.title = Manually enter the address
-ated.address-lookup.error.non-selected.field = Select a previous return
+ated.address-lookup.error.non-selected.field = Select an address
 ated.address-lookup.error.general.selected-address = There is something wrong with the selected address
 
 #### CONFIRM ADDRESS
