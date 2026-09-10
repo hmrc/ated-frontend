@@ -222,7 +222,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "Authorised users" must {
 
-        "show correct property details with a back link to address lookup" in new Setup {
+        "show correct property details with a back link to edit address" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -233,7 +233,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
               document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
               document.getElementsByClass("govuk-back-link").text must be("Back")
-              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/address-lookup/view/2015")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/address/view/1/false/2015")
           }
         }
           "show correct property details with a back link to enter address manually" in new Setup {
