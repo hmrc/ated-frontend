@@ -59,7 +59,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
               case mode if AtedUtils.isEditSubmittedMode(mode) =>
                 Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
               case _ =>
-                Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+                Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
             }
           }
 
@@ -74,7 +74,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
         }
       }
     }
-    }
+  }
 
   def editSubmittedReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

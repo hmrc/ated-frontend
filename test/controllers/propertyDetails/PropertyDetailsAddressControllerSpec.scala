@@ -326,7 +326,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
+            document.title() must be(TitleBuilder.buildTitle(messages("ated.property-details.editAddress")))
 
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
