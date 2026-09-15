@@ -80,6 +80,7 @@ object AtedUtils {
 
   val EDIT_SUBMITTED = "editSubmitted"
   val EDIT_PREV_RETURN = "editPrevReturn"
+  val EDIT_FROM_SUMMARY = "editFromSummary"
 
   def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None): Option[String] = {
     isFromPrevReturn match {
@@ -90,7 +91,7 @@ object AtedUtils {
 
   def isEditSubmitted(propertyDetails: PropertyDetails): Boolean = propertyDetails.formBundleReturn.isDefined
 
-  def isEditSubmittedMode(mode: Option[String]): Boolean = mode == Some(EDIT_SUBMITTED) || mode == Some(EDIT_PREV_RETURN)
+  def isEditSubmittedMode(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED) || mode.contains(EDIT_PREV_RETURN)
 
   def isEditReturn(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED)
 
@@ -105,7 +106,7 @@ object AtedUtils {
 
   def getPropertyDetailsPreHeader(mode: Option[String] = None): String = {
     mode match {
-      case Some(EDIT_SUBMITTED) => "ated.property-details.pre-header-change"
+      case Some(EDIT_SUBMITTED) | Some(EDIT_FROM_SUMMARY) => "ated.property-details.pre-header-change"
       case _ => "ated.property-details.pre-header"
     }
   }

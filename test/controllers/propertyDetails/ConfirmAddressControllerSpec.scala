@@ -111,6 +111,8 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
@@ -134,7 +136,6 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val result = testConfirmAddressController.view("1", periodKey, Some("editPrevReturn")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
-
     def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -222,7 +223,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "Authorised users" must {
 
-        "show correct property details with a back link to address lookup" in new Setup {
+        "show correct property details with a back link to edit address" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -233,7 +234,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
               document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
               document.getElementsByClass("govuk-back-link").text must be("Back")
-              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/address-lookup/view/2015")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/address/view/1/false/2015")
           }
         }
           "show correct property details with a back link to enter address manually" in new Setup {

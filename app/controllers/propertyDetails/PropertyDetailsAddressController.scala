@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.AtedUtils
 import scala.concurrent.{ExecutionContext, Future}
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
                                                  auditConnector: DefaultAuditConnector,
@@ -100,7 +101,10 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
               Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
             } else if (AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")) {
               Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(id, periodKey, true).url)
-            } else {
+            } else if (mode.contains(EDIT_FROM_SUMMARY)) {
+              Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id).url)
+            }
+            else {
               Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
             }
           }
@@ -127,15 +131,17 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              val mode = AtedUtils.getEditSubmittedMode(propertyDetails)
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
+              val backLink = AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+              val showEditMessage: Boolean = if (mode.contains(EDIT_FROM_SUMMARY)) true else false
               Future.successful(Ok(template(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                mode,
+                Some(mode),
                 serviceInfoContent,
-                AtedUtils.getSummaryBackLink(id, None),
-                fromConfirmAddressPage = false)
+                backLink,
+                fromConfirmAddressPage = showEditMessage)
               ))
           }
         }
