@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityDatesLiableController
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,6 +28,8 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
+
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerComponents,
@@ -47,17 +50,23 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
   override val controllerId: String = "PropertyDetailsInReliefController"
 
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
+
               currentBackLink.flatMap(backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
                   Ok(template(id, propertyDetails.periodKey, filledForm,
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink)
+                    modeView, serviceInfoContent, backLink)
                   )
                 }
               )
@@ -78,19 +87,19 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
               )
             },
             propertyDetails => {
-              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id).url)
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id, mode).url)
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsInRelief(id, propertyDetails)
                 result <-
                   (propertyDetails.isInRelief.getOrElse(false), AtedUtils.isEditSubmittedMode(mode)) match {
                     case (true, _) =>
                       redirectWithBackLink(periodsInAndOutReliefController.controllerId,
-                        controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id),
+                        controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode),
                         backLink
                       )
                     case (false, false) =>
                       redirectWithBackLink(periodDatesLiableController.controllerId,
-                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id),
+                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, mode),
                         backLink
                       )
                     case (false, true) =>

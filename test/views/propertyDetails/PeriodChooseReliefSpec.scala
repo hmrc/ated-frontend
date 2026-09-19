@@ -54,7 +54,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2015, None, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -89,7 +89,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2020, periodChooseReliefForm, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2020, None, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The header should match - Select the type of relief")
@@ -122,7 +122,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015,None, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

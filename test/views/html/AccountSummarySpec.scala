@@ -130,7 +130,6 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show the Create a new return for current tax year button" in {
-        println(currentTaxYear)
         assert(doc.select(
           "#create-return-1").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
         )

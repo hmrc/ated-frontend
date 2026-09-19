@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.{AtedUtils, PeriodUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,7 +48,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
 
   val controllerId: String = "IsFullTaxPeriodController"
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -59,10 +60,10 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                   answer match {
                     case Some(true) =>
                       Future.successful(Ok(template(id, propertyDetails.periodKey, isFullTaxPeriodForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), None, serviceInfoContent, backLink)))
+                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), mode, serviceInfoContent, backLink)))
                     case _ =>
                       Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), None,serviceInfoContent, backLink)))
+                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), mode,serviceInfoContent, backLink)))
                   }
                 )
               }
@@ -79,9 +80,11 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
+              /// TODO:  need to check this mode if working fine only one parameter is passes
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
               Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
                 PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey),
-                None,
+                Some(mode),
                 serviceInfoContent,
                 AtedUtils.getSummaryBackLink(id, None)))
               )
@@ -91,7 +94,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -110,15 +113,15 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
                     redirectWithBackLink(
                       propertyDetailsTaxAvoidanceSchemeController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id),
-                      Some(routes.IsFullTaxPeriodController.view(id).url))
+                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+                      Some(routes.IsFullTaxPeriodController.view(id, mode).url))
                   )
                 case _ =>
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>
                     redirectWithBackLink(
                       propertyDetailsInReliefController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id),
-                      Some(routes.IsFullTaxPeriodController.view(id).url)))
+                      controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id, mode),
+                      Some(routes.IsFullTaxPeriodController.view(id, mode).url)))
               }
             }
           )

@@ -96,10 +96,11 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val showEditMessage: Boolean = if (mode.contains(EDIT_FROM_SUMMARY)) true else fromConfirmAddressPage
           val backLinkView = {
-            if (fromConfirmAddressPage) {
+            if (fromConfirmAddressPage && !mode.contains(EDIT_FROM_SUMMARY)) {
               Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
-            } else if (AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")) {
+            } else if (AtedUtils.getPropertyDetailsPreHeader(mode).contains("change") && !mode.contains(EDIT_FROM_SUMMARY)) {
               Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(id, periodKey, true).url)
             } else if (mode.contains(EDIT_FROM_SUMMARY)) {
               Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id).url)
@@ -108,15 +109,21 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
               Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
             }
           }
+
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               Future.successful(Ok(template(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                AtedUtils.getEditSubmittedMode(propertyDetails, Some(AtedUtils.isPrevReturn(mode))), serviceInfoContent,
+                if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, Some(AtedUtils.isPrevReturn(mode)))
+                } else {
+                  mode
+                },
+                serviceInfoContent,
                 backLinkView,
-                fromConfirmAddressPage = fromConfirmAddressPage)
+                fromConfirmAddressPage = showEditMessage)
               ))
           }
         }

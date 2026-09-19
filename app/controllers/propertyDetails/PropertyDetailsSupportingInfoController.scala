@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,6 +28,8 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
+
 import scala.concurrent.{ExecutionContext, Future}
 import utils.PeriodUtils
 
@@ -47,7 +50,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsSupportingInfoController"
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String,  mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -59,8 +62,21 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
               }
               currentBackLink.flatMap(backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
+//                  val backLinkView = {
+//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+//                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+//                    }
+//                    else {
+//                      backLink
+//                    }
+//                  }
                   Ok(template(id, propertyDetails.periodKey, filledForm,
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
+                    modeView, serviceInfoContent, backLink))
                 }
               )
           }
@@ -80,9 +96,9 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                   case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
                   case _ => propertyDetailsSupportingInfoForm
                 }
-                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
                 Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
-                  mode, serviceInfoContent, AtedUtils.getSummaryBackLink(id, None))))
+                  Some(mode), serviceInfoContent, AtedUtils.getSummaryBackLink(id, None))))
               }
           }
         }

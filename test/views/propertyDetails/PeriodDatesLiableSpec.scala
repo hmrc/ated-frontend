@@ -55,7 +55,7 @@ class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite 
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Enter the dates the property was liable for an ATED charge", None, Html(""), Some("backLink"))
+        "Enter the dates the property was liable for an ATED charge", None, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -95,7 +95,7 @@ class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite 
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Add the dates the property was liable for an ATED charge", Some("add"), Html(""), Some("http://backLink"))
+        "Add the dates the property was liable for an ATED charge", Some("add"), None, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

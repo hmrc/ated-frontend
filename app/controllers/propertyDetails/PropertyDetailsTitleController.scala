@@ -21,6 +21,7 @@ import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityHasValueChangedController
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.PropertyDetailsTitle
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -28,6 +29,8 @@ import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents,
@@ -45,7 +48,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = propertyDetailsTitleId
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -54,8 +57,22 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
+//                  val backLinkView = {
+//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+//                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+//                    }
+//                    else {
+//                      backLink
+//                    }
+//                  }
                   Ok(template(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent,
+                    modeView,
+                    serviceInfoContent,
                     backLink))
                 }
               }
@@ -72,13 +89,14 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
+
               Future.successful(
                 Ok(template(
                   id,
                   propertyDetails.periodKey,
                   propertyDetailsTitleForm.fill(propertyDetails.title.getOrElse(PropertyDetailsTitle(""))),
-                  mode,
+                  Some(mode),
                   serviceInfoContent,
                   AtedUtils.getSummaryBackLink(id, None))
                 )
@@ -98,7 +116,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
-              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id).url)
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id,mode).url)
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
                 result <-
@@ -110,7 +128,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                   } else {
                     redirectWithBackLink(
                       propertyDetailsOwnedBeforeController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id),
+                      controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode),
                       backLink)
                   }
               } yield result

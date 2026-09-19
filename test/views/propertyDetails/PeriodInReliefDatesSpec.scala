@@ -53,7 +53,7 @@ class PeriodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuit
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodInReliefDatesForm, Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015, None ,periodInReliefDatesForm, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

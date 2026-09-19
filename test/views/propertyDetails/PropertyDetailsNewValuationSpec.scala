@@ -72,8 +72,8 @@ class PropertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
       }
 
       "have the correct section heading" in {
-        assert(doc.select("h2.govuk-caption-l").first().text == "This section is Create return")
-        assert(doc.select("h2.govuk-caption-l > span").hasClass("govuk-visually-hidden"))
+        assert(doc.select("h2.govuk-caption-xl").text() == "This section is: Create return")
+        assert(doc.select("h2.govuk-caption-xl > span").hasClass("govuk-visually-hidden"))
       }
       "have a currency input box" in {
         assert(doc.select(".govuk-input__prefix").text() == "£")

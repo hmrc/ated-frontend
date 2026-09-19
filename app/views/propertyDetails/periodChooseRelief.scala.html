@@ -32,7 +32,7 @@
       formHelper: FormWithCSRF)
 
 
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, periodKey: Int, mode: Option[String], propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
 @chooseSingleReliefsocialHousingMessage = @{
@@ -59,11 +59,11 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
 }
 
-  @formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey, mode)) {
 
       <h2 class="govuk-caption-xl hmrc-caption-xl">
           <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-          @messages("ated.property-details.pre-header")
+          @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
       </h2>
 
     @govukRadios(Radios(
