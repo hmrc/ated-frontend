@@ -136,12 +136,25 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
+      val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsTitleController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
+
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsTitleController.controllerId))
+
+      val result =
+        testPropertyDetailsTitleController
+          .editFromSummary(id)
+          .apply(SessionBuilder.buildRequestWithSession(userId))
+
       test(result)
     }
 
@@ -191,6 +204,17 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     "edit from summary" must {
+      "save the entry controller when edit from summary is called" in new Setup {
+
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService).saveFormData[String](
+            ArgumentMatchers.eq("EditSummaryEntryController"),
+            ArgumentMatchers.eq(testPropertyDetailsTitleController.controllerId)
+          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
       "show the details of a submitted return with a back link" in new Setup {
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
           status(result) must be(OK)
@@ -206,6 +230,8 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
         }
       }
+
+
     }
 
     "save" must {

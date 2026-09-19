@@ -50,7 +50,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsSupportingInfoController"
 
-  def view(id: String,  mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -61,22 +61,30 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 case _ => propertyDetailsSupportingInfoForm
               }
               currentBackLink.flatMap(backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                  } else {
-                    mode
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[String]("EditSummaryEntryController").map { entryController =>
+
+                    val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    } else {
+                      mode
+                    }
+
+                    val backLinkView = {
+                      if (
+                        mode.contains(EDIT_FROM_SUMMARY) &&
+                          entryController.contains(controllerId)
+                      ) {
+                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                      }
+                      else {
+                        backLink
+                      }
+                    }
+
+                    Ok(template(id, propertyDetails.periodKey, filledForm,
+                      modeView, serviceInfoContent, backLinkView))
                   }
-//                  val backLinkView = {
-//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-//                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-//                    }
-//                    else {
-//                      backLink
-//                    }
-//                  }
-                  Ok(template(id, propertyDetails.periodKey, filledForm,
-                    modeView, serviceInfoContent, backLink))
                 }
               )
           }
@@ -85,21 +93,42 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
     }
   }
 
-  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
-                  case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
-                  case _ => propertyDetailsSupportingInfoForm
+
+              dataCacheService
+                .saveFormData[String](
+                  "EditSummaryEntryController",
+                  controllerId
+                )
+                .flatMap { _ =>
+
+                  dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                    val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
+                      case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
+                      case _ => propertyDetailsSupportingInfoForm
+                    }
+
+                    val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
+
+                    Future.successful(
+                      Ok(
+                        template(
+                          id,
+                          propertyDetails.periodKey,
+                          filledForm,
+                          Some(mode),
+                          serviceInfoContent,
+                          AtedUtils.getSummaryBackLink(id, None)
+                        )
+                      )
+                    )
+                  }
                 }
-                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
-                Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
-                  Some(mode), serviceInfoContent, AtedUtils.getSummaryBackLink(id, None))))
-              }
           }
         }
       }

@@ -119,6 +119,13 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.fetchAndGetData[String](
+          ArgumentMatchers.eq("EditSummaryEntryController")
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(
+        Future.successful(None)
+      )
       val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -135,6 +142,14 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.fetchAndGetData[String](
+          ArgumentMatchers.eq("EditSummaryEntryController")
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(
+        Future.successful(None)
+      )
+
       val result = testPropertyDetailsAddressController.view(
         id, fromConfirmAddressPage, periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -162,6 +177,13 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsAddressController.controllerId))
+
       val result = testPropertyDetailsAddressController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
