@@ -17,11 +17,8 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
 import models.PropertyDetailsAcquisition
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
@@ -30,12 +27,14 @@ import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComponents,
                                                      authAction: AuthAction,
                                                      isFullTaxPeriodController: IsFullTaxPeriodController,
                                                      propertyDetailsHasBeenRevaluedController: PropertyDetailsHasBeenRevaluedController,
+                                                     propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheService: DataCacheService,
@@ -43,9 +42,10 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      template: views.html.propertyDetails.propertyDetailsAcquisition)
                                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsAcquisitionController"
 
   def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
@@ -119,11 +119,19 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                       backLink
                     )
                   } else {
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      redirectWithBackLink(
+                        propertyDetailsSummaryController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        backLink
+                      )
+                    } else {
                       redirectWithBackLink(
                         isFullTaxPeriodController.controllerId,
                         controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
                         backLink
                       )
+                    }
                   }
               } yield result
             }

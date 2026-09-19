@@ -17,13 +17,12 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
 import utils.AtedUtils
@@ -35,15 +34,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesControllerComponents,
                                                                 authAction: AuthAction,
                                                                 propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                                propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                                 serviceInfoService: ServiceInfoService,
                                                                 val propertyDetailsService: PropertyDetailsService,
                                                                 val dataCacheService: DataCacheService,
                                                                 val backLinkCacheService: BackLinkCacheService,
                                                                 template: views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences)
-                                                     (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+                                                               (using val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsTaxAvoidanceReferencesController"
 
   def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
@@ -102,7 +103,6 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-
               for {
                 isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
                 _ <- dataCacheService.saveFormData(
@@ -136,6 +136,8 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
       }
     }
   }
+
+
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -147,11 +149,19 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences(id, propertyDetails)
                 result <-
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    redirectWithBackLink(
+                      propertyDetailsSummaryController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
+                    )
+                  } else {
                     redirectWithBackLink(
                       propertyDetailsSupportingInfoController.controllerId,
                       controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
                       Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
                     )
+                  }
               } yield result
             }
           )

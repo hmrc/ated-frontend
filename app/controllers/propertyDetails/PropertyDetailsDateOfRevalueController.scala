@@ -23,7 +23,7 @@ import forms.PropertyDetailsForms.*
 import models.*
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.AtedUtils
@@ -39,18 +39,20 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val backLinkCacheService: BackLinkCacheService,
                                                        val dataCacheService: DataCacheService,
-                                                       isFullTaxPeriodController: IsFullTaxPeriodController)
+                                                       isFullTaxPeriodController: IsFullTaxPeriodController,
+                                                       propertyDetailsSummaryController: PropertyDetailsSummaryController)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsDateOfRevalueController"
   val dateFields: (String, String) = ("dateOfRevalue", messages("ated.property-details-value.dateOfRevalue.messageKey"))
 
   given messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
 
-  def view(id: String,  mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -59,7 +61,7 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
-                    val dateOfRevalue = cachedDateOfRevalue.flatMap(_.dateOfRevalue)
+                    val dateOfRevalue = propertyDetails.value.flatMap(_.revaluedDate).orElse(cachedDateOfRevalue.flatMap(_.dateOfRevalue))
                     val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                     } else {
@@ -91,29 +93,30 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
             },
             dateOfRevalue => {
               dataCacheService.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
-              val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
-                revaluedValue <- dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                dateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
+              for {
+                DateOfRevalueConstant <- dataCacheService.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant)
               } yield {
-                PropertyDetailsRevalued(
-                  isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),
-                  revaluedValue = revaluedValue.flatMap(_.revaluedValue),
-                  revaluedDate = dateOfRevalue.dateOfRevalue,
-                  partAcqDispDate = dateOfChange.flatMap(_.dateOfChange)
+                DateOfRevalue(
+                  dateOfRevalue = DateOfRevalueConstant.flatMap(_.dateOfRevalue)
                 )
               }
-              propertyDetailsFuture.flatMap { propertyDetails =>
-                for {
-                  _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-                  result <-
-                       redirectWithBackLink(
-                         isFullTaxPeriodController.controllerId,
-                         controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
-                         Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
-                       )
-                } yield result
-              }
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue)
+                result <- if (mode.contains(EDIT_FROM_SUMMARY)) {
+                  redirectWithBackLink(
+                    propertyDetailsSummaryController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
+                  )
+                } else {
+                  redirectWithBackLink(
+                    isFullTaxPeriodController.controllerId,
+                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
+                  )
+                }
+              } yield result
+
             }
           )
         }

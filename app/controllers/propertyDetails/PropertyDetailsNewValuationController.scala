@@ -44,6 +44,7 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsNewValuationController"
 
   def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
@@ -56,7 +57,7 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
-                    val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
+                    val newValuation = propertyDetails.value.flatMap(_.revaluedValue).orElse(cachedNewValuation.flatMap(_.revaluedValue))
                     val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                     } else {
@@ -89,11 +90,15 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
             },
             revaluedValue => {
               dataCacheService.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
-              redirectWithBackLink(
-                propertyDetailsDateOfRevalueController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode),
-                Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode).url)
-              )
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsNewValuation(id, revaluedValue)
+                result <-
+                  redirectWithBackLink(
+                    propertyDetailsDateOfRevalueController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode).url)
+                  )
+              } yield result
             }
           )
         }

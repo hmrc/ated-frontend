@@ -140,18 +140,65 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-  def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
-                                      (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+  def saveDraftPropertyDetailsIsPropertyRevalued(id: String, isPropertyRevalued: HasBeenRevalued)(using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, revalued)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsHasBeenRevalued(id, isPropertyRevalued)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsIsPropertyRevalued] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
-            s"[saveDraftPropertyDetailsRevalued] Invalid status when saving Property Details :$status")
+            s"[saveDraftPropertyDetailsIsPropertyRevalued] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+  
+  def saveDraftPropertyDetailsFortyThousandValueDateOfChange(id: String, fortyThousandValueDateOfChange: DateOfChange)
+                                                      (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsFortyThousandValueDateOfChange(id, fortyThousandValueDateOfChange)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsFortyThousandValueDateOfChange] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsFortyThousandValueDateOfChange] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+  
+  def saveDraftPropertyDetailsNewValuation(id: String, newValuation: PropertyDetailsNewValuation)
+                                        (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsNewValuation(id, newValuation)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewValuation] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsNewValuation] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+  
+  def saveDraftPropertyDetailsDateOfRevaluation(id: String, dateOfRevalue: DateOfRevalue)
+                                        (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewValuationDateOfChange] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsNewValuationDateOfChange] Invalid status when saving Property Details :$status")
       }
     }
   }
