@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
-
 import javax.inject.Inject
 import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,7 +26,6 @@ import services.{BackLinkCacheService, ChangeLiabilityReturnService, DataCacheSe
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{RetrieveSelectPeriodFormId, SelectedPreviousReturn}
 import utils.AtedUtils
-import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import scala.concurrent.ExecutionContext
 
@@ -102,18 +100,16 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
       }
     }
   }
-  
+
   def submit(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-
         val backToViewLink = Some(routes.ConfirmAddressController.view(id, periodKey, mode).url)
-
-          redirectWithBackLink(
-            propertyDetailsTitleId,
-            controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id, mode),
-            backToViewLink
-          )
+        redirectWithBackLink(
+          propertyDetailsTitleId,
+          controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id, mode),
+          backToViewLink
+        )
       }
     }
   }
