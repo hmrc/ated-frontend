@@ -21,7 +21,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
 import models.HasBeenRevalued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
 import utils.AtedUtils
@@ -29,7 +29,7 @@ import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesControllerComponents,
                                                          authAction: AuthAction,
@@ -45,9 +45,10 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                                                         ) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsHasBeenRevaluedController"
 
-  def view(id: String,  mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -57,17 +58,18 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued).map {
                     cachedHasBeenRevalued =>
-                      val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
+                      val hasBeenRevalued = propertyDetails.value.flatMap(_.isPropertyRevalued).orElse(cachedHasBeenRevalued.flatMap(_.isPropertyRevalued))
                       val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
                         AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                       } else {
                         mode
                       }
+                      val filledForm = propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued))
                       Ok(template(id,
                         propertyDetails.periodKey,
                         backLink,
                         modeView,
-                        propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued)),
+                        filledForm,
                         serviceInfoContent))
                   }
                 }
@@ -90,21 +92,31 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, backLink, mode, formWithErrors, serviceInfoContent)))
               },
               hasBeenRevalued => {
-                if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
-                  dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
-                  redirectWithBackLink(
-                    dateOfChangeController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
-                  )
-                } else {
-                  dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
-                  redirectWithBackLink(
-                    exitController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
+                dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                for {
+                  hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
+                } yield {
+                  HasBeenRevalued(
+                    isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued)
                   )
                 }
+                for {
+                  _ <- propertyDetailsService.saveDraftPropertyDetailsIsPropertyRevalued(id, hasBeenRevalued)
+                  result <- if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
+                    redirectWithBackLink(
+                      dateOfChangeController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      exitController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
+                    )
+                  }
+                } yield result
+
               }
             )
           }

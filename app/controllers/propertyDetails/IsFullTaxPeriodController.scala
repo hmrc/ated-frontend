@@ -17,25 +17,24 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.{AtedUtils, PeriodUtils}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthAction,
                                           propertyDetailsInReliefController: PropertyDetailsInReliefController,
                                           propertyDetailsTaxAvoidanceSchemeController : PropertyDetailsTaxAvoidanceSchemeController,
+                                          propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
                                           val dataCacheService: DataCacheService,
@@ -43,7 +42,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
 
@@ -170,14 +169,26 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             propertyDetails => {
               propertyDetails.isFullPeriod match {
                 case Some(true) =>
-                  val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
-                    Some(PeriodUtils.periodEndDate(periodKey)))))
-                  propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
+                      Some(PeriodUtils.periodEndDate(periodKey)))))
+                    propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
+                      redirectWithBackLink(
+                        propertyDetailsSummaryController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(routes.IsFullTaxPeriodController.view(id, mode).url))
+                    )
+                  } else {
+                    val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
+                      Some(PeriodUtils.periodEndDate(periodKey)))))
+                    propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
                       redirectWithBackLink(
                         propertyDetailsTaxAvoidanceSchemeController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
                         Some(routes.IsFullTaxPeriodController.view(id, mode).url))
-                  )
+                    )
+                  }
+
                 case _ =>
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>
                     redirectWithBackLink(
