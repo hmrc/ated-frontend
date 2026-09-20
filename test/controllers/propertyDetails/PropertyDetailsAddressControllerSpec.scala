@@ -250,6 +250,21 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
       "Authorised users" must {
 
+        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+          viewDataWithAuthorisedUser(
+            "1",
+            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")),
+            fromConfirmAddressPage = false
+          ) {
+            result =>
+              status(result) must be(OK)
+
+              verify(mockDataCacheService).fetchAndGetData[String](
+                ArgumentMatchers.eq("EditSummaryEntryController")
+              )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
+
         "show the chargeable property details view if we have no id" in new Setup {
           createWithAuthorisedUser {
             result =>
@@ -343,6 +358,18 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
     "edit from summary" must {
+
+      "save the entry controller when edit from summary is called" in new Setup {
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
+          result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService).saveFormData[String](
+              ArgumentMatchers.eq("EditSummaryEntryController"),
+              ArgumentMatchers.eq(testPropertyDetailsAddressController.controllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
       "show the details of a submitted return with a back link" in new Setup {
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
           result =>

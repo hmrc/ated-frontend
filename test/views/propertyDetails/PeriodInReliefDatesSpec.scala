@@ -29,6 +29,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import utils.AtedUtils
 import views.html.propertyDetails.periodInReliefDates
 
 class PeriodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
@@ -85,6 +86,33 @@ class PeriodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuit
       Then("The back link is correct")
       assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
+    }
+
+    Scenario("show change return subheader and summary backlink when editing from summary") {
+
+      Given("the client is editing relief dates from the summary page")
+      When("The user views the page in edit mode")
+
+      val html = injectedViewInstance(
+        "1",
+        2015,
+        Some(AtedUtils.EDIT_SUBMITTED),
+        periodInReliefDatesForm,
+        Html(""),
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("The subheader should be Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+
+      Then("The back link should be visible and point to previous page")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "/ated/liability/create/summary")
+
+      Then("The save and continue button should still be displayed")
+      assert(document.getElementById("submit").text() === "Save and continue")
     }
 
   }

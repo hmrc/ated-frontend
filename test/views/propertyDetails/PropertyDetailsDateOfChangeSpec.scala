@@ -21,6 +21,7 @@ import forms.PropertyDetailsForms.propertyDetailsDateOfChangeForm
 import models.StandardAuthRetrievals
 import play.twirl.api.{Html, HtmlFormat}
 import testhelpers.{AtedViewSpec, MockAuthUtil}
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsDateOfChange
 
 class PropertyDetailsDateOfChangeSpec extends AtedViewSpec with MockAuthUtil {
@@ -145,6 +146,29 @@ class PropertyDetailsDateOfChangeSpec extends AtedViewSpec with MockAuthUtil {
         doc.getElementById("dateOfChange.day").className() must not include "govuk-input--error"
         doc.getElementById("dateOfChange.month").className() must not include "govuk-input--error"
         doc.getElementById("dateOfChange.year").className() must not include "govuk-input--error"
+      }
+    }
+    "when coming from summary page" must {
+
+      val view: Html =
+        injectedViewInstance(
+          "anything",
+          2024,
+          propertyDetailsDateOfChangeForm,
+          Some(AtedUtils.EDIT_FROM_SUMMARY),
+          HtmlFormat.empty,
+          Some("/ated/liability/create/summary")
+        )
+
+      val document = doc(view)
+
+      "have the correct pre heading for change return" in {
+        document.select("h2.govuk-caption-l").text() mustBe "This section is: Change return"
+      }
+
+      "have the summary page backlink" in {
+        document.select("a.govuk-back-link").text() mustBe "Back"
+        document.select("a.govuk-back-link").attr("href") mustBe "/ated/liability/create/summary"
       }
     }
   }

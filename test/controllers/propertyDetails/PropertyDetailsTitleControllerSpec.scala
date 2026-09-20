@@ -21,7 +21,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityHasValueChangedController
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -38,6 +38,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -182,13 +183,16 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
       "Authorised users" must {
 
-        "show the chargeable property details view if we id and data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+          val propertyDetails: PropertyDetails =
+            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
-            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+
+            verify(mockDataCacheService).fetchAndGetData[String](
+              ArgumentMatchers.eq("EditSummaryEntryController")
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -205,7 +209,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
     "edit from summary" must {
       "save the entry controller when edit from summary is called" in new Setup {
-
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
           status(result) must be(OK)
 
@@ -230,8 +233,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
         }
       }
-
-
     }
 
     "save" must {
