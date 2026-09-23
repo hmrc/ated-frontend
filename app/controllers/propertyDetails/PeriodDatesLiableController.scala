@@ -17,9 +17,11 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.*
 import play.api.i18n.{I18nSupport, Messages, MessagesImpl}
@@ -27,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +42,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with ControllerIds{
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodDatesLiableController"
@@ -110,11 +113,21 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                   case _ =>
                     for {
                       _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                      result <- ensureClientContext(redirectWithBackLink(
+                      result <- ensureClientContext(
+                        if (mode.contains(EDIT_FROM_SUMMARY)) {
+                          redirectWithBackLink(
+                            propertyDetailsSummaryControllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                            Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, addOption, mode).url)
+                          )
+                        } else {
+                        redirectWithBackLink(
                         propertyDetailsTaxAvoidanceSchemeController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-                        Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, mode).url)
-                      ))
+                        Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, addOption,  mode).url)
+                      )
+                        }
+                      )
                     } yield {
                       result
                     }

@@ -99,12 +99,12 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                       )
                     case (false, false) =>
                       redirectWithBackLink(periodDatesLiableController.controllerId,
-                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, mode),
+                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id,None, mode),
                         backLink
                       )
                     case (false, true) =>
                       redirectWithBackLink(editLiabilityDatesLiableController.controllerId,
-                        controllers.editLiability.routes.EditLiabilityDatesLiableController.view(id),
+                        controllers.editLiability.routes.EditLiabilityDatesLiableController.view(id, mode),
                         backLink
                       )
                   }

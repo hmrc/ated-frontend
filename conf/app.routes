@@ -79,8 +79,8 @@ POST    /liability/:formBundleNo/edit/:periodKey                            cont
 
 ## edit-liability - change return journey ##
 GET     /liability/:formBundleNo/change/address                             controllers.propertyDetails.PropertyDetailsAddressController.editSubmittedReturn(formBundleNo: String)
-GET     /liability/:formBundleNo/change/dates-liable                        controllers.editLiability.EditLiabilityDatesLiableController.view(formBundleNo: String)
-POST    /liability/:formBundleNo/change/dates-liable/period/:periodKey      controllers.editLiability.EditLiabilityDatesLiableController.save(formBundleNo: String, periodKey: Int)
+GET     /liability/:formBundleNo/change/dates-liable                        controllers.editLiability.EditLiabilityDatesLiableController.view(formBundleNo: String, mode: Option[String] ?= None)
+POST    /liability/:formBundleNo/change/dates-liable/period/:periodKey      controllers.editLiability.EditLiabilityDatesLiableController.save(formBundleNo: String, periodKey: Int, mode: Option[String] ?= None)
 
 GET     /liability/:formBundleNo/change/edit-summary                        controllers.editLiability.EditLiabilityHasValueChangedController.editFromSummary(formBundleNo: String, isPrevReturn: Option[Boolean] ?=None)
 GET     /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.view(formBundleNo: String)

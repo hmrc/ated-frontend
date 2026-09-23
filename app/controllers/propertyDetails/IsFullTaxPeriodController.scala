@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 
@@ -42,7 +43,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
 
@@ -170,10 +171,18 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                   val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
                     Some(PeriodUtils.periodEndDate(periodKey)))))
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
-                    redirectWithBackLink(
-                      propertyDetailsTaxAvoidanceSchemeController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-                      Some(routes.IsFullTaxPeriodController.view(id, mode).url))
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      redirectWithBackLink(
+                        propertyDetailsSummaryControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(routes.IsFullTaxPeriodController.view(id, mode).url)
+                      )
+                    }else {
+                      redirectWithBackLink(
+                        propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+                        Some(routes.IsFullTaxPeriodController.view(id, mode).url))
+                    }
                   )
                 case _ =>
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>

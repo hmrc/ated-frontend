@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 
@@ -41,7 +42,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.propertyDetails.periodsInAndOutRelief)
                                                (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodsInAndOutReliefController"
@@ -102,11 +103,20 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
 
   def continue(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(redirectWithBackLink(
-        propertyDetailsTaxAvoidanceController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-        Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
-      ))
+      ensureClientContext(
+        if (mode.contains(EDIT_FROM_SUMMARY)) {
+          redirectWithBackLink(
+            propertyDetailsSummaryControllerId,
+            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+            Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+          )
+        } else {
+          redirectWithBackLink(
+            propertyDetailsTaxAvoidanceController.controllerId,
+            controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+            Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+          )
+        })
     }
   }
 }
