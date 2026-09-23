@@ -52,7 +52,7 @@
  <p class="govuk-body">@messages("ated.property-details.earliest-start-date.first-para")</p>
  <p class="govuk-body">@messages("ated.property-details.earliest-start-date.second-para", when.getDayOfMonth().toString, intToMonth(when.getMonthValue()), when.getYear().toString)</p>
 
-  @formHelper(action = controllers.propertyDetails.routes.EarliestStartDateInUseController.continue(id)) {
+  @formHelper(action = controllers.propertyDetails.routes.EarliestStartDateInUseController.continue(id, mode)) {
       <div class="govuk-form-group govuk-!-padding-top-3">
           @govukButton(Button(
               content = Text(messages("ated.continue")),
