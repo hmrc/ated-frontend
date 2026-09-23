@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
-
+import controllers.ControllerIds
 import javax.inject.Inject
 import models.PropertyDetailsOwnedBefore
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -44,7 +44,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsOwnedBeforeController"
@@ -140,10 +140,18 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                     _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
                     result <-
                       if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
-                        redirectWithBackLink(
-                          propertyDetailsProfessionallyValuedController.controllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
-                          Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                        if (mode.contains(EDIT_FROM_SUMMARY)) {
+                          redirectWithBackLink(
+                            propertyDetailsSummaryControllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                            Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url)
+                          )
+                        }else{
+                          redirectWithBackLink(
+                            propertyDetailsProfessionallyValuedController.controllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                            Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                        }
                       } else {
                         redirectWithBackLink(
                           propertyDetailsNewBuildController.controllerId,
