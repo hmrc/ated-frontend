@@ -89,7 +89,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       setInvalidAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Html("")))
-      val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsValueAcquiredController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -115,7 +115,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
 
-      val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsValueAcquiredController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

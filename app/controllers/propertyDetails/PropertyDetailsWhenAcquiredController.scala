@@ -27,7 +27,9 @@ import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,18 +49,23 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsWhenAcquiredController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                } else {
+                  mode
+                }
                 val displayData = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate))
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsWhenAcquiredDatesForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  modeView,
                   serviceInfoContent,
                   backLink)
                 ))
@@ -91,8 +98,8 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
                   result <-
                     redirectWithBackLink(
                       propertyDetailsValueAcquiredController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id).url)
+                      controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id, mode).url)
                     )
                 } yield result
               }

@@ -30,6 +30,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import utils.AtedUtils
 import views.html.propertyDetails.periodDatesLiable
 
 class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
@@ -55,7 +56,7 @@ class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite 
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Enter the dates the property was liable for an ATED charge", None, Html(""), Some("backLink"))
+        "Enter the dates the property was liable for an ATED charge", None, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -95,7 +96,7 @@ class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite 
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Add the dates the property was liable for an ATED charge", Some("add"), Html(""), Some("http://backLink"))
+        "Add the dates the property was liable for an ATED charge", Some("add"), None, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -128,6 +129,29 @@ class PeriodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite 
       Then("The back link is correct")
       assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
+    }
+
+    Scenario("show change return subheading and summary back link when editing") {
+
+      val html = injectedViewInstance(
+        "1",
+        2015,
+        periodDatesLiableForm,
+        "Add the dates the property was liable for an ATED charge",
+        Some("add"),
+        Some(AtedUtils.EDIT_SUBMITTED),
+        Html(""),
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("The subheader should be Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+
+      Then("The back link should point to the summary page")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "/ated/liability/create/summary")
     }
 
   }

@@ -156,101 +156,101 @@ POST     /liability/create/address/save/:periodKey                              
 GET      /liability/create/address/:periodKey                                               controllers.propertyDetails.PropertyDetailsAddressController.createNewDraft(periodKey: Int)
 GET      /liability/create/address/lookup/:periodKey                                        controllers.propertyDetails.PropertyDetailsAddressController.addressLookupRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/title/view/:propertyKey                             controllers.propertyDetails.PropertyDetailsTitleController.view(propertyKey: String)
+GET      /liability/create/title/view/:propertyKey                             controllers.propertyDetails.PropertyDetailsTitleController.view(propertyKey: String, mode: Option[String] ?=None)
 GET      /liability/create/title/edit/:propertyKey                             controllers.propertyDetails.PropertyDetailsTitleController.editFromSummary(propertyKey: String)
 POST     /liability/create/title/save/:propertyKey/period/:periodKey           controllers.propertyDetails.PropertyDetailsTitleController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/acquisition/edit-summary/:propertyKey               controllers.propertyDetails.PropertyDetailsAcquisitionController.editFromSummary(propertyKey: String)
-GET      /liability/create/acquisition/view/:propertyKey                       controllers.propertyDetails.PropertyDetailsAcquisitionController.view(propertyKey: String)
+GET      /liability/create/acquisition/view/:propertyKey                       controllers.propertyDetails.PropertyDetailsAcquisitionController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/acquisition/save/:propertyKey/period/:periodKey     controllers.propertyDetails.PropertyDetailsAcquisitionController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.PropertyDetailsExitController.view()
 
-GET      /liability/create/has-been-revalued/view/:propertyKey                        controllers.propertyDetails.PropertyDetailsHasBeenRevaluedController.view(propertyKey: String)
+GET      /liability/create/has-been-revalued/view/:propertyKey                        controllers.propertyDetails.PropertyDetailsHasBeenRevaluedController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/has-been-revalued/save/:propertyKey/period/:periodKey      controllers.propertyDetails.PropertyDetailsHasBeenRevaluedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/date-of-change/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsDateOfChangeController.view(propertyKey: String)
+GET      /liability/create/date-of-change/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsDateOfChangeController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/date-of-change/save/:propertyKey/period/:periodKey         controllers.propertyDetails.PropertyDetailsDateOfChangeController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/new-valuation/view/:propertyKey                      controllers.propertyDetails.PropertyDetailsNewValuationController.view(propertyKey: String)
+GET      /liability/create/new-valuation/view/:propertyKey                      controllers.propertyDetails.PropertyDetailsNewValuationController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-valuation/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PropertyDetailsNewValuationController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?= None)
 
-GET      /liability/create/date-of-revalue/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsDateOfRevalueController.view(propertyKey: String)
+GET      /liability/create/date-of-revalue/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsDateOfRevalueController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/date-of-revalue/save/:propertyKey/period/:periodKey         controllers.propertyDetails.PropertyDetailsDateOfRevalueController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/owned-before/edit-summary/:propertyKey              controllers.propertyDetails.PropertyDetailsOwnedBeforeController.editFromSummary(propertyKey: String)
-GET      /liability/create/owned-before/view/:propertyKey                      controllers.propertyDetails.PropertyDetailsOwnedBeforeController.view(propertyKey: String)
+GET      /liability/create/owned-before/view/:propertyKey                      controllers.propertyDetails.PropertyDetailsOwnedBeforeController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/owned-before/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PropertyDetailsOwnedBeforeController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
-GET      /liability/create/new-build/view/:propertyKey                         controllers.propertyDetails.PropertyDetailsNewBuildController.view(propertyKey: String)
+GET      /liability/create/new-build/view/:propertyKey                         controllers.propertyDetails.PropertyDetailsNewBuildController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build/save/:propertyKey/period/:periodKey       controllers.propertyDetails.PropertyDetailsNewBuildController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
-GET      /liability/create/valued/view/:propertyKey                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.view(propertyKey: String)
+GET      /liability/create/valued/view/:propertyKey                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.view(propertyKey: String, mode: Option[String] ?=None)
 GET      /liability/create/valued/edit/:propertyKey                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyKey: String)
 
 ###
 ###   New build date journey
-GET      /liability/create/new-build/kickout/:propertyKey                      controllers.propertyDetails.NewBuildNoStartDateController.view(propertyKey: String)
-POST     /liability/create/new-build/kickout/:propertyKey                     controllers.propertyDetails.NewBuildNoStartDateController.continue(propertyKey: String)
+GET      /liability/create/new-build/kickout/:propertyKey                      controllers.propertyDetails.NewBuildNoStartDateController.view(propertyKey: String, mode: Option[String] ?=None)
+POST     /liability/create/new-build/kickout/:propertyKey                     controllers.propertyDetails.NewBuildNoStartDateController.continue(propertyKey: String, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.view(propertyKey: String)
-POST     /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.continue(propertyKey: String)
+GET      /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.view(propertyKey: String, mode: Option[String] ?=None)
+POST     /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.continue(propertyKey: String, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.view(propertyKey: String)
+GET      /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.save(propertyKey: String, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/do-you-know-council-registered-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredKnownController.view(propertyKey: String)
+GET      /liability/create/new-build/do-you-know-council-registered-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredKnownController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build/do-you-know-council-registered-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredKnownController.save(propertyKey: String, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedController.view(propertyKey: String)
+GET      /liability/create/new-build/when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build/when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/when-local-council-register-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredController.view(propertyKey: String)
+GET      /liability/create/new-build/when-local-council-register-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build/when-local-council-register-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 ###
 
-GET      /liability/create/new-build-value/view/:propertyKey                                 controllers.propertyDetails.PropertyDetailsNewBuildValueController.view(propertyKey: String)
+GET      /liability/create/new-build-value/view/:propertyKey                                 controllers.propertyDetails.PropertyDetailsNewBuildValueController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/new-build-value/save/:propertyKey/period/:periodKey/date/:date    controllers.propertyDetails.PropertyDetailsNewBuildValueController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, date: java.time.LocalDate)
 
-GET      /liability/create/when-acquired/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsWhenAcquiredController.view(propertyKey: String)
+GET      /liability/create/when-acquired/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsWhenAcquiredController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/when-acquired/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsWhenAcquiredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/value-acquired/view/:propertyKey                                   controllers.propertyDetails.PropertyDetailsValueAcquiredController.view(propertyKey: String)
+GET      /liability/create/value-acquired/view/:propertyKey                                   controllers.propertyDetails.PropertyDetailsValueAcquiredController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/value-acquired/save/:propertyKey/period/:periodKey/date/:date      controllers.propertyDetails.PropertyDetailsValueAcquiredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, date: java.time.LocalDate)
 
 POST     /liability/create/valued/save/:propertyKey/period/:periodKey          controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/full-tax-period/edit-summary/:propertyKey           controllers.propertyDetails.IsFullTaxPeriodController.editFromSummary(propertyKey: String)
-GET      /liability/create/full-tax-period/view/:propertyKey                   controllers.propertyDetails.IsFullTaxPeriodController.view(propertyKey: String)
-POST     /liability/create/full-tax-period/save/:propertyKey/period/:periodKey controllers.propertyDetails.IsFullTaxPeriodController.save(propertyKey: String, periodKey: Int)
+GET      /liability/create/full-tax-period/view/:propertyKey                   controllers.propertyDetails.IsFullTaxPeriodController.view(propertyKey: String, mode: Option[String] ?=None)
+POST     /liability/create/full-tax-period/save/:propertyKey/period/:periodKey controllers.propertyDetails.IsFullTaxPeriodController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/tax-avoidance-reference/edit-summary/:propertyKey             controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(propertyKey: String)
-GET      /liability/create/tax-avoidance-reference/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.view(propertyKey: String)
+GET      /liability/create/tax-avoidance-reference/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/tax-avoidance-reference/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/tax-avoidance/edit-summary/:propertyKey             controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(propertyKey: String)
-GET      /liability/create/tax-avoidance/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.view(propertyKey: String)
+GET      /liability/create/tax-avoidance/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/tax-avoidance/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 
 GET      /liability/create/supporting-info/edit-summary/:propertyKey            controllers.propertyDetails.PropertyDetailsSupportingInfoController.editFromSummary(propertyKey: String)
-GET      /liability/create/supporting-info/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsSupportingInfoController.view(propertyKey: String)
+GET      /liability/create/supporting-info/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsSupportingInfoController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/supporting-info/save/:propertyKey/period/:periodKey  controllers.propertyDetails.PropertyDetailsSupportingInfoController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/in-relief/view/:propertyKey                         controllers.propertyDetails.PropertyDetailsInReliefController.view(propertyKey: String)
+GET      /liability/create/in-relief/view/:propertyKey                         controllers.propertyDetails.PropertyDetailsInReliefController.view(propertyKey: String, mode: Option[String] ?=None)
 POST     /liability/create/in-relief/save/:propertyKey/period/:periodKey       controllers.propertyDetails.PropertyDetailsInReliefController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/dates-liable/view/:propertyKey                      controllers.propertyDetails.PeriodDatesLiableController.view(propertyKey: String)
-GET      /liability/create/dates-liable/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodDatesLiableController.add(propertyKey: String, periodKey: Int)
-POST     /liability/create/dates-liable/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodDatesLiableController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?= None)
+GET      /liability/create/dates-liable/view/:propertyKey                      controllers.propertyDetails.PeriodDatesLiableController.view(propertyKey: String, addOption: Option[String]  ?= None, mode: Option[String] ?=None)
+GET      /liability/create/dates-liable/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodDatesLiableController.add(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/create/dates-liable/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodDatesLiableController.save(propertyKey: String, periodKey: Int, addOption: Option[String]  ?= None, mode: Option[String] ?= None)
 
-GET      /liability/create/in-relief/choose/add/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodChooseReliefController.add(propertyKey: String, periodKey: Int)
-POST     /liability/create/in-relief/choose/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PeriodChooseReliefController.save(propertyKey: String, periodKey: Int)
-GET      /liability/create/in-relief/dates/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodInReliefDatesController.add(propertyKey: String, periodKey: Int)
-POST     /liability/create/in-relief/dates/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodInReliefDatesController.save(propertyKey: String, periodKey: Int)
+GET      /liability/create/in-relief/choose/add/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodChooseReliefController.add(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/create/in-relief/choose/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PeriodChooseReliefController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/in-relief/dates/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodInReliefDatesController.add(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/create/in-relief/dates/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodInReliefDatesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/periods-in-relief/view/:propertyKey                       controllers.propertyDetails.PeriodsInAndOutReliefController.view(propertyKey: String)
-POST     /liability/create/periods-in-relief/continue/:propertyKey/period/:periodKey controllers.propertyDetails.PeriodsInAndOutReliefController.continue(propertyKey: String, periodKey: Int)
-GET      /liability/create/periods-in-relief/delete/:propertyKey/period/:startDate   controllers.propertyDetails.PeriodsInAndOutReliefController.deletePeriod(propertyKey: String, startDate: java.time.LocalDate)
+GET      /liability/create/periods-in-relief/view/:propertyKey                       controllers.propertyDetails.PeriodsInAndOutReliefController.view(propertyKey: String, mode: Option[String] ?=None)
+POST     /liability/create/periods-in-relief/continue/:propertyKey/period/:periodKey controllers.propertyDetails.PeriodsInAndOutReliefController.continue(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/periods-in-relief/delete/:propertyKey/period/:startDate   controllers.propertyDetails.PeriodsInAndOutReliefController.deletePeriod(propertyKey: String, startDate: java.time.LocalDate, mode: Option[String])
 
 GET      /liability/create/summary/:propertyKey                         controllers.propertyDetails.PropertyDetailsSummaryController.view(propertyKey: String)
 POST     /liability/create/summary/:propertyKey                         controllers.propertyDetails.PropertyDetailsSummaryController.submit(propertyKey: String)

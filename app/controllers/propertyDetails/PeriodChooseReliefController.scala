@@ -40,28 +40,28 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
 
   val controllerId: String = "PeriodChooseReliefController"
 
-  def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+  def add(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        ensureClientContext(Future.successful(Ok(template(id, periodKey, periodChooseReliefForm, serviceInfoContent, getBackLink(id)))))
+        ensureClientContext(Future.successful(Ok(template(id, periodKey,mode, periodChooseReliefForm, serviceInfoContent, getBackLink(id, mode)))))
       }
     }
   }
 
-  def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           periodChooseReliefForm.bindFromRequest().fold(
             formWithError =>
               Future.successful(
-                BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id)))
+                BadRequest(template(id, periodKey, mode, formWithError, serviceInfoContent, getBackLink(id, mode)))
               ),
             chosenRelief => {
               for {
                 _ <- propertyDetailsService.storeChosenRelief(chosenRelief)
               } yield {
-                Redirect(controllers.propertyDetails.routes.PeriodInReliefDatesController.add(id, periodKey))
+                Redirect(controllers.propertyDetails.routes.PeriodInReliefDatesController.add(id, periodKey, mode))
               }
             }
           )
@@ -70,7 +70,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def getBackLink(id: String) = {
-    Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
+  private def getBackLink(id: String, mode: Option[String] = None) = {
+    Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
   }
 }

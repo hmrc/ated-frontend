@@ -62,7 +62,6 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                 Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
             }
           }
-
           propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty
@@ -108,7 +107,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
         val backToViewLink = Some(routes.ConfirmAddressController.view(id, periodKey, mode).url)
         redirectWithBackLink(
           propertyDetailsTitleId,
-          controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id),
+          controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id, mode),
           backToViewLink
         )
       }

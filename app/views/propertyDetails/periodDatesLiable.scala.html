@@ -30,7 +30,7 @@
         govukErrorSummary : GovukErrorSummary,
         formHelper: FormWithCSRF)
 
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, addOption: Option[String], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -60,7 +60,7 @@
       </h1>
     </header>
 
-    @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
+    @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, addOption, mode)) {
 
         @dateInput(
             field = "startDate",

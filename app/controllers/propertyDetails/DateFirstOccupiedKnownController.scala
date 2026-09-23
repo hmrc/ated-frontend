@@ -19,13 +19,15 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-import javax.inject.{Singleton, Inject}
+
+import javax.inject.{Inject, Singleton}
 import models.{DateFirstOccupied, DateFirstOccupiedKnown}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildFirstOccupiedDate}
+import utils.AtedConstants.{NewBuildFirstOccupiedDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import scala.concurrent.ExecutionContext
 
@@ -44,7 +46,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateFirstOccupiedKnownControllerId
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -55,10 +57,14 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                 dataCacheService.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).map { firstOccupied =>
                   val firstOccupiedDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isBuildDateKnown)
                   val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(firstOccupiedDateKnown))
-
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
                   Ok(view(id,
                     dateFirstOccupiedKnownForm.fill(displayData),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    modeView,
                     serviceInfoContent,
                     backLink)
                   )
@@ -82,15 +88,15 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                 case DateFirstOccupiedKnown(Some(true)) =>
                   redirectWithBackLink(
                     DateFirstOccupiedControllerId,
-                    controllers.propertyDetails.routes.DateFirstOccupiedController.view(id),
-                    Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
+                    controllers.propertyDetails.routes.DateFirstOccupiedController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id,mode).url)
                   )
                 case _ =>
                   dataCacheService.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, DateFirstOccupied(None)).flatMap{_ =>
                     redirectWithBackLink(
                       DateCouncilRegisteredKnownControllerId,
-                      controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),
-                      Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
+                      controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url)
                     )
                   }
               }

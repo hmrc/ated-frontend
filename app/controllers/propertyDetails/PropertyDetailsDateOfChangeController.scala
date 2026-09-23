@@ -26,6 +26,7 @@ import models.DateOfChange
 import play.api.i18n.{Messages, MessagesImpl}
 import utils.AtedConstants.{FortyThousandValueDateOfChange, SelectedPreviousReturn}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -45,7 +46,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsDateOfChangeController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String,  mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -55,10 +56,15 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
                     val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
+                    val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    } else {
+                      mode
+                    }
                     Ok(template(id,
                       propertyDetails.periodKey,
                       propertyDetailsDateOfChangeForm.fill(DateOfChange(dateOfChange)),
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      modeView,
                       serviceInfoContent,
                       backlink))
                   }
@@ -87,8 +93,8 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
               dataCacheService.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
               redirectWithBackLink(
                 newValuationController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),
-                Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id).url)
+                controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode),
+                Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode).url)
               )
             }
           )

@@ -111,7 +111,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      val result = testPeriodDatesLiableController.add(propertyDetails.id, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodDatesLiableController.add(propertyDetails.id, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -120,7 +120,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPeriodDatesLiableController.save("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodDatesLiableController.save("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -135,7 +135,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
         .thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPeriodDatesLiableController.save("1", periodKey)
+      val result = testPeriodDatesLiableController.save("1", periodKey, None, None)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withMethod("POST").withFormUrlEncodedBody(formBody: _*), userId))
       test(result)
     }
@@ -152,7 +152,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPeriodDatesLiableController.save("1", periodKey, Some("add"))
+      val result = testPeriodDatesLiableController.save("1", periodKey, Some("add"), None)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withMethod("POST").withFormUrlEncodedBody(formBody: _*), userId))
       test(result)
     }

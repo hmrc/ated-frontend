@@ -27,6 +27,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsNewBuild
 
 class PropertyDetailsNewBuildSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
@@ -103,6 +104,27 @@ class PropertyDetailsNewBuildSpec extends PlaySpec with GuiceOneAppPerSuite with
 
       "render an error message at the input field" in {
         assert(doc.getElementById("isNewBuild-error").text() == "Error: Select yes if the property is a new build")
+      }
+    }
+    "when coming from summary page" should {
+
+      val view = injectedView(
+        "key",
+        2024,
+        propertyDetailsNewBuildForm,
+        backLink = Some("/ated/liability/create/summary"),
+        mode = Some(AtedUtils.EDIT_FROM_SUMMARY)
+      )
+
+      val doc = Jsoup.parse(view.toString)
+
+      "have the correct section heading for change return" in {
+        assert(doc.select("h2.govuk-caption-xl").first().text() == "This section is: Change return")
+      }
+
+      "render the summary page back link" in {
+        assert(doc.getElementsByClass("govuk-back-link").first().text() == "Back")
+        assert(doc.getElementsByClass("govuk-back-link").first().attr("href") == "/ated/liability/create/summary")
       }
     }
   }

@@ -86,7 +86,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPeriodsInAndOutReliefController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -102,7 +102,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testPeriodsInAndOutReliefController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -116,7 +116,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
       when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
-      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01")).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01"), None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -125,7 +125,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPeriodsInAndOutReliefController.continue("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.continue("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -136,7 +136,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPeriodsInAndOutReliefController.continue("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.continue("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
 
       test(result)
     }

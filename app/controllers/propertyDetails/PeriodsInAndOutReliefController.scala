@@ -19,12 +19,14 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.{AtedUtils, PeriodUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,7 +46,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodsInAndOutReliefController"
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -52,10 +54,15 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
                   Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
                     PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    modeView,
                     serviceInfoContent,
                     backLink)))
                 }
@@ -66,7 +73,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-  def deletePeriod(id: String, startDate: LocalDate) : Action[AnyContent] = Action.async { implicit request =>
+  def deletePeriod(id: String, startDate: LocalDate, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
@@ -74,10 +81,15 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           serviceInfoContent <- serviceInfoService.getPartial
           result <-
           currentBackLink.flatMap(backLink =>
+            val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+              AtedUtils.getEditSubmittedMode(propertyDetails)
+            } else {
+              mode
+            }
             Future.successful(Ok(template(id, propertyDetails.periodKey,
               periodsInAndOutReliefForm,
               PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
-              AtedUtils.getEditSubmittedMode(propertyDetails),
+              modeView,
               serviceInfoContent,
               backLink))
             ))
@@ -88,12 +100,12 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-  def continue(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def continue(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext(redirectWithBackLink(
         propertyDetailsTaxAvoidanceController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id),
-        Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
+        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+        Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
       ))
     }
   }
