@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -38,6 +37,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import utils.AtedConstants
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.propertyDetails.confirmAddress
 import views.html.{BtaNavigationLinks, global_error}
 
@@ -180,13 +180,13 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = testConfirmAddressController.submit("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.submit("1", periodKey, mode).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -329,10 +329,19 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         "redirect to declaration page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
-          submitWithAuthorisedUser {
+          submitWithAuthorisedUser() {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result) must be(Some("/ated/liability/create/title/view/1"))
+          }
+        }
+        "redirect to summary page when in edit from summary mode" in new Setup {
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          submitWithAuthorisedUser(Some(EDIT_FROM_SUMMARY)) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
       }

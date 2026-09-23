@@ -20,7 +20,8 @@ import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models._
+import models.*
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -36,6 +37,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.PeriodUtils.calculatePeakStartYear
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
@@ -142,7 +144,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded],  mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
@@ -157,7 +159,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsOwnedBeforeController
-        .save("1", periodKey, None)
+        .save("1", periodKey, mode)
         .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
@@ -300,6 +302,24 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
             redirectLocation(result).get must include("/liability/create/valued/view")
           }
         }
+
+        "redirect to the Property Details Summary page when editing from summary" in new Setup {
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isOwnedBeforePolicyYear" -> "true",
+              "ownedBeforePolicyYearValue" -> "1500000"
+            )
+
+          submitWithAuthorisedUser(fakeRequest, Some(EDIT_FROM_SUMMARY)) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
+          }
+        }
+
 
         "owned before is false" must {
           "redirect to the New Build page" in new Setup {

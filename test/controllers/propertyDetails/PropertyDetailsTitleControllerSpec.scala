@@ -316,6 +316,26 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
             redirectLocation(result).get must include("/ated/liability/1/change/value")
           }
         }
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val title: PropertyDetailsTitle = propDetails.title.value
+
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          submitWithAuthorisedUser(
+            "1",
+            FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "titleNumber" -> title.titleNumber
+              ),
+            Some(EDIT_FROM_SUMMARY)
+          ) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
+          }
+        }
       }
     }
   }
