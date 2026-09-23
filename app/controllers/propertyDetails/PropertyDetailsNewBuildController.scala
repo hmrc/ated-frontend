@@ -95,13 +95,13 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                     case Some(true) =>
                       redirectWithBackLink(
                         DateFirstOccupiedKnownControllerId,
-                        controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
+                        controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode).url)
                       )
                     case Some(false) =>
                       redirectWithBackLink(
                         propertyDetailsWhenAcquiredController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id),
+                        controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id,mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode).url)
                       )
                     case _ => Future.successful(Ok)
