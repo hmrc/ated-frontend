@@ -57,55 +57,49 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { answer =>
                 currentBackLink.flatMap { backLink =>
-                  dataCacheService.fetchAndGetData[String]("EditSummaryEntryController").flatMap { entryController =>
 
-                    val backLinkView =
-                      if (
-                        mode.contains(EDIT_FROM_SUMMARY) &&
-                          entryController.contains(controllerId)
-                      ) {
-                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                      } else {
-                        backLink
-                      }
+                  val backLinkView =
+                    if (mode.contains(EDIT_FROM_SUMMARY))
+                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                    else
+                      backLink
 
-                    val filledForm = isFullTaxPeriodForm.fill(
-                      PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
-                    )
+                  val filledForm = isFullTaxPeriodForm.fill(
+                    PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
+                  )
 
-                    answer match {
-                      case Some(true) =>
-                        Future.successful(
-                          Ok(
-                            template(
-                              id,
-                              propertyDetails.periodKey,
-                              isFullTaxPeriodForm,
-                              PeriodUtils.periodStartDate(propertyDetails.periodKey),
-                              PeriodUtils.periodEndDate(propertyDetails.periodKey),
-                              mode,
-                              serviceInfoContent,
-                              backLinkView
-                            )
+                  answer match {
+                    case Some(true) =>
+                      Future.successful(
+                        Ok(
+                          template(
+                            id,
+                            propertyDetails.periodKey,
+                            isFullTaxPeriodForm,
+                            PeriodUtils.periodStartDate(propertyDetails.periodKey),
+                            PeriodUtils.periodEndDate(propertyDetails.periodKey),
+                            mode,
+                            serviceInfoContent,
+                            backLinkView
                           )
                         )
+                      )
 
-                      case _ =>
-                        Future.successful(
-                          Ok(
-                            template(
-                              id,
-                              propertyDetails.periodKey,
-                              filledForm,
-                              PeriodUtils.periodStartDate(propertyDetails.periodKey),
-                              PeriodUtils.periodEndDate(propertyDetails.periodKey),
-                              mode,
-                              serviceInfoContent,
-                              backLinkView
-                            )
+                    case _ =>
+                      Future.successful(
+                        Ok(
+                          template(
+                            id,
+                            propertyDetails.periodKey,
+                            filledForm,
+                            PeriodUtils.periodStartDate(propertyDetails.periodKey),
+                            PeriodUtils.periodEndDate(propertyDetails.periodKey),
+                            mode,
+                            serviceInfoContent,
+                            backLinkView
                           )
                         )
-                    }
+                      )
                   }
                 }
               }
@@ -122,32 +116,28 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
 
-              dataCacheService
-                .saveFormData[String](
-                  "EditSummaryEntryController",
-                  controllerId
+              val filledForm = isFullTaxPeriodForm.fill(
+                PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
+              )
+
+              val mode =
+                AtedUtils.getEditSubmittedMode(propertyDetails)
+                  .getOrElse(EDIT_FROM_SUMMARY)
+
+              Future.successful(
+                Ok(
+                  template(
+                    id,
+                    propertyDetails.periodKey,
+                    filledForm,
+                    PeriodUtils.periodStartDate(propertyDetails.periodKey),
+                    PeriodUtils.periodEndDate(propertyDetails.periodKey),
+                    Some(mode),
+                    serviceInfoContent,
+                    AtedUtils.getSummaryBackLink(id, None)
+                  )
                 )
-                .map { _ =>
-
-                  val filledForm = isFullTaxPeriodForm.fill(
-                    PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
-                  )
-
-                  val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
-
-                  Ok(
-                    template(
-                      id,
-                      propertyDetails.periodKey,
-                      filledForm,
-                      PeriodUtils.periodStartDate(propertyDetails.periodKey),
-                      PeriodUtils.periodEndDate(propertyDetails.periodKey),
-                      Some(mode),
-                      serviceInfoContent,
-                      AtedUtils.getSummaryBackLink(id, None)
-                    )
-                  )
-                }
+              )
           }
         }
       }

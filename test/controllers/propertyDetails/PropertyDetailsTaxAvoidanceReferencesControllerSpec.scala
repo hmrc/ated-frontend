@@ -114,12 +114,6 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      when(
-        mockDataCacheService.saveFormData[String](
-          ArgumentMatchers.any(),
-          ArgumentMatchers.any()
-        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-      ).thenReturn(Future.successful(testPropertyDetailsTaxAvoidanceController.controllerId))
       val result = testPropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -171,18 +165,6 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
 
       "Authorised users" must {
 
-        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-
-          getDataWithAuthorisedUser(propertyDetails) { result =>
-            status(result) must be(OK)
-
-            verify(mockDataCacheService).fetchAndGetData[String](
-              ArgumentMatchers.eq("EditSummaryEntryController")
-            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-          }
-        }
-
         "show the chargeable property details value view with no data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
 
@@ -203,18 +185,6 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
     "editFromSummary" must {
 
       "Authorised users" must {
-
-        "save the entry controller when edit from summary is called" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-          editFromSummary(propertyDetails) { result =>
-            status(result) must be(OK)
-
-            verify(mockDataCacheService).saveFormData[String](
-              ArgumentMatchers.eq("EditSummaryEntryController"),
-              ArgumentMatchers.eq(testPropertyDetailsTaxAvoidanceController.controllerId)
-            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-          }
-        }
 
         "show the chargeable property details value view with no data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)

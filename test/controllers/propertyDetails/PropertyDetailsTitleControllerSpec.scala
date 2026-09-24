@@ -144,13 +144,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
 
-      when(
-        mockDataCacheService.saveFormData[String](
-          ArgumentMatchers.any(),
-          ArgumentMatchers.any()
-        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-      ).thenReturn(Future.successful(testPropertyDetailsTitleController.controllerId))
-
       val result =
         testPropertyDetailsTitleController
           .editFromSummary(id)
@@ -183,19 +176,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
       "Authorised users" must {
 
-        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          val propertyDetails: PropertyDetails =
-            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-
-          getDataWithAuthorisedUser("1", propertyDetails) { result =>
-            status(result) must be(OK)
-
-            verify(mockDataCacheService).fetchAndGetData[String](
-              ArgumentMatchers.eq("EditSummaryEntryController")
-            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-          }
-        }
-
         "show the chargeable property details view if we id and data even when there is no propertyDetailsTitle" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(title = None)
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
@@ -208,16 +188,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     "edit from summary" must {
-      "save the entry controller when edit from summary is called" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
-          status(result) must be(OK)
-
-          verify(mockDataCacheService).saveFormData[String](
-            ArgumentMatchers.eq("EditSummaryEntryController"),
-            ArgumentMatchers.eq(testPropertyDetailsTitleController.controllerId)
-          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-        }
-      }
       "show the details of a submitted return with a back link" in new Setup {
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
           status(result) must be(OK)

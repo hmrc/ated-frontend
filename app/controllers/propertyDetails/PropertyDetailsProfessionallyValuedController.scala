@@ -54,38 +54,33 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheService.fetchAndGetData[String]("EditSummaryEntryController").map { entryController =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
 
-                    val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  val modeView =
+                    if (!mode.contains(EDIT_FROM_SUMMARY))
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                    } else {
+                    else
                       mode
-                    }
 
-                    val backLinkView =
-                      if (
-                        mode.contains(EDIT_FROM_SUMMARY) &&
-                          entryController.contains(controllerId)
-                      ) {
-                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                      } else {
-                        backLink
-                      }
+                  val backLinkView =
+                    if (mode.contains(EDIT_FROM_SUMMARY))
+                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                    else
+                      backLink
 
-                    val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+                  val displayData =
+                    PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
 
-                    Ok(
-                      template(
-                        id,
-                        propertyDetails.periodKey,
-                        propertyDetailsProfessionallyValuedForm.fill(displayData),
-                        modeView,
-                        serviceInfoContent,
-                        backLinkView
-                      )
+                  Ok(
+                    template(
+                      id,
+                      propertyDetails.periodKey,
+                      propertyDetailsProfessionallyValuedForm.fill(displayData),
+                      modeView,
+                      serviceInfoContent,
+                      backLinkView
                     )
-                  }
+                  )
                 }
               }
           }
@@ -94,36 +89,32 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
     }
   }
 
-  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
 
-              dataCacheService
-                .saveFormData[String](
-                  "EditSummaryEntryController",
-                  controllerId
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                val displayData =
+                  PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+
+                val mode =
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    .getOrElse(EDIT_FROM_SUMMARY)
+
+                Ok(
+                  template(
+                    id,
+                    propertyDetails.periodKey,
+                    propertyDetailsProfessionallyValuedForm.fill(displayData),
+                    Some(mode),
+                    serviceInfoContent,
+                    AtedUtils.getSummaryBackLink(id, None)
+                  )
                 )
-                .flatMap { _ =>
-
-                  dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                    val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-                    val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
-
-                    Ok(
-                      template(
-                        id,
-                        propertyDetails.periodKey,
-                        propertyDetailsProfessionallyValuedForm.fill(displayData),
-                        Some(mode),
-                        serviceInfoContent,
-                        AtedUtils.getSummaryBackLink(id, None)
-                      )
-                    )
-                  }
-                }
+              }
           }
         }
       }

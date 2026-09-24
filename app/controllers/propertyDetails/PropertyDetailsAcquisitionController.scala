@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 
@@ -42,7 +43,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      template: views.html.propertyDetails.propertyDetailsAcquisition)
                                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsAcquisitionController"
@@ -118,11 +119,19 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                       backLink
                     )
                   } else {
-                    redirectWithBackLink(
-                      isFullTaxPeriodController.controllerId,
-                      controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
-                      backLink
-                    )
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      redirectWithBackLink(
+                        propertyDetailsSummaryControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        backLink
+                      )
+                    } else {
+                      redirectWithBackLink(
+                        isFullTaxPeriodController.controllerId,
+                        controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
+                        backLink
+                      )
+                    }
                   }
               } yield result
             }

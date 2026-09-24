@@ -56,27 +56,21 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheService.fetchAndGetData[String]("EditSummaryEntryController").map { entryController =>
+                  val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
 
-                    val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
+                  val modeView =
+                    if (!mode.contains(EDIT_FROM_SUMMARY))
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    else
+                      mode
 
-                    val modeView =
-                      if (!mode.contains(EDIT_FROM_SUMMARY))
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                      else
-                        mode
+                  val backLinkView =
+                    if (mode.contains(EDIT_FROM_SUMMARY))
+                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                    else
+                      backLink
 
-                    val isSummaryEntryPage =
-                      mode.contains(EDIT_FROM_SUMMARY) &&
-                        entryController.contains(controllerId)
-
-                    val backLinkView =
-                      if (isSummaryEntryPage) {
-                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                      } else {
-                        backLink
-                      }
-
+                  Future.successful(
                     Ok(
                       template(
                         id,
@@ -87,7 +81,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                         backLinkView
                       )
                     )
-                  }
+                  )
                 }
               }
           }
@@ -101,14 +95,8 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              for {
-                _ <- dataCacheService.saveFormData(
-                  "EditSummaryEntryController",
-                  controllerId
-                )
-              } yield {
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
-                Ok(
+                  Future.successful( Ok(
                   template(
                     id,
                     propertyDetails.periodKey,
@@ -118,9 +106,8 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                     Some(mode),
                     serviceInfoContent,
                     AtedUtils.getSummaryBackLink(id, None)
-                  )
+                  ))
                 )
-              }
             }
         }
       }
