@@ -27,6 +27,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
 class PropertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
@@ -99,6 +100,32 @@ class PropertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSui
 
       "render an error message at the input field" in {
         assert(doc.getElementById("isPropertyRevalued-error").text() == "Error: Select yes if the property has been revalued since the change of £40,000 or more")
+      }
+    }
+
+    "when editing from summary" should {
+
+      val view = injectedView(
+        "key",
+        2024,
+        Some("/ated/liability/create/summary"),
+        Some(AtedUtils.EDIT_FROM_SUMMARY),
+        propertyDetailsHasBeenRevaluedForm
+      )
+
+      val doc = Jsoup.parse(view.toString)
+
+      "have the correct section heading" in {
+        assert(doc.select("h2.govuk-caption-l").first().text == "This section is: Change return")
+        assert(doc.select("h2.govuk-caption-l > span").hasClass("govuk-visually-hidden"))
+      }
+
+      "correctly render a backLink to summary page" in {
+        assert(doc.getElementsByClass("govuk-back-link").first().text == "Back")
+        assert(
+          doc.getElementsByClass("govuk-back-link").first().attr("href") ==
+            "/ated/liability/create/summary"
+        )
       }
     }
   }

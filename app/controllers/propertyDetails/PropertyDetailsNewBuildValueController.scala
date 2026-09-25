@@ -17,18 +17,22 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.PropertyDetailsNewBuildValue
+
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import utils.AtedUtils.getEarliestDate
+import utils.AtedUtils.{EDIT_FROM_SUMMARY, getEarliestDate}
 import views.html
+
 import scala.concurrent.ExecutionContext
 
 
@@ -42,12 +46,12 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                                                        template: html.propertyDetails.propertyDetailsNewBuildValue)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = NewBuildValueControllerId
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String,  mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -60,11 +64,16 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                 val localRegDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
 
                 val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
+                val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                } else {
+                  mode
+                }
 
                 Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsNewBuildValueForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  modeView,
                   serviceInfoContent,
                   backLink,
                   dynamicDate)
@@ -92,11 +101,19 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuildValue(id, propertyDetails)
                   result <-
-                    redirectWithBackLink(
-                      propertyDetailsProfessionallyValuedController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id).url)
-                    )
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      redirectWithBackLink(
+                        propertyDetailsSummaryControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode).url)
+                      )
+                    }else {
+                      redirectWithBackLink(
+                        propertyDetailsProfessionallyValuedController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode).url)
+                      )
+                    }
                 } yield result
               }
             )

@@ -17,17 +17,22 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
+
 import javax.inject.Inject
 import models.{PropertyDetailsValueOnAcquisition, PropertyDetailsWhenAcquiredDates}
+
 import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -41,12 +46,12 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
                                                        template: html.propertyDetails.propertyDetailsValueAcquired)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsValueAcquiredController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -55,10 +60,15 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
                 val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(LocalDate.now())
+                val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                } else {
+                  mode
+                }
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsValueAcquiredForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  modeView,
                   serviceInfoContent,
                   backLink,
                   dynamicDate)
@@ -85,11 +95,20 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsValueAcquired(id, propertyDetails)
                   result <-
-                    redirectWithBackLink(
-                      propertyDetailsProfessionallyValuedController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id).url)
-                    )
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      redirectWithBackLink(
+                        propertyDetailsSummaryControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode).url)
+                      )
+                    } else {
+                      redirectWithBackLink(
+                        propertyDetailsProfessionallyValuedController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode).url)
+                      )
+                    }
+
                 } yield result
               }
             )

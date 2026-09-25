@@ -43,7 +43,7 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
   "PropertyDetailsNewValuationController.view" must {
     "redirect to the unauthorised page" when {
       "user fails authentication" in new Setup(enrolmentSet = invalidEnrolmentSet) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = testController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
       }
@@ -52,7 +52,7 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
     "render the new valuation page" when {
       "user is authenticated" in new Setup {
         setupPropertyDetailServiceMockExpectations()
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = testController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
       }
     }
@@ -71,7 +71,7 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
   "PropertyDetailsHasBeenRevaluedController.save" must {
     "redirect to the unauthorised page" when {
       "user fails authentication" in new Setup(enrolmentSet = invalidEnrolmentSet) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = testController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
       }

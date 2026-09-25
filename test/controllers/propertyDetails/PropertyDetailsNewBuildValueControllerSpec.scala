@@ -17,11 +17,11 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import models.*
+
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import play.twirl.api.Html
@@ -38,6 +38,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -87,7 +88,7 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsNewBuildValueController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsNewBuildValueController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -107,7 +108,7 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsNewBuildValueController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsNewBuildValueController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -121,7 +122,7 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
       test(result)
     }
 
-    def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(formBody: List[(String, String)],  mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(
         mockDataCacheService
@@ -138,7 +139,7 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsNewBuildValueController
-        .save("1", periodKey, None, testDate)
+        .save("1", periodKey, mode, testDate)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withMethod("POST").withFormUrlEncodedBody(formBody: _*), userId))
 
       test(result)
@@ -201,6 +202,15 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
       submitWithAuthorisedUser(formBody) { result =>
         status(result) must be(SEE_OTHER)
         redirectLocation(result).get must include("/liability/create/valued/view")
+      }
+    }
+
+    "redirect to the Property Details Summary page when editing from summary" in new Setup {
+      val formBody = List(("newBuildValue", "100000"))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      submitWithAuthorisedUser(formBody, Some(EDIT_FROM_SUMMARY)) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result).get must include("/ated/liability/create/summary/1")
       }
     }
   }

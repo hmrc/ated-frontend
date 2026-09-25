@@ -77,7 +77,7 @@ class EarliestStartDateInUseControllerSpec extends PlaySpec with GuiceOneServerP
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = noStartDateController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = noStartDateController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -95,7 +95,7 @@ class EarliestStartDateInUseControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = noStartDateController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = noStartDateController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
   }

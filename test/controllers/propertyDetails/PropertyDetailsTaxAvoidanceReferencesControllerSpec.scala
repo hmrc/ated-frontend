@@ -37,6 +37,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
 
@@ -85,7 +86,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsTaxAvoidanceController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsTaxAvoidanceController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -101,7 +102,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsTaxAvoidanceController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsTaxAvoidanceController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -126,7 +127,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -135,7 +136,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsTaxAvoidanceController.save("1", periodKey, None)
+      val result = testPropertyDetailsTaxAvoidanceController.save("1", periodKey, mode)
         .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
       test(result)
     }
@@ -239,6 +240,21 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
           ) { result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/liability/create/supporting-info/view")
+          }
+        }
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "taxAvoidanceScheme" -> "12345678",
+              "taxAvoidancePromoterReference" -> "12345678"),
+            Some(EDIT_FROM_SUMMARY)
+          ) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
       }

@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
@@ -26,6 +27,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,12 +41,12 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
                                                                 val backLinkCacheService: BackLinkCacheService,
                                                                 template: views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences)
                                                      (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsTaxAvoidanceReferencesController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -52,17 +54,30 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val displayData = PropertyDetailsTaxAvoidanceReferences(
                 propertyDetails.period.flatMap(_.taxAvoidanceScheme),
-                propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))
-              currentBackLink.flatMap(backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                  Ok(template(id,
-                    propertyDetails.periodKey,
-                    propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                    serviceInfoContent,
-                    backLink))
-                }
+                propertyDetails.period.flatMap(_.taxAvoidancePromoterReference)
               )
+
+              currentBackLink.flatMap { backLink =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+
+                  val modeView =
+                    if (!mode.contains(EDIT_FROM_SUMMARY))
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    else
+                      mode
+
+                  Ok(
+                    template(
+                      id,
+                      propertyDetails.periodKey,
+                      propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
+                      modeView,
+                      serviceInfoContent,
+                      backLink
+                    )
+                  )
+                }
+              }
           }
         }
       }
@@ -75,26 +90,34 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsTaxAvoidanceReferences(
                   propertyDetails.period.flatMap(_.taxAvoidanceScheme),
-                  propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))
+                  propertyDetails.period.flatMap(_.taxAvoidancePromoterReference)
+                )
 
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                Future.successful(Ok(template(id,
-                  propertyDetails.periodKey,
-                  propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
-                  mode,
-                  serviceInfoContent,
-                  AtedUtils.getSummaryBackLink(id, None))
-                ))
+                  .getOrElse(EDIT_FROM_SUMMARY)
+
+                Future.successful(
+                  Ok(
+                    template(
+                      id,
+                      propertyDetails.periodKey,
+                      propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
+                      Some(mode),
+                      serviceInfoContent,
+                      AtedUtils.getSummaryBackLink(id, None)
+                    )
+                  )
+                )
               }
           }
         }
       }
     }
   }
-
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -106,11 +129,19 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences(id, propertyDetails)
                 result <-
-                  redirectWithBackLink(
-                    propertyDetailsSupportingInfoController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id).url)
-                  )
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    redirectWithBackLink(
+                      propertyDetailsSummaryControllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      propertyDetailsSupportingInfoController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
+                    )
+                  }
               } yield result
             }
           )

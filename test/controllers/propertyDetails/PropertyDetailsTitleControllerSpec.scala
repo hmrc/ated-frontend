@@ -21,7 +21,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityHasValueChangedController
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -38,6 +38,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -136,12 +137,18 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId   = s"user-${UUID.randomUUID}"
+      val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsTitleController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
+
+      val result =
+        testPropertyDetailsTitleController
+          .editFromSummary(id)
+          .apply(SessionBuilder.buildRequestWithSession(userId))
+
       test(result)
     }
 
@@ -168,16 +175,6 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       }
 
       "Authorised users" must {
-
-        "show the chargeable property details view if we id and data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          getDataWithAuthorisedUser("1", propertyDetails) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
-            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-          }
-        }
 
         "show the chargeable property details view if we id and data even when there is no propertyDetailsTitle" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(title = None)
@@ -287,6 +284,26 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/1/change/value")
+          }
+        }
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val title: PropertyDetailsTitle = propDetails.title.value
+
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          submitWithAuthorisedUser(
+            "1",
+            FakeRequest()
+              .withMethod("POST")
+              .withFormUrlEncodedBody(
+                "titleNumber" -> title.titleNumber
+              ),
+            Some(EDIT_FROM_SUMMARY)
+          ) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
       }

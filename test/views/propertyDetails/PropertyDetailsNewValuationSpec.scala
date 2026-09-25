@@ -43,6 +43,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsNewValuation
 
 class PropertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with MockAuthUtil with GuiceOneAppPerSuite {
@@ -72,8 +73,8 @@ class PropertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
       }
 
       "have the correct section heading" in {
-        assert(doc.select("h2.govuk-caption-l").first().text == "This section is Create return")
-        assert(doc.select("h2.govuk-caption-l > span").hasClass("govuk-visually-hidden"))
+        assert(doc.select("h2.govuk-caption-xl").text() == "This section is: Create return")
+        assert(doc.select("h2.govuk-caption-xl > span").hasClass("govuk-visually-hidden"))
       }
       "have a currency input box" in {
         assert(doc.select(".govuk-input__prefix").text() == "£")
@@ -179,6 +180,31 @@ class PropertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
         assert(doc.getElementById("revaluedValue-error").text() == "Error: The property value must be less than 14 characters")
       }
 
+    }
+    "when editing from summary" should {
+
+      val view = injectedView(
+        "propertyId",
+        2024,
+        Some(AtedUtils.EDIT_FROM_SUMMARY),
+        propertyDetailsNewValuationForm,
+        Some("/ated/liability/create/summary")
+      )
+
+      val doc = Jsoup.parse(view.toString())
+
+      "have the correct section heading" in {
+        assert(doc.select("h2.govuk-caption-xl").text() == "This section is: Change return")
+        assert(doc.select("h2.govuk-caption-xl > span").hasClass("govuk-visually-hidden"))
+      }
+
+      "render a backLink to the summary page" in {
+        assert(doc.getElementsByClass("govuk-back-link").first().text() == "Back")
+        assert(
+          doc.getElementsByClass("govuk-back-link").first().attr("href") ==
+            "/ated/liability/create/summary"
+        )
+      }
     }
   }
 

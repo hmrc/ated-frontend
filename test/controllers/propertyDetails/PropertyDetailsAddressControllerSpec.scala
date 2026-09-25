@@ -135,6 +135,14 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.fetchAndGetData[String](
+          ArgumentMatchers.eq("EditSummaryEntryController")
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(
+        Future.successful(None)
+      )
+
       val result = testPropertyDetailsAddressController.view(
         id, fromConfirmAddressPage, periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -162,6 +170,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+
       val result = testPropertyDetailsAddressController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -321,6 +330,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
     "edit from summary" must {
+
       "show the details of a submitted return with a back link" in new Setup {
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
           result =>

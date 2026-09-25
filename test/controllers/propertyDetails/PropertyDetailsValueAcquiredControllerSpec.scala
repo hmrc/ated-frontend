@@ -20,7 +20,7 @@ import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models._
+import models.*
 
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers
@@ -39,6 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -89,7 +90,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       setInvalidAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Html("")))
-      val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsValueAcquiredController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -115,7 +116,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
 
-      val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsValueAcquiredController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -129,7 +130,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       test(result)
     }
 
-    def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(formBody: List[(String, String)], mode : Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(
         mockDataCacheService
@@ -144,7 +145,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsValueAcquiredController
-        .save("1", periodKey, None, testDate)
+        .save("1", periodKey, mode, testDate)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withMethod("POST").withFormUrlEncodedBody(formBody: _*), userId))
 
       test(result)
@@ -206,6 +207,15 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       submitWithAuthorisedUser(formBody) { result =>
         status(result) must be(SEE_OTHER)
         redirectLocation(result).get must include("/liability/create/valued/view")
+      }
+    }
+
+    "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+      val formBody = List(("acquiredValue", "1000000"))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      submitWithAuthorisedUser(formBody, Some(EDIT_FROM_SUMMARY)) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result).get must include("/ated/liability/create/summary/1")
       }
     }
   }
