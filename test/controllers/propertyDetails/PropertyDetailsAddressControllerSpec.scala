@@ -119,13 +119,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      when(
-        mockDataCacheService.fetchAndGetData[String](
-          ArgumentMatchers.eq("EditSummaryEntryController")
-        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-      ).thenReturn(
-        Future.successful(None)
-      )
       val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -177,12 +170,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       setAuthMocks(authMock)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      when(
-        mockDataCacheService.saveFormData[String](
-          ArgumentMatchers.any(),
-          ArgumentMatchers.any()
-        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-      ).thenReturn(Future.successful(testPropertyDetailsAddressController.controllerId))
 
       val result = testPropertyDetailsAddressController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -249,21 +236,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       }
 
       "Authorised users" must {
-
-        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          viewDataWithAuthorisedUser(
-            "1",
-            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")),
-            fromConfirmAddressPage = false
-          ) {
-            result =>
-              status(result) must be(OK)
-
-              verify(mockDataCacheService).fetchAndGetData[String](
-                ArgumentMatchers.eq("EditSummaryEntryController")
-              )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-          }
-        }
 
         "show the chargeable property details view if we have no id" in new Setup {
           createWithAuthorisedUser {
@@ -359,17 +331,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
     "edit from summary" must {
 
-      "save the entry controller when edit from summary is called" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
-          result =>
-            status(result) must be(OK)
-
-            verify(mockDataCacheService).saveFormData[String](
-              ArgumentMatchers.eq("EditSummaryEntryController"),
-              ArgumentMatchers.eq(testPropertyDetailsAddressController.controllerId)
-            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
-        }
-      }
       "show the details of a submitted return with a back link" in new Setup {
         editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
           result =>
