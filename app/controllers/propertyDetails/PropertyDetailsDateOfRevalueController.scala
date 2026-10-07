@@ -107,19 +107,19 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
                   result <-
-                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                  /*if (mode.contains(EDIT_FROM_SUMMARY)) {
                     redirectWithBackLink(
                       propertyDetailsSummaryControllerId,
                       controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
                       Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
                     )
-                  } else {
+                  } else {*/
                        redirectWithBackLink(
                          isFullTaxPeriodController.controllerId,
                          controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
                          Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
                        )
-                     }
+                   //  }
                 } yield result
               }
             }

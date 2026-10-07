@@ -95,19 +95,19 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsValueAcquired(id, propertyDetails)
                   result <-
-                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-                      redirectWithBackLink(
-                        propertyDetailsSummaryControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                        Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode).url)
-                      )
-                    } else {
+//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+//                      redirectWithBackLink(
+//                        propertyDetailsSummaryControllerId,
+//                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+//                        Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode).url)
+//                      )
+//                    } else {
                       redirectWithBackLink(
                         propertyDetailsProfessionallyValuedController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id, mode).url)
                       )
-                    }
+                  //  }
 
                 } yield result
               }
