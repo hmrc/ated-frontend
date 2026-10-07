@@ -142,19 +142,10 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
                   )
                 case _ =>
                   propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
-
-                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-                      redirectWithBackLink(
-                        propertyDetailsSummaryControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                        Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode).url)
-                      )
-                    } else {
                       redirectWithBackLink(
                         propertyDetailsSupportingInfoController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode).url))
-                    }
                   )
               }
             }
