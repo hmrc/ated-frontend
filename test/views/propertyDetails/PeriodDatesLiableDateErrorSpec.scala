@@ -42,8 +42,8 @@ class PeriodDatesLiableDateErrorSpec extends AtedViewSpec with MockAuthUtil {
   override def view: Html = viewWith(periodDatesLiableForm)
 
   def viewWith(form: Form[PropertyDetailsDatesLiable]): Html =
-    injectedViewInstance("anything", periodKey, form, "ated.property-details-period.datesLiable.title",
-      None, HtmlFormat.empty, Some("localhost"))
+    injectedViewInstance("anything", periodKey, form, "ated.property-details-period.datesLiable.title", None, None, HtmlFormat.empty, Some("localhost"))
+
 
   /** A start date with a day only, and a complete end date. */
   val startDateMissingMonthAndYear: Form[PropertyDetailsDatesLiable] =

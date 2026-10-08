@@ -21,6 +21,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
 import models.{DateCouncilRegistered, DateFirstOccupiedKnown}
+
 import java.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -28,6 +29,7 @@ import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -51,7 +53,7 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
 
   val dateFields = Seq(("dateCouncilRegistered", Messages("ated.property-details.council-registered-date.messageKey")))
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -59,10 +61,15 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val dcr: Option[LocalDate] = propertyDetails.value.flatMap(_.localAuthRegDate)
+                val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                } else {
+                  mode
+                }
                 Ok(template(id,
                   propertyDetails.periodKey,
                   dateCouncilRegisteredForm.fill(DateCouncilRegistered(dcr)),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  modeView,
                   serviceInfoContent,
                   backLink)
                 )
@@ -89,14 +96,14 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
                         case Some(DateFirstOccupiedKnown(Some(true))) =>
                           redirectWithBackLink(
                             EarliestStartDateInUseControllerId,
-                            controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id),
-                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                            controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id, mode),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id, mode).url)
                           )
                         case _ =>
                           redirectWithBackLink(
                             NewBuildValueControllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
-                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id, mode).url)
                           )
                       }
                     }

@@ -92,38 +92,69 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def view(id: String, fromConfirmAddressPage: Boolean, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, fromConfirmAddressPage: Boolean, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          val backLinkView = {
-            if (fromConfirmAddressPage) {
-              Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
-            } else if (AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")) {
-              Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(id, periodKey, true).url)
-            } else if (mode.contains(EDIT_FROM_SUMMARY)) {
-              Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id).url)
-            }
-            else {
-              Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
-            }
-          }
+          val showEditMessage: Boolean =
+            if (mode.contains(EDIT_FROM_SUMMARY)) true else fromConfirmAddressPage
+
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              Future.successful(Ok(template(
-                Some(id),
-                propertyDetails.periodKey,
-                propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                AtedUtils.getEditSubmittedMode(propertyDetails, Some(AtedUtils.isPrevReturn(mode))), serviceInfoContent,
-                backLinkView,
-                fromConfirmAddressPage = fromConfirmAddressPage)
-              ))
+
+              dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
+
+                val isSummaryEditPage =
+                  mode.contains(EDIT_FROM_SUMMARY) &&
+                    entryController.contains(controllerId)
+
+                val backLinkView =
+                  if (fromConfirmAddressPage && !mode.contains(EDIT_FROM_SUMMARY)) {
+                    Some(
+                      controllers.propertyDetails.routes.ConfirmAddressController
+                        .view(id, periodKey, mode).url
+                    )
+                  } else if (
+                    AtedUtils.getPropertyDetailsPreHeader(mode).contains("change") &&
+                      !mode.contains(EDIT_FROM_SUMMARY)
+                  ) {
+                    Some(
+                      controllers.editLiability.routes.EditLiabilityTypeController
+                        .editLiability(id, periodKey, true).url
+                    )
+                  } else if (isSummaryEditPage) {
+                    AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                  } else {
+                    Some(
+                      controllers.propertyDetails.routes.AddressLookupController
+                        .view(Some(id), periodKey, mode).url
+                    )
+                  }
+
+                Ok(
+                  template(
+                    Some(id),
+                    propertyDetails.periodKey,
+                    propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
+                    if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getEditSubmittedMode(
+                        propertyDetails,
+                        Some(AtedUtils.isPrevReturn(mode))
+                      )
+                    } else {
+                      mode
+                    },
+                    serviceInfoContent,
+                    backLinkView,
+                    fromConfirmAddressPage = showEditMessage
+                  )
+                )
+              }
           }
         }
       }
     }
-    }
-
+  }
 
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -131,18 +162,36 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(EDIT_FROM_SUMMARY)
-              val backLink = AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-              val showEditMessage: Boolean = if (mode.contains(EDIT_FROM_SUMMARY)) true else false
-              Future.successful(Ok(template(
-                Some(id),
-                propertyDetails.periodKey,
-                propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                Some(mode),
-                serviceInfoContent,
-                backLink,
-                fromConfirmAddressPage = showEditMessage)
-              ))
+
+              for {
+                _ <- dataCacheService.saveFormData(
+                  editFromSummaryControllerId,
+                  controllerId
+                )
+              } yield {
+
+                val mode =
+                  AtedUtils.getEditSubmittedMode(propertyDetails)
+                    .getOrElse(EDIT_FROM_SUMMARY)
+
+                val backLink =
+                  AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+
+                val showEditMessage: Boolean =
+                  if (mode.contains(EDIT_FROM_SUMMARY)) true else false
+
+                Ok(
+                  template(
+                    Some(id),
+                    propertyDetails.periodKey,
+                    propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
+                    Some(mode),
+                    serviceInfoContent,
+                    backLink,
+                    fromConfirmAddressPage = showEditMessage
+                  )
+                )
+              }
           }
         }
       }
@@ -235,7 +284,4 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
       "submittedPostcode" -> address.postcode.getOrElse(""),
       "submittedCountry" -> "UK")) //country is Hardcoded as UK as all property should be.
   }
-
-}
-
-
+  }

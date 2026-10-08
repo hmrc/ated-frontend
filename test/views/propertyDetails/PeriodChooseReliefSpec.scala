@@ -29,7 +29,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
-import utils.ReliefsUtils
+import utils.{AtedUtils, ReliefsUtils}
 import views.html.propertyDetails.periodChooseRelief
 
 class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
@@ -54,7 +54,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2015, None, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -89,7 +89,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2020, periodChooseReliefForm, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2020, None, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The header should match - Select the type of relief")
@@ -122,7 +122,7 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015,None, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -153,6 +153,26 @@ class PeriodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite
       Then("The back link is correct")
       assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
+    }
+    Scenario("show change return subheader and summary back link when editing") {
+
+      val html = injectedViewInstance(
+        "1",
+        2015,
+        Some(AtedUtils.EDIT_SUBMITTED),
+        periodChooseReliefForm,
+        Html(""),
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("The subheader should be Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Change return")
+
+      Then("The back link should point to the summary page")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "/ated/liability/create/summary")
     }
   }
 

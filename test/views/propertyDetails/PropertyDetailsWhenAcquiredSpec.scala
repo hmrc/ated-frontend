@@ -22,6 +22,7 @@ import models.{PropertyDetailsWhenAcquiredDates, StandardAuthRetrievals}
 import play.api.data.Form
 import play.twirl.api.{Html, HtmlFormat}
 import testhelpers.{AtedViewSpec, MockAuthUtil}
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsWhenAcquired
 
 class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
@@ -76,6 +77,22 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
         doc(viewWith(form)).getElementById("acquiredDate.month").className() must include("govuk-input--error")
         doc(viewWith(form)).getElementById("acquiredDate.year").className() must include("govuk-input--error")
       }
+    }
+    "show change return subheading and summary back link when editing" in {
+
+      val view = injectedViewInstance(
+        "anything",
+        2026,
+        propertyDetailsWhenAcquiredDatesForm,
+        Some(AtedUtils.EDIT_SUBMITTED),
+        HtmlFormat.empty,
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = doc(view)
+
+      document.select("h2.govuk-caption-xl").text() mustBe "This section is: Change return"
+      document.select("a.govuk-back-link").attr("href") mustBe "/ated/liability/create/summary"
     }
   }
 }

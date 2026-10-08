@@ -18,14 +18,17 @@ package controllers.propertyDetails
 
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
 import scala.concurrent.ExecutionContext
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import services.*
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 @Singleton
 class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
@@ -42,15 +45,20 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = NoStartDateControllerId
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                } else {
+                  mode
+                }
                 currentBackLink.map(backLink =>
-                  Ok(view(id, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+                  Ok(view(id, serviceInfoContent, modeView, backLink))
                 )
               }
           }
@@ -59,13 +67,13 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def continue(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def continue(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction{implicit authContext =>
       ensureClientContext {
         redirectWithBackLink(
           DateFirstOccupiedKnownControllerId,
-          controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
-          Some(controllers.propertyDetails.routes.NewBuildNoStartDateController .view(id).url)
+          controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode),
+          Some(controllers.propertyDetails.routes.NewBuildNoStartDateController .view(id, mode).url)
         )
       }
     }

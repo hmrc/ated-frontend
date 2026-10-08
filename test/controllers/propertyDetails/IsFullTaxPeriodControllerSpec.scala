@@ -39,6 +39,8 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedConstants.editFromSummaryControllerId
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -89,7 +91,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       setInvalidAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = testIsFullTaxPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testIsFullTaxPeriodController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -109,7 +111,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testIsFullTaxPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testIsFullTaxPeriodController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -124,7 +126,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testIsFullTaxPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testIsFullTaxPeriodController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -136,6 +138,13 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testIsFullTaxPeriodController.controllerId))
+
       val result = testIsFullTaxPeriodController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -144,11 +153,11 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testIsFullTaxPeriodController.save("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testIsFullTaxPeriodController.save("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -158,7 +167,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testIsFullTaxPeriodController.save("1", periodKey)
+      val result = testIsFullTaxPeriodController.save("1", periodKey, mode)
         .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
@@ -231,6 +240,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     "Authorised users" must {
 
+      "save the entry controller when edit from summary is called" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        editFromSummary(propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService).saveFormData[String](
+            ArgumentMatchers.eq(editFromSummaryControllerId),
+            ArgumentMatchers.eq(testIsFullTaxPeriodController.controllerId)
+          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
+
       "show the chargeable property details value view with no data and set the back link to the summary page" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
 
@@ -258,6 +279,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     }
 
     "Authorised users" must {
+      "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+        getDataWithAuthorisedUser(propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService, atLeastOnce())
+            .fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
       "for invalid data, return BAD_REQUEST" in new Setup {
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser(FakeRequest()
@@ -288,6 +321,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         ) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/liability/create/tax-avoidance/view")
+        }
+      }
+      "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the stax avoidance page" in new Setup {
+        when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        submitWithAuthorisedUser(FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "isFullPeriod" -> "true"),
+          Some(EDIT_FROM_SUMMARY)
+        ) { result =>
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
         }
       }
     }

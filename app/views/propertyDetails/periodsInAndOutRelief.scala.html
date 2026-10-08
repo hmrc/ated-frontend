@@ -49,7 +49,7 @@
 }
 
 @deleteLink(period: LineItem) = {
-  <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" class="govuk-link govuk-body" id="delete-period-@periods.indexOf(period).toString()">
+  <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate, mode)" class="govuk-link govuk-body" id="delete-period-@periods.indexOf(period).toString()">
       @messages("ated.property-details-period.periodsInRelief.delete")
       <span class="govuk-visually-hidden">
           @messages((period.description).getOrElse(""))
@@ -122,19 +122,19 @@
 
     @govukButton(Button(
           classes = "govuk-button--secondary",
-          href = Some(controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey).url),
+          href = Some(controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey, mode).url),
           content = Text(messages("ated.property-details-period.periodsInRelief.add-charge")),
           attributes = Map("id" -> "add-period-charge")
     ))
 
     @govukButton(Button(
         classes = "govuk-button--secondary",
-        href = Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey).url),
+        href = Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey, mode).url),
         content = Text(messages("ated.property-details-period.periodsInRelief.add-relief")),
         attributes = Map("id" -> "add-period-in-relief")
       ))
 
-  @formHelper(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey, mode)) {
 
     @govukButton(Button(
         content = Text(messages("ated.save-and-continue")),

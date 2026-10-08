@@ -48,16 +48,16 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
   val dateFields = Seq(("startDate", Messages("ated.property-details-period.datesInRelief.startDate.messageKey")),
     ("endDate", Messages("ated.property-details-period.datesInRelief.endDate.messageKey")))
 
-  def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def add(id: String, periodKey: Int, mode: Option[String] = None) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         ensureClientContext(Future.successful(Ok(template(id,
-          periodKey, periodInReliefDatesForm, serviceInfoContent, getBackLink(id, periodKey)))))
+          periodKey, mode, periodInReliefDatesForm, serviceInfoContent, getBackLink(id, periodKey, mode)))))
       }
     }
   }
 
-  def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -66,13 +66,13 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
               val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
               PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest(), lineItems, dateFields).fold(
                 formWithError => {
-                  Future.successful(BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id, periodKey))))
+                  Future.successful(BadRequest(template(id, periodKey,mode, formWithError, serviceInfoContent, getBackLink(id, periodKey, mode))))
                 },
                 datesInRelief => {
                   for {
                     _ <- propertyDetailsService.addDraftPropertyDetailsDatesInRelief(id, datesInRelief)
                   } yield {
-                    Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+                    Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode))
                   }
                 }
               )
@@ -81,8 +81,8 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
       }
     }
   }
-  private def getBackLink(id: String, periodKey: Int) = {
-    Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey).url)
+  private def getBackLink(id: String, periodKey: Int, mode: Option[String]) = {
+    Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey, mode).url)
   }
 }
 

@@ -78,7 +78,7 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = dateFirstOccupiedKnownController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -107,7 +107,7 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = dateFirstOccupiedKnownController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

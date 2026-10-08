@@ -25,6 +25,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
 import javax.inject.Inject
@@ -46,7 +47,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsHasBeenRevaluedController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String,  mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -57,10 +58,15 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                   dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued).map {
                     cachedHasBeenRevalued =>
                       val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
+                      val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                      } else {
+                        mode
+                      }
                       Ok(template(id,
                         propertyDetails.periodKey,
                         backLink,
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                        modeView,
                         propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued)),
                         serviceInfoContent))
                   }
@@ -88,15 +94,15 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                   dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                   redirectWithBackLink(
                     dateOfChangeController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                    controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
                   )
                 } else {
                   dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                   redirectWithBackLink(
                     exitController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id, mode).url)
                   )
                 }
               }

@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
+
 import javax.inject.{Inject, Singleton}
 import models.DateFirstOccupied
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,6 +33,7 @@ import utils.AtedConstants.NewBuildFirstOccupiedDate
 import scala.concurrent.ExecutionContext
 import java.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 @Singleton
 class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
@@ -52,7 +54,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
 
   val dateFields = Seq(("dateFirstOccupied", Messages("ated.property-details.first-occupied-date.messageKey")))
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -60,11 +62,16 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 dataCacheService.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
                   val dfo: Option[LocalDate] = dateFirstOccupied.map(_.dateFirstOccupied).getOrElse(propertyDetails.value.flatMap(_.newBuildDate))
                   Ok(template(id,
                     propertyDetails.periodKey,
                     dateFirstOccupiedForm.fill(DateFirstOccupied(dfo)),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    modeView,
                     serviceInfoContent,
                     backLink)
                   )
@@ -89,8 +96,8 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
                 dataCacheService.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, form).flatMap{_ =>
                   redirectWithBackLink(
                     DateCouncilRegisteredKnownControllerId,
-                    controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),
-                    Some(controllers.propertyDetails.routes.DateFirstOccupiedController.view(id).url)
+                    controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.DateFirstOccupiedController.view(id, mode).url)
                   )
                 }
             )

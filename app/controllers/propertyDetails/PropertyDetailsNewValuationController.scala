@@ -26,6 +26,7 @@ import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, propertyDetailsNewValuationValue}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -45,7 +46,7 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsNewValuationController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
 
@@ -56,9 +57,14 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
                     val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
+                    val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                    } else {
+                      mode
+                    }
                     Ok(template(id,
                       propertyDetails.periodKey,
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      modeView,
                       propertyDetailsNewValuationForm.fill(PropertyDetailsNewValuation(newValuation)),
                       backLink,
                       serviceInfoContent
@@ -85,8 +91,8 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
               dataCacheService.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
               redirectWithBackLink(
                 propertyDetailsDateOfRevalueController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id),
-                Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id).url)
+                controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode),
+                Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode).url)
               )
             }
           )

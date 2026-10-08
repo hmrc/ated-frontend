@@ -55,7 +55,7 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
 }
 
-  @formHelper(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey, mode)) {
 
     <h2 class="govuk-caption-xl hmrc-caption-xl">
         <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>

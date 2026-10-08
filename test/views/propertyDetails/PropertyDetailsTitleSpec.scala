@@ -102,6 +102,38 @@ class PropertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite w
       assert(document.getElementsByClass("govuk-back-link").text() === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
+
+    Scenario("show the back link to summary page when coming from edit from summary") {
+
+      Given("the user is editing from the summary page")
+
+      When("the page is displayed in edit from summary mode")
+
+      val html = injectedViewInstance(
+        "1",
+        2015,
+        propertyDetailsTitleForm,
+        Some(AtedUtils.EDIT_FROM_SUMMARY),
+        Html(""),
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("the subheader should be Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+
+      Then("the back link should be displayed")
+      assert(document.getElementsByClass("govuk-back-link").text() === "Back")
+
+      And("the back link should point to the summary page")
+      assert(
+        document.getElementsByClass("govuk-back-link").attr("href") ===
+          "/ated/liability/create/summary"
+      )
+    }
+
+
   }
 
 }

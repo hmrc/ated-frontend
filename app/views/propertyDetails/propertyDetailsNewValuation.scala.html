@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
+@import _root_.utils._
 
 
 @this(newMain: newMain,
@@ -48,13 +49,16 @@
 
 @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewValuationController.save(id, periodKey, mode)) {
 
-       <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is </span>@messages("ated.property-details.pre-header")</h2>
-        @govukInput(Input(
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+    </h2>
+         @govukInput(Input(
             id = "revaluedValue",
             name = "revaluedValue",
             label = Label(
             isPageHeading = true,
-            classes = "govuk-label--xl govuk-!-margin-bottom-8",
+            classes = "govuk-label--xl",
             content = Text(messages("ated.property_details_new_valuation.heading"))
             ),
             hint = Some(Hint(

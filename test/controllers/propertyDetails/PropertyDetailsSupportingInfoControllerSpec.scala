@@ -17,11 +17,12 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-import builders._
+import builders.*
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilitySummaryController
-import models._
+import models.*
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -39,6 +40,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import utils.AtedConstants.editFromSummaryControllerId
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
 import views.html.{BtaNavigationLinks, global_error}
 import views.html.propertyDetails.propertyDetailsSupportingInfo
@@ -95,7 +97,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsSupportingInfoController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsSupportingInfoController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -120,7 +122,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
 
-      val result = testPropertyDetailsSupportingInfoController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsSupportingInfoController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -134,6 +136,12 @@ class PropertyDetailsSupportingInfoControllerSpec
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsSupportingInfoController.controllerId))
       val result =
         testPropertyDetailsSupportingInfoController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -281,6 +289,19 @@ class PropertyDetailsSupportingInfoControllerSpec
 
       "Authorised users" must {
 
+        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+
+          getDataWithAuthorisedUser(propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService).fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
+
+
         "show the chargeable property details value view with no data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
 
@@ -315,6 +336,18 @@ class PropertyDetailsSupportingInfoControllerSpec
 
     "editFromSummary" must {
       "Authorised users" must {
+
+        "save the entry controller when edit from summary is called" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          editFromSummary(propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService).saveFormData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId),
+              ArgumentMatchers.eq(testPropertyDetailsSupportingInfoController.controllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
 
         "show the chargeable property details value view with no data and add a back link to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)

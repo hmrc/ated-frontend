@@ -19,13 +19,16 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-import javax.inject.{Singleton, Inject}
-import models.{DateFirstOccupiedKnown, DateCouncilRegisteredKnown, DateCouncilRegistered}
+
+import javax.inject.{Inject, Singleton}
+import models.{DateCouncilRegistered, DateCouncilRegisteredKnown, DateFirstOccupiedKnown}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown, NewBuildCouncilRegisteredDate}
+import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildCouncilRegisteredDateKnown, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
+import utils.AtedUtils.EDIT_FROM_SUMMARY
+
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -45,7 +48,7 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String          = DateCouncilRegisteredKnownControllerId
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
 
@@ -57,12 +60,16 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
                   val councilRegisteredDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isLocalAuthRegDateKnown)
 
                   val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(councilRegisteredDateKnown))
-
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
+                  }
                   Ok(
                     view(
                       id,
                       dateCouncilRegisteredKnownForm.fill(displayData),
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      modeView,
                       serviceInfoContent,
                       backLink))
                 }
@@ -87,8 +94,8 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
                   case DateCouncilRegisteredKnown(Some(true)) =>
                     redirectWithBackLink(
                       DateCouncilRegisteredControllerId,
-                      controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id),
-                      Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                      controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
                     )
                   case _ =>
                     // Date not known => Clear any previously store date from cache
@@ -100,16 +107,16 @@ class DateCouncilRegisteredKnownController @Inject() (val mcc: MessagesControlle
                           storeNewBuildDatesFromCache(id).flatMap { _ =>
                             redirectWithBackLink(
                               NewBuildValueControllerId,
-                              controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
-                              Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                              controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode),
+                              Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
                             )
                           }
                         case _ =>
                           // No First occupied date and no council registration date => Inform user via kickout page
                           redirectWithBackLink(
                             NoStartDateControllerId,
-                            controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
-                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                            controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id, mode),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
                           )
                       }
                     }

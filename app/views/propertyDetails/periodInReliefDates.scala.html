@@ -34,7 +34,7 @@
      govukInput : GovukInput,
     formHelper: FormWithCSRF)
 
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesInRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, periodKey: Int, mode: Option[String], propertyDetailsForm: Form[PropertyDetailsDatesInRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -55,7 +55,7 @@
     <header>
         <h2 class="govuk-caption-xl hmrc-caption-xl">
             <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-            @messages("ated.property-details.pre-header")
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
         </h2>
         <h1 class="govuk-heading-xl">
             @messages("ated.property-details-period.datesInRelief.header")
@@ -63,7 +63,7 @@
     </header>
 
 
-    @formHelper(action=controllers.propertyDetails.routes.PeriodInReliefDatesController.save(id, periodKey)) {
+    @formHelper(action=controllers.propertyDetails.routes.PeriodInReliefDatesController.save(id, periodKey, mode)) {
 
         @dateInput(
             field = "startDate",

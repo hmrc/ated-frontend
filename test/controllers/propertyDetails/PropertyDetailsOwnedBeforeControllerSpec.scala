@@ -20,7 +20,8 @@ import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models._
+import models.*
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -36,6 +37,8 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.AtedConstants.editFromSummaryControllerId
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.PeriodUtils.calculatePeakStartYear
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
@@ -122,6 +125,12 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsOwnedBeforeController.controllerId))
       val result = testPropertyDetailsOwnedBeforeController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -135,7 +144,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded],  mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId         = s"user-${UUID.randomUUID}"
       when(
@@ -150,7 +159,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsOwnedBeforeController
-        .save("1", periodKey, None)
+        .save("1", periodKey, mode)
         .apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
       test(result)
@@ -171,6 +180,18 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
     "accessed by an Authorised user" when {
       "a property is found using the id provided" must {
+
+        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService).fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
 
         "show the chargeable property details view for valuation period 2017" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
@@ -210,6 +231,18 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
   "editFromSummary" when {
     "accessed by an Authorised users" must {
+
+      "save the entry controller when edit from summary is called" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        editFromSummary("1", propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService).saveFormData[String](
+            ArgumentMatchers.eq(editFromSummaryControllerId),
+            ArgumentMatchers.eq(testPropertyDetailsOwnedBeforeController.controllerId)
+          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
 
       "show a back link which takes the user to the liability summary" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
@@ -268,6 +301,24 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
             redirectLocation(result).get must include("/liability/create/valued/view")
           }
         }
+
+        "redirect to the valued page when editing from summary" in new Setup {
+          when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+            .withMethod("POST")
+            .withFormUrlEncodedBody(
+              "isOwnedBeforePolicyYear" -> "true",
+              "ownedBeforePolicyYearValue" -> "1500000"
+            )
+
+          submitWithAuthorisedUser(fakeRequest, Some(EDIT_FROM_SUMMARY)) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/liability/create/valued/view/1?mode=editFromSummary")
+          }
+        }
+
 
         "owned before is false" must {
           "redirect to the New Build page" in new Setup {

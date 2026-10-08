@@ -128,6 +128,28 @@ class PeriodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
       assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
+
+    Scenario("show change return and summary backlink when periods exist and user comes from summary page") {
+
+      val periods = List(
+        LineItem("liability", LocalDate.parse("2015-04-01"), LocalDate.parse("2015-05-01"), Some("Liable for charge"))
+      )
+
+      val html = injectedViewInstance(
+        "1",
+        2015,
+        periodsInAndOutReliefForm,
+        periods,
+        Some(AtedUtils.EDIT_FROM_SUMMARY),
+        Html(""),
+        Some("/ated/liability/create/summary")
+      )
+
+      val document = Jsoup.parse(html.toString())
+
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "/ated/liability/create/summary")
+    }
   }
 
 }

@@ -84,7 +84,7 @@ class PropertyDetailsWhenAcquiredControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsWhenAcquiredController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsWhenAcquiredController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -100,7 +100,7 @@ class PropertyDetailsWhenAcquiredControllerSpec extends PlaySpec with GuiceOneSe
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsWhenAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsWhenAcquiredController.view(id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

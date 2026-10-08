@@ -88,7 +88,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsInReliefController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsInReliefController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -97,7 +97,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testPropertyDetailsInReliefController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsInReliefController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -113,7 +113,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(Some("http://backlink")))
-      val result = testPropertyDetailsInReliefController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsInReliefController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

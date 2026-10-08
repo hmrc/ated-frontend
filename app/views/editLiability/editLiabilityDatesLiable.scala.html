@@ -33,7 +33,8 @@
         periodKey: Int,
         propertyDetailsForm: Form[PropertyDetailsDatesLiable],
         serviceInfoContent: Html = HtmlFormat.empty,
-        backLink: Option[String]
+        backLink: Option[String],
+        mode: Option[String] = None
 )(implicit authContext: StandardAuthRetrievals,
         messages: Messages,
         request: Request[AnyContent],
@@ -64,7 +65,7 @@
         </h1>
     </header>
 
-    @formHelper(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
+    @formHelper(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey, mode)) {
 
         @dateInput(
             field = "startDate",
