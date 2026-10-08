@@ -109,19 +109,11 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
 
         val backToViewLink = Some(routes.ConfirmAddressController.view(id, periodKey, mode).url)
 
-        if (mode.contains(EDIT_FROM_SUMMARY)) {
-          redirectWithBackLink(
-            propertyDetailsSummaryControllerId,
-            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-            backToViewLink
-          )
-        } else {
           redirectWithBackLink(
             propertyDetailsTitleId,
             controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id, mode),
             backToViewLink
           )
-        }
       }
     }
   }

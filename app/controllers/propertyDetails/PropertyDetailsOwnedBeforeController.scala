@@ -21,12 +21,13 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
 import controllers.ControllerIds
+
 import javax.inject.Inject
 import models.PropertyDetailsOwnedBefore
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
@@ -57,35 +58,41 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
 
-                  val modeView =
-                    if (!mode.contains(EDIT_FROM_SUMMARY))
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                    else
-                      mode
+                    val isSummaryEditPage =
+                      mode.contains(EDIT_FROM_SUMMARY) &&
+                        entryController.contains(controllerId)
 
-                  val backLinkView =
-                    if (mode.contains(EDIT_FROM_SUMMARY))
-                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                    else
-                      backLink
+                    val modeView =
+                      if (!mode.contains(EDIT_FROM_SUMMARY))
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                      else
+                        mode
 
-                  val displayData = PropertyDetailsOwnedBefore(
-                    propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
-                    propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue)
-                  )
+                    val backLinkView =
+                      if (isSummaryEditPage)
+                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                      else
+                        backLink
 
-                  Ok(
-                    template(
-                      id,
-                      propertyDetails.periodKey,
-                      propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
-                      modeView,
-                      serviceInfoContent,
-                      backLinkView
+                    val displayData = PropertyDetailsOwnedBefore(
+                      propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
+                      propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue)
                     )
-                  )
+
+                    Ok(
+                      template(
+                        id,
+                        propertyDetails.periodKey,
+                        propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
+                        modeView,
+                        serviceInfoContent,
+                        backLinkView
+                      )
+                    )
+                  }
                 }
               }
           }
@@ -100,7 +107,14 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              for {
+                isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
+                _ <- dataCacheService.saveFormData(
+                  editFromSummaryControllerId,
+                  controllerId
+                )
+              } yield {
+
                 val displayData = PropertyDetailsOwnedBefore(
                   propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
                   propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue)

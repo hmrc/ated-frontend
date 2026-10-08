@@ -67,5 +67,6 @@ object AtedConstants {
 
   val draftType: String = "ated.draft"
   val submittedType: String = "ated.submitted"
+  val editFromSummaryControllerId = "editFromSummaryControllerId"
 
 }

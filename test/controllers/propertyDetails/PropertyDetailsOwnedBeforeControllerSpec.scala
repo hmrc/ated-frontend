@@ -37,6 +37,7 @@ import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuc
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.AtedConstants.editFromSummaryControllerId
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.PeriodUtils.calculatePeakStartYear
 import utils.{AtedConstants, PeriodUtils}
@@ -124,6 +125,12 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsOwnedBeforeController.controllerId))
       val result = testPropertyDetailsOwnedBeforeController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -174,6 +181,18 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
     "accessed by an Authorised user" when {
       "a property is found using the id provided" must {
 
+        "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService).fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
+
         "show the chargeable property details view for valuation period 2017" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
@@ -212,6 +231,18 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
   "editFromSummary" when {
     "accessed by an Authorised users" must {
+
+      "save the entry controller when edit from summary is called" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        editFromSummary("1", propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService).saveFormData[String](
+            ArgumentMatchers.eq(editFromSummaryControllerId),
+            ArgumentMatchers.eq(testPropertyDetailsOwnedBeforeController.controllerId)
+          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
 
       "show a back link which takes the user to the liability summary" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))

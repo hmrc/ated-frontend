@@ -39,6 +39,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedConstants.editFromSummaryControllerId
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
@@ -137,6 +138,13 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testIsFullTaxPeriodController.controllerId))
+
       val result = testIsFullTaxPeriodController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -232,6 +240,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     "Authorised users" must {
 
+      "save the entry controller when edit from summary is called" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        editFromSummary(propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService).saveFormData[String](
+            ArgumentMatchers.eq(editFromSummaryControllerId),
+            ArgumentMatchers.eq(testIsFullTaxPeriodController.controllerId)
+          )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
+
       "show the chargeable property details value view with no data and set the back link to the summary page" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
 
@@ -259,6 +279,18 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     }
 
     "Authorised users" must {
+      "retrieve the entry controller when showing the chargeable property details view" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+        getDataWithAuthorisedUser(propertyDetails) { result =>
+          status(result) must be(OK)
+
+          verify(mockDataCacheService, atLeastOnce())
+            .fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
       "for invalid data, return BAD_REQUEST" in new Setup {
         when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser(FakeRequest()

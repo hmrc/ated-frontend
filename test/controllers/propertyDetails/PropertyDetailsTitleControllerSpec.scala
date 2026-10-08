@@ -144,6 +144,20 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
 
+      when(
+        mockDataCacheService.saveFormData(
+          ArgumentMatchers.any[String],
+          ArgumentMatchers.any[String]
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(None))
+
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsTitleController.controllerId))
+
       val result =
         testPropertyDetailsTitleController
           .editFromSummary(id)
@@ -286,7 +300,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
             redirectLocation(result).get must include("/ated/liability/1/change/value")
           }
         }
-        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the owned before page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           val title: PropertyDetailsTitle = propDetails.title.value
 
@@ -303,7 +317,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
             Some(EDIT_FROM_SUMMARY)
           ) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/summary/1")
+            redirectLocation(result).get must include("/ated/liability/create/owned-before/view/1?mode=editFromSummary")
           }
         }
       }

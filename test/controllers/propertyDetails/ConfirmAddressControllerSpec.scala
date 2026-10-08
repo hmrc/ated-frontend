@@ -335,13 +335,13 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               redirectLocation(result) must be(Some("/ated/liability/create/title/view/1"))
           }
         }
-        "redirect to summary page when in edit from summary mode" in new Setup {
+        "redirect to Title page when in edit from summary mode" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
 
           submitWithAuthorisedUser(Some(EDIT_FROM_SUMMARY)) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/summary/1")
+            redirectLocation(result).get must include("/ated/liability/create/title/view/1?mode=editFromSummary")
           }
         }
       }

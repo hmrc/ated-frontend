@@ -57,20 +57,26 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { answer =>
                 currentBackLink.flatMap { backLink =>
+                  dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
 
-                  val backLinkView =
-                    if (mode.contains(EDIT_FROM_SUMMARY))
-                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                    else
-                      backLink
+                    val isSummaryEditPage =
+                      mode.contains(EDIT_FROM_SUMMARY) &&
+                        entryController.contains(controllerId)
 
-                  val filledForm = isFullTaxPeriodForm.fill(
-                    PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
-                  )
+                    val backLinkView =
+                      if (isSummaryEditPage)
+                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                      else
+                        backLink
 
-                  answer match {
-                    case Some(true) =>
-                      Future.successful(
+                    val filledForm = isFullTaxPeriodForm.fill(
+                      PropertyDetailsFullTaxPeriod(
+                        propertyDetails.period.flatMap(_.isFullPeriod)
+                      )
+                    )
+
+                    answer match {
+                      case Some(true) =>
                         Ok(
                           template(
                             id,
@@ -83,10 +89,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                             backLinkView
                           )
                         )
-                      )
 
-                    case _ =>
-                      Future.successful(
+                      case _ =>
                         Ok(
                           template(
                             id,
@@ -99,7 +103,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                             backLinkView
                           )
                         )
-                      )
+                    }
                   }
                 }
               }
@@ -116,15 +120,23 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
 
-              val filledForm = isFullTaxPeriodForm.fill(
-                PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod))
-              )
+              for {
+                _ <- dataCacheService.saveFormData(
+                  editFromSummaryControllerId,
+                  controllerId
+                )
+              } yield {
 
-              val mode =
-                AtedUtils.getEditSubmittedMode(propertyDetails)
-                  .getOrElse(EDIT_FROM_SUMMARY)
+                val filledForm = isFullTaxPeriodForm.fill(
+                  PropertyDetailsFullTaxPeriod(
+                    propertyDetails.period.flatMap(_.isFullPeriod)
+                  )
+                )
 
-              Future.successful(
+                val mode =
+                  AtedUtils.getEditSubmittedMode(propertyDetails)
+                    .getOrElse(EDIT_FROM_SUMMARY)
+
                 Ok(
                   template(
                     id,
@@ -137,7 +149,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                     AtedUtils.getSummaryBackLink(id, None)
                   )
                 )
-              )
+              }
           }
         }
       }

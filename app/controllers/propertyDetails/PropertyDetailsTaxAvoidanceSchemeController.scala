@@ -24,7 +24,7 @@ import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
@@ -58,30 +58,36 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
               )
 
               currentBackLink.flatMap { backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
 
-                  val modeView =
-                    if (!mode.contains(EDIT_FROM_SUMMARY))
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                    else
-                      mode
+                    val isSummaryEditPage =
+                      mode.contains(EDIT_FROM_SUMMARY) &&
+                        entryController.contains(controllerId)
 
-                  val backLinkView =
-                    if (mode.contains(EDIT_FROM_SUMMARY))
-                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                    else
-                      backLink
+                    val modeView =
+                      if (!mode.contains(EDIT_FROM_SUMMARY))
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                      else
+                        mode
 
-                  Ok(
-                    template(
-                      id,
-                      propertyDetails.periodKey,
-                      propertyDetailsTaxAvoidanceSchemeForm.fill(displayData),
-                      modeView,
-                      serviceInfoContent,
-                      backLinkView
+                    val backLinkView =
+                      if (isSummaryEditPage)
+                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                      else
+                        backLink
+
+                    Ok(
+                      template(
+                        id,
+                        propertyDetails.periodKey,
+                        propertyDetailsTaxAvoidanceSchemeForm.fill(displayData),
+                        modeView,
+                        serviceInfoContent,
+                        backLinkView
+                      )
                     )
-                  )
+                  }
                 }
               }
           }
@@ -97,24 +103,31 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
 
-              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              for {
+                isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
+                _ <- dataCacheService.saveFormData(
+                  editFromSummaryControllerId,
+                  controllerId
+                )
+              } yield {
+
                 val displayData =
-                  PropertyDetailsTaxAvoidanceScheme(propertyDetails.period.flatMap(_.isTaxAvoidance))
+                  PropertyDetailsTaxAvoidanceScheme(
+                    propertyDetails.period.flatMap(_.isTaxAvoidance)
+                  )
 
                 val mode =
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                     .getOrElse(EDIT_FROM_SUMMARY)
 
-                Future.successful(
-                  Ok(
-                    template(
-                      id,
-                      propertyDetails.periodKey,
-                      propertyDetailsTaxAvoidanceSchemeForm.fill(displayData),
-                      Some(mode),
-                      serviceInfoContent,
-                      AtedUtils.getSummaryBackLink(id, None)
-                    )
+                Ok(
+                  template(
+                    id,
+                    propertyDetails.periodKey,
+                    propertyDetailsTaxAvoidanceSchemeForm.fill(displayData),
+                    Some(mode),
+                    serviceInfoContent,
+                    AtedUtils.getSummaryBackLink(id, None)
                   )
                 )
               }

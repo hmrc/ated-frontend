@@ -37,6 +37,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedConstants.editFromSummaryControllerId
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -123,6 +124,12 @@ class PropertyDetailsProfessionallyValuedControllerSpec
         .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(
+        mockDataCacheService.saveFormData[String](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+      ).thenReturn(Future.successful(testPropertyDetailsProfessionallyValuedController.controllerId))
       val result = testPropertyDetailsProfessionallyValuedController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -219,6 +226,42 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       }
 
       "Authorised users" must {
+
+        "save the entry controller when edit from summary is called" in new Setup {
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          editDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService, atLeastOnce()).saveFormData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId),
+              ArgumentMatchers.eq(testPropertyDetailsProfessionallyValuedController.controllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
+
+        "retrieve the saved entry controller when showing the chargeable property details view" in new Setup {
+          val propertyDetails =
+            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          when(
+            mockDataCacheService.fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          ).thenReturn(
+            Future.successful(
+              Some(testPropertyDetailsProfessionallyValuedController.controllerId)
+            )
+          )
+
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
+
+            verify(mockDataCacheService, atLeastOnce()).fetchAndGetData[String](
+              ArgumentMatchers.eq(editFromSummaryControllerId)
+            )(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          }
+        }
 
         "for invalid data, return BAD_REQUEST" in new Setup {
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
