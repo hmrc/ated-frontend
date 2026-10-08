@@ -126,6 +126,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
               val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id,mode).url)
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
+                response <- propertyDetailsService.calculateDraftPropertyDetails(id)
                 result <-
                   if (mode.contains(EDIT_FROM_SUMMARY)) {
                     redirectWithBackLink(

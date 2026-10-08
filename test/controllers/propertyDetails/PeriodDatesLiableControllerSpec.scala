@@ -270,7 +270,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
               redirectLocation(result).get must include("/liability/create/tax-avoidance/view")
           }
         }
-        "for valid data when editing from summary forward to the Property Details Summary Page" in new Setup {
+        "for valid data when editing from summary forward to the Property Details tax avoidance Page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
@@ -284,7 +284,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
           submitWithAuthorisedUser(formBody, propertyDetails, Some(EDIT_FROM_SUMMARY)) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated/liability/create/summary/1")
+              redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
           }
         }
 

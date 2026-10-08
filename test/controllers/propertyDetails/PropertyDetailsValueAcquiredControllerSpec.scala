@@ -210,12 +210,12 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       }
     }
 
-    "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the summary page" in new Setup {
+    "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto valued page" in new Setup {
       val formBody = List(("acquiredValue", "1000000"))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
       submitWithAuthorisedUser(formBody, Some(EDIT_FROM_SUMMARY)) { result =>
         status(result) must be(SEE_OTHER)
-        redirectLocation(result).get must include("/ated/liability/create/summary/1")
+          redirectLocation(result).get must include("/ated/liability/create/valued/view/1?mode=editFromSummary")
       }
     }
   }

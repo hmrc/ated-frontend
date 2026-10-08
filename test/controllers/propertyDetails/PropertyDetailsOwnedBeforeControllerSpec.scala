@@ -271,7 +271,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
           }
         }
 
-        "redirect to the Property Details Summary page when editing from summary" in new Setup {
+        "redirect to the valued page when editing from summary" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
 
@@ -284,7 +284,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
 
           submitWithAuthorisedUser(fakeRequest, Some(EDIT_FROM_SUMMARY)) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/summary/1")
+            redirectLocation(result).get must include("/ated/liability/create/valued/view/1?mode=editFromSummary")
           }
         }
 

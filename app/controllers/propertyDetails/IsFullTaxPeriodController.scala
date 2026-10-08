@@ -161,18 +161,10 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                   val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
                     Some(PeriodUtils.periodEndDate(periodKey)))))
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
-//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-//                      redirectWithBackLink(
-//                        propertyDetailsSummaryControllerId,
-//                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-//                        Some(routes.IsFullTaxPeriodController.view(id, mode).url)
-//                      )
-//                    }else {
                       redirectWithBackLink(
                         propertyDetailsTaxAvoidanceSchemeController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
                         Some(routes.IsFullTaxPeriodController.view(id, mode).url))
-                   // }
                   )
                 case _ =>
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>

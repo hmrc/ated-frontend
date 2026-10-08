@@ -142,18 +142,10 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                     _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
                     result <-
                       if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
-                       /* if (mode.contains(EDIT_FROM_SUMMARY)) {
-                          redirectWithBackLink(
-                            propertyDetailsSummaryControllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                            Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url)
-                          )
-                        }else{*/
                           redirectWithBackLink(
                             propertyDetailsProfessionallyValuedController.controllerId,
                             controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
                             Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
-                       // }
                       } else {
                         redirectWithBackLink(
                           propertyDetailsNewBuildController.controllerId,

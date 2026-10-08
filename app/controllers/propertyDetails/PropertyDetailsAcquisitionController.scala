@@ -119,19 +119,11 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                       backLink
                     )
                   } else {
-                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-                      redirectWithBackLink(
-                        propertyDetailsSummaryControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                        backLink
-                      )
-                    } else {
                       redirectWithBackLink(
                         isFullTaxPeriodController.controllerId,
                         controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
                         backLink
                       )
-                    }
                   }
               } yield result
             }

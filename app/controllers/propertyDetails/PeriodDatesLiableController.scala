@@ -114,19 +114,11 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                     for {
                       _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
                       result <- ensureClientContext(
-                       /* if (mode.contains(EDIT_FROM_SUMMARY)) {
-                          redirectWithBackLink(
-                            propertyDetailsSummaryControllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                            Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, addOption, mode).url)
-                          )
-                        } else { */
                         redirectWithBackLink(
                         propertyDetailsTaxAvoidanceSchemeController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, addOption,  mode).url)
                       )
-                      //  }
                       )
                     } yield {
                       result

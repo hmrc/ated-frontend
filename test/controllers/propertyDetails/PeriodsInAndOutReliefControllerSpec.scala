@@ -218,14 +218,14 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
           }
         }
 
-        "for valid data when editing from summary forward to the Property Details Summary Page" in new Setup {
+        "for valid data when editing from summary forward to the Property Details tax avoidance Page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
 
           continueWithAuthorisedUser(Some(EDIT_FROM_SUMMARY)) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated/liability/create/summary/1")
+              redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
           }
         }
       }
