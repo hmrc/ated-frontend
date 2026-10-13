@@ -49,24 +49,24 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
         case res :: Nil => {
           res.address.lines match {
             case line1 :: line2 :: _ if (res.address.town.isDefined && res.address.county.isDefined) =>
-              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, res.address.postcode))
             case line1 :: line2 :: line3 :: _ if (res.address.county.isDefined) =>
-              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.county, Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.county, res.address.postcode))
             case line1 :: line2 :: line3 :: _ if (res.address.town.isDefined) =>
-              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.town, Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.town, res.address.postcode))
             case line1 :: line2 :: line3 :: line4 :: _ =>
-              Some(PropertyDetailsAddress(line1, line2, Some(line3), Some(line4), Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), Some(line4), res.address.postcode))
             case line1 :: line2 :: line3 :: Nil =>
-              Some(PropertyDetailsAddress(line1, line2,  Some(line3), res.address.town, Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2,  Some(line3), res.address.town, res.address.postcode))
             case line1 :: line2 :: Nil =>
-              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, Some(res.address.postcode)))
+              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, res.address.postcode))
             case line1 :: Nil if (res.address.town.isDefined) =>
               res.address.town.map(town =>
-                PropertyDetailsAddress(line1, town, res.address.county, None, Some(res.address.postcode))
+                PropertyDetailsAddress(line1, town, res.address.county, None, res.address.postcode)
               )
             case line1 :: Nil if (res.address.county.isDefined) =>
               res.address.county.map(county =>
-                PropertyDetailsAddress(line1, county, None, None, Some(res.address.postcode))
+                PropertyDetailsAddress(line1, county, None, None, res.address.postcode)
               )
             case _ => None
           }

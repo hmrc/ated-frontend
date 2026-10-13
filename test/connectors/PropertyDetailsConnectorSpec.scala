@@ -73,7 +73,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
   "PropertyDetailsConnector" must {
 
     "create draft property details" must {
-      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress("testPostCode")
 
       "call correct url and http method to save createDraftPropertyDetails" in new Setup {
         testPropertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetails)
@@ -83,7 +83,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     }
 
     "save property details address ref" must {
-      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress("testPostCode")
 
       "call correct url and http method to save saveDraftPropertyDetailsAddressRef" in new Setup {
         testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(id, propertyDetails)

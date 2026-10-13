@@ -59,7 +59,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
   "PropertyDetailsService" must {
     "Save property Details IsFullTaxPeriod" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new IsFullTaxPeriod(false, None)
 
 
@@ -84,7 +84,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "Save property Details IsInRelief" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsInRelief()
 
 
@@ -109,7 +109,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "Save property Details TaxAvoidance reference" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsTaxAvoidanceReferences()
 
 
@@ -134,7 +134,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "Save property Details TaxAvoidance scheme" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsTaxAvoidanceScheme()
 
 
@@ -159,7 +159,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "Save property Details DatesLiable" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
@@ -184,7 +184,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "add DatesLiable" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
@@ -223,7 +223,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
 
     "add DatesInRelief" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsDatesInRelief(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
@@ -250,7 +250,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "delete period" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsDatesInRelief(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
@@ -275,7 +275,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
     }
 
     "Save property Details SupportingInfo" must {
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       val propValue = new PropertyDetailsSupportingInfo("")
 
 

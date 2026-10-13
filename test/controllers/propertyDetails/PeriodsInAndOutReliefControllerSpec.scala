@@ -114,7 +114,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
       when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
       val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01"), None).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -167,7 +167,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
 
         "show the chargeable property details value view with no data" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>

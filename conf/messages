@@ -458,7 +458,7 @@ ated.addressProperty.line_1 = Address line 1
 ated.addressProperty.line_2 = Address line 2
 ated.addressProperty.line_3 = Address line 3 (optional)
 ated.addressProperty.line_4 = Address line 4 (optional)
-ated.addressProperty.postcode = Postcode (optional)
+ated.addressProperty.postcode = Postcode
 ated.propertyReference.titleNumber = What is the property’s title number? (optional)
 ated.propertyReference.titleNumber.hint = For example, CS72532
 

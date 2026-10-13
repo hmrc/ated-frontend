@@ -140,7 +140,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -157,7 +157,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(calculated = None)
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(calculated = None)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -176,7 +176,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       setAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))

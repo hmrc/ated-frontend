@@ -184,7 +184,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
         "show the chargeable property details value view with no data" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -200,7 +200,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
             .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("2015-05-01"), LocalDate.parse("2016-02-23")).
             map(_.copy(isFullPeriod = Some(false), isInRelief = Some(false)))
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = propertyDetailsPeriod)
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)
@@ -221,7 +221,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
     "add" must {
       "show the chargeable property details value view with no data" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
         addDataWithAuthorisedUser(propertyDetails) {
           result =>
@@ -245,7 +245,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Nil, propertyDetails) {
             result =>
@@ -254,7 +254,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
         }
 
         "for valid data forward to the TaxAvoidance Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -271,7 +271,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
         }
         "for valid data when editing from summary forward to the Property Details tax avoidance Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -289,7 +289,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
         }
 
         "for valid data when adding a period return to the Periods Summary Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),

@@ -158,7 +158,7 @@ class PeriodChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerS
 
         "show the selection of allowed reliefs" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           addDataWithAuthorisedUser(propertyDetails) {
             result =>

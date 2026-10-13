@@ -182,7 +182,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       "a property is found using the id provided" must {
 
         "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
 
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
@@ -194,7 +194,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
         }
 
         "show the chargeable property details view for valuation period 2017" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -205,7 +205,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
         }
 
         "show the chargeable property details view for different valuation period 2022" in new Setup(2023) {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", periodKey = periodKey)
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -216,7 +216,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
         }
 
         "show the chargeable property details view for different valuation period 2012" in new Setup(2015) {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", periodKey = periodKey)
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -233,7 +233,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
     "accessed by an Authorised users" must {
 
       "save the entry controller when edit from summary is called" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         editFromSummary("1", propertyDetails) { result =>
           status(result) must be(OK)
 
@@ -245,7 +245,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       }
 
       "show a back link which takes the user to the liability summary" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         editFromSummary("1", propertyDetails) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))

@@ -83,7 +83,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("town"))
       result.get.line_4 must be ( Some("county"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 4 lines and a town and county" in new Setup {
@@ -99,7 +99,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("town"))
       result.get.line_4 must be ( Some("county"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 4 lines and no town or county" in new Setup {
@@ -113,7 +113,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("line3"))
       result.get.line_4 must be ( Some("line4"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
 
@@ -129,7 +129,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("line3"))
       result.get.line_4 must be ( Some("county"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 3 lines in it and a town" in new Setup {
@@ -144,7 +144,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("line3"))
       result.get.line_4 must be ( Some("town"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 3 lines and no town or county" in new Setup {
@@ -159,7 +159,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("line3"))
       result.get.line_4 must be ( None )
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 2 lines and a town" in new Setup {
@@ -174,7 +174,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( Some("town"))
       result.get.line_4 must be ( None)
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 2 lines and a county" in new Setup {
@@ -189,7 +189,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("line2")
       result.get.line_3 must be ( None)
       result.get.line_4 must be ( Some("county"))
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 1 lines and a county" in new Setup {
@@ -203,7 +203,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("county")
       result.get.line_3 must be ( None)
       result.get.line_4 must be (None)
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return the address from the list if we have 1 lines in it and a town" in new Setup {
@@ -217,7 +217,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.line_2 must be ("town")
       result.get.line_3 must be ( None)
       result.get.line_4 must be (None)
-      result.get.postcode must be (Some("postCode"))
+      result.get.postcode must be ("postCode")
     }
 
     "return None if we have no line2, town or county" in new Setup {

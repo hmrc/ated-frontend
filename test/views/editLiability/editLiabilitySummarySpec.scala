@@ -59,7 +59,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 2)
@@ -111,7 +111,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 2)
@@ -165,7 +165,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
 
       val html = injectedViewInstance(propertyDetails, "F", Nil,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
@@ -212,7 +212,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is changing a liability, is due a refund and is asked bank details")
       When("The user views the page and has a UK bank account")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(8875.12)), true, Some("UK"))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", liabilityAmount = Some(BigDecimal(8875.12)), true, Some("UK"))
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 1)
       val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
@@ -233,7 +233,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("address-line-1").text() === "addr1")
       assert(document.getElementById("address-line-2").text() === "addr2")
       assert(document.getElementById("address-line-3").text() === "addr3")
-      assert(document.getElementById("address-postcode").text() === "123456")
+      assert(document.getElementById("address-postcode").text() === "NE1 1AA")
       assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-title-number").text() === "titleNo")
 
@@ -289,7 +289,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is changing a liability, is due a refund and is asked bank details")
       When("The user views the page and has an Overseas bank account")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(8875.12)), true, Some("NonUK"))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", liabilityAmount = Some(BigDecimal(8875.12)), true, Some("NonUK"))
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 1)
       val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
@@ -310,7 +310,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("address-line-1").text() === "addr1")
       assert(document.getElementById("address-line-2").text() === "addr2")
       assert(document.getElementById("address-line-3").text() === "addr3")
-      assert(document.getElementById("address-postcode").text() === "123456")
+      assert(document.getElementById("address-postcode").text() === "NE1 1AA")
       assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-title-number").text() === "titleNo")
 
@@ -366,7 +366,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is changing a liability, is due a refund and is asked bank details")
       When("The user views the page but does not have bank details")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(8875.12)), false)
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", liabilityAmount = Some(BigDecimal(8875.12)), false)
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 1)
       val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
@@ -387,7 +387,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("address-line-1").text() === "addr1")
       assert(document.getElementById("address-line-2").text() === "addr2")
       assert(document.getElementById("address-line-3").text() === "addr3")
-      assert(document.getElementById("address-postcode").text() === "123456")
+      assert(document.getElementById("address-postcode").text() === "NE1 1AA")
       assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-title-number").text() === "titleNo")
 
@@ -435,7 +435,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       Given("the client is changing a liability, is due a refund and is asked bank details")
       When("The user views the page but user leaves bank details incomplete")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(8875.12)), true)
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetailsWithRefund(id = "1", liabilityAmount = Some(BigDecimal(8875.12)), true)
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 1)
       val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
@@ -456,7 +456,7 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("address-line-1").text() === "addr1")
       assert(document.getElementById("address-line-2").text() === "addr2")
       assert(document.getElementById("address-line-3").text() === "addr3")
-      assert(document.getElementById("address-postcode").text() === "123456")
+      assert(document.getElementById("address-postcode").text() === "NE1 1AA")
       assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-title-number").text() === "titleNo")
 

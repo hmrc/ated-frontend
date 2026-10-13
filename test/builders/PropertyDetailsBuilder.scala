@@ -27,6 +27,7 @@ object PropertyDetailsBuilder {
 
   val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-09-08"), LocalDate.parse("2015-10-12"), AtedConstants.LiabilityReturnType, None)
   val formBundlePropRefund: FormBundleProperty = FormBundleProperty(BigDecimal(727000), LocalDate.parse("2015-04-01"), LocalDate.parse("2016-01-01"), AtedConstants.ReliefReturnType, Some("Relief"))
+  val postCode = "NE1 1AA"
 
   def generateFormBundleReturn: FormBundleReturn = {
     FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq(formBundleProp))
@@ -156,7 +157,7 @@ object PropertyDetailsBuilder {
     Some(new PropertyDetailsTitle("titleNo"))
   }
 
-  def getPropertyDetailsAddress(postCode: Option[String] = None): PropertyDetailsAddress = {
+  def getPropertyDetailsAddress(postCode: String): PropertyDetailsAddress = {
     new PropertyDetailsAddress("addr1", "addr2", Some("addr3"), Some("addr4"), postCode)
   }
 
@@ -184,7 +185,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetails(id: String,
-                         postCode: Option[String] = None,
+                         postCode: String = postCode,
                          liabilityAmount: Option[BigDecimal] = None,
                          periodKey: Int = 2019): PropertyDetails = {
     PropertyDetails(
@@ -198,7 +199,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsValuedByAgent(id: String,
-                         postCode: Option[String] = None,
+                         postCode: String  = postCode,
                          liabilityAmount: Option[BigDecimal] = None,
                          valueChanged: Option[Boolean] = Some(true))(implicit appConfig: ApplicationConfig): PropertyDetails = {
     val periodKey: Int = calculatePeakStartYear()
@@ -214,7 +215,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsWithNoValue(id: String,
-                         postCode: Option[String] = None,
+                         postCode: String  = postCode,
                          liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
     val periodKey: Int = calculatePeakStartYear()
 
@@ -231,7 +232,7 @@ object PropertyDetailsBuilder {
 
 
   def getFullPropertyDetails(id: String,
-                             postCode: Option[String] = None,
+                             postCode: String = postCode,
                              liabilityAmount: Option[BigDecimal] = None
                             )(implicit appConfig: ApplicationConfig): PropertyDetails = {
     val periodKey: Int = calculatePeakStartYear()
@@ -277,7 +278,7 @@ object PropertyDetailsBuilder {
   }
 
   def getFullPropertyDetailsWithRefund(id: String,
-                             postCode: Option[String] = None,
+                             postCode: String = postCode,
                              liabilityAmount: Option[BigDecimal] = None,
                              hasBankDetails: Boolean,
                              bankDetailsType: Option[String] = None
@@ -298,7 +299,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsWithFormBundleReturn(id: String,
-                             postCode: Option[String] = None,
+                             postCode: String = postCode,
                              liabilityAmount: Option[BigDecimal] = None
                             )(implicit appConfig: ApplicationConfig): PropertyDetails = {
     val periodKey: Int = calculatePeakStartYear()

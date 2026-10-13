@@ -193,7 +193,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     "Authorised users" must {
 
       "show the chargeable property details value view with no data" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
         getDataWithAuthorisedUser(propertyDetails) {
           result =>
@@ -202,7 +202,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "show the chargeable property details value view with data when propertyDetails has a formBundleReturn" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1")
 
         getDataWithAuthorisedUser(propertyDetails) {
           result =>
@@ -211,7 +211,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "show the chargeable property details value view with data" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
         getFormBundleDatWithAuthorisedUser(propertyDetails) {
           result =>
@@ -223,7 +223,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder
           .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02"))
           .map(_.copy(isFullPeriod = Some(false)))
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = propertyDetailsPeriod)
         getDataWithAuthorisedUser(propertyDetails) {
           result =>
             status(result) must be(OK)
@@ -241,7 +241,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     "Authorised users" must {
 
       "save the entry controller when edit from summary is called" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         editFromSummary(propertyDetails) { result =>
           status(result) must be(OK)
 
@@ -253,7 +253,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "show the chargeable property details value view with no data and set the back link to the summary page" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
 
         editFromSummary(propertyDetails) {
           result =>
@@ -280,7 +280,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     "Authorised users" must {
       "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
 
         getDataWithAuthorisedUser(propertyDetails) { result =>
           status(result) must be(OK)

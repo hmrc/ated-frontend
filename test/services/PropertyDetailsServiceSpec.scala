@@ -45,7 +45,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
   val mockDataCacheService: DataCacheService = mock[DataCacheService]
-
+  val postCode: String = "SW1A 1AA"
   class Setup {
     val testPropertyDetailsService: PropertyDetailsService = new PropertyDetailsService(
       mockPropertyDetailsConnector,
@@ -62,7 +62,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       "save the address ref and return the response from the connector" in new Setup {
 
         val periodKey: Int = 2015
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", postCode)
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -76,7 +76,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
       "save and throw an Exception if it fails" in new Setup {
         val periodKey: Int = 2015
-        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode)
         val successResponse: JsValue = Json.toJson("1")
         when(mockPropertyDetailsConnector.createDraftPropertyDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
           (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
@@ -91,7 +91,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
     "Save property Details Address" must {
       "save the address ref and return the response from the connector" in new Setup {
 
-        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode)
 
         val successResponse: JsValue = Json.toJson(addressProperty)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -103,7 +103,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "save and throw an Exception if it fails" in new Setup {
-        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+        val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode)
         val successResponse: JsValue = Json.toJson(addressProperty)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(ArgumentMatchers.any(), ArgumentMatchers.any())
           (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
@@ -118,7 +118,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
     "Save property Details Title" must {
       "save the value and return the response from the connector" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", postCode)
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
@@ -131,7 +131,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "save and throw an Exception if it fails" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", postCode)
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTitle(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
@@ -252,7 +252,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
     "Calculate property Details" must {
       "does not save the new calculated data and return blank OK response return the response from the connector" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", postCode)
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -267,7 +267,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
       "save the new calculated data and return the response from the connector" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -288,7 +288,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     "Calculate Change Liability property Details" must {
       "return the property details if the calculation is successful" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -300,7 +300,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "return the property details if the calculation is successful for owned before policy year" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
           value.copy(
             isOwnedBeforePolicyYear = Some(true),
@@ -319,7 +319,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "return the property details if the calculation is successful for new build" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
           value.copy(
             isOwnedBeforePolicyYear = Some(false),
@@ -339,7 +339,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "return the property details if the calculation is successful for not new build" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
           value.copy(
             isOwnedBeforePolicyYear = Some(false),
@@ -359,7 +359,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "return the property details if the calculation is not successful with no value for ispropertyrevalued" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
           value.copy(
             isPropertyRevalued = None
@@ -377,7 +377,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "not return property details if the calculation is unsuccessful" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode)
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -389,7 +389,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "not return property details if the validation is unsuccessful" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"), valueChanged = None)
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", postCode, valueChanged = None)
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -400,7 +400,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     "Retrieve property Details" must {
       "return the response from the connector with a Success Response" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "new Prop Det")
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -410,7 +410,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "retrieve data and return a not found response if no data is found" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "new Prop Det")
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -421,7 +421,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
 
       "retrieve data and return an error response if it fails" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "new Prop Det")
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -472,7 +472,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     "clear chargeable draft" when {
       "valid id is passed" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "new Prop Det")
         val successResponse: JsValue = Json.toJson(Seq(propertyDetails))
         when(mockPropertyDetailsConnector.deleteDraftChargeable(ArgumentMatchers.eq("AB12345"))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -485,7 +485,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     "validate whether to make the calculateDraftPropertyDetails call to ETMP" when {
       "for a valid form bundle number but property no period is found" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithNoValue("1", Some("new Prop Det"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithNoValue("1", "new Prop Det")
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))

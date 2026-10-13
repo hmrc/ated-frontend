@@ -153,7 +153,7 @@ class PropertyDetailsWhenAcquiredControllerSpec extends PlaySpec with GuiceOneSe
 
       "Authorised users" must {
         "show the when acquired page view if we id and data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)

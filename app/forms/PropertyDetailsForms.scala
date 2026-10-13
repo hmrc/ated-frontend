@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.AtedForms.validatePostCodeFormat
+import forms.AtedForms.*
 import forms.mappings.DateTupleCustomError
 import models.*
 import play.api.data.Forms.*
@@ -66,8 +66,8 @@ object PropertyDetailsForms {
         .verifying("ated.address.line-4", x => AtedForms.checkBlankFieldLength(x.toString))
         .verifying("ated.error.address.line-4", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
         .verifying("ated.error.address.line-4.format", x => AtedForms.validateAddressLine(x)),
-      "postcode" -> optional(text)
-        .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x)))
+      "postcode" -> text
+        .verifying("ated.error.address.postalcode.format", x => x.trim.nonEmpty && validateMandatoryPostCodeFormat(AtedUtils.formatMandatoryPostCode(x)))
     )(PropertyDetailsAddress.apply)(x => Some(Tuple.fromProductTyped(x)))
   )
 

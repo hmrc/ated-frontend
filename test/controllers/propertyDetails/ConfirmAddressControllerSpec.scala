@@ -82,6 +82,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     )
 
     val periodKey: Int = 2015
+    val postCode: String = "CF10 1EP"
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
@@ -100,7 +101,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1", postCode)))
       }
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testConfirmAddressController.view("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -116,7 +117,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1")))
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1", postCode)))
       }
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testConfirmAddressController.view("1", periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -130,7 +131,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getFullPropertyDetails("1")))
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getFullPropertyDetails("1", postCode)))
       }
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testConfirmAddressController.view("1", periodKey, Some("editPrevReturn")).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -232,7 +233,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("editAddress").text() must be("Edit address")
               document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
-              document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+              document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 CF10 1EP")
               document.getElementsByClass("govuk-back-link").text must be("Back")
               document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/address/view/1/false/2015")
           }
@@ -245,7 +246,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                 document.title() must be(TitleBuilder.buildTitle("Confirm address"))
                 document.getElementById("editAddress").text() must be("Edit address")
                 document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
-                document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+                document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 CF10 1EP")
                 document.getElementsByClass("govuk-back-link").text must be("Back")
                 document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/address/view/1/false/2015?mode=editSubmitted")
             }
@@ -258,7 +259,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                   document.title() must be(TitleBuilder.buildTitle("Confirm address"))
                   document.getElementById("editAddress").text() must be("Edit address")
                   document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
-                  document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+                  document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 CF10 1EP")
                   document.getElementsByClass("govuk-back-link").text must be("Back")
                   document.getElementsByClass("govuk-back-link").text must be("Back")
                   document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/existing-return/select/2015/charge")
@@ -292,14 +293,14 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
     "editSubmittedReturn" must {
       "show the address of a previously used property" in new Setup {
-        viewSubmittedWithAuthorisedUser("1", Some(PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")))) {
+        viewSubmittedWithAuthorisedUser("1", Some(PropertyDetailsBuilder.getPropertyDetails("1", "EH1 1AA"))) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Confirm address"))
             document.getElementById("editAddress").text() must be("Edit address")
             document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
-            document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 postCode")
+            document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 EH1 1AA")
         }
       }
 

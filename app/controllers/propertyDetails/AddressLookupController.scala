@@ -165,7 +165,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
       "submittedLine2" -> address.line_2,
       "submittedLine3" -> address.line_3.getOrElse(""),
       "submittedLine4" -> address.line_4.getOrElse(""),
-      "submittedPostcode" -> address.postcode.getOrElse(""),
+      "submittedPostcode" -> address.postcode,
       "submittedCountry" -> "UK")) //country is Hardcoded as UK as all property should be.
   }
 }

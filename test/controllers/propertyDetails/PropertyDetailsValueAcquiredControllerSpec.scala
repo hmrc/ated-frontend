@@ -174,7 +174,7 @@ class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneS
       }
       "Authorised users" must {
         "show the value on acquisition view page when called" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
           }

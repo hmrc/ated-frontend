@@ -57,6 +57,7 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with GuiceOneAppPerSuit
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodInReliefDates]
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
+  val validPostCode: String = "CF10 1AA"
 
   class Setup {
 
@@ -153,7 +154,7 @@ reset(mockDelegationService)
       "Authorised users" must {
 
         "show the date selection for the choose reliefs" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           addDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -178,7 +179,7 @@ reset(mockDelegationService)
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           submitWithAuthorisedUser(Nil, propertyDetails) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -186,7 +187,7 @@ reset(mockDelegationService)
         }
 
         "for valid data when adding a period return to the Periods Summary Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -202,7 +203,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", ""),
             ("startDate.month", ""),
@@ -221,7 +222,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty day values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", ""),
             ("startDate.month", "6"),
@@ -240,7 +241,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty month values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", ""),
@@ -259,7 +260,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty year values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -278,7 +279,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty day & month values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", ""),
             ("startDate.month", ""),
@@ -297,7 +298,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty day & year values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", ""),
             ("startDate.month", "6"),
@@ -316,7 +317,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- empty month & year values for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", ""),
@@ -335,7 +336,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- invalid day value start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "41"),
             ("startDate.month", "6"),
@@ -354,7 +355,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- invalid month value start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "16"),
@@ -373,7 +374,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- value that does not contain 4-digit value for year for start and end dates - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -392,7 +393,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- Relief Start and End dates have incorrect combination of day & month fields - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "30"),
             ("startDate.month", "2"),
@@ -411,7 +412,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- Relief Start and End dates have invalid values - return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "30"),
             ("startDate.month", "2"),
@@ -430,7 +431,7 @@ reset(mockDelegationService)
         }
 
         "for invalid data, -- Relief Start and End dates have invalid values, -- return BAD_REQUEST" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val formBody = List(
             ("startDate.day", "29"),
             ("startDate.month", "2"),
@@ -449,7 +450,7 @@ reset(mockDelegationService)
         }
 
         "for valid data with too old period (before 2019) when adding a period return to the Periods Summary Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           val formBody = List(
             ("startDate.day", "1"),
@@ -469,7 +470,7 @@ reset(mockDelegationService)
         }
 
         "for valid data with future dates for both when adding a period return to the Periods Summary Page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None, periodKey = 2023)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None, periodKey = 2023)
 
           val formBody = List(
             ("startDate.day", "15"),
@@ -491,3 +492,4 @@ reset(mockDelegationService)
     }
   }
 }
+

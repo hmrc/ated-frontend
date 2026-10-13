@@ -163,7 +163,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
       "Authorised users" must {
 
         "show the chargeable property details value view with no data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -174,7 +174,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
         "show the chargeable property details value view with existing data" in new Setup {
           val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder
             .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02")).map(_.copy(isInRelief = Some(false)))
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = propertyDetailsPeriod)
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)

@@ -159,7 +159,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "show the chargeable property details value view with no data" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "CF10 1AA").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -174,7 +174,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
             .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("2015-05-01"), LocalDate.parse("2016-02-23")).
             map(_.copy(isFullPeriod = Some(false), isInRelief = Some(false)))
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "CF10 1AA").copy(period = propertyDetailsPeriod)
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)

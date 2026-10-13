@@ -72,9 +72,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
         @propertyDetails.addressProperty.line_4.map { line =>
             <span id="address-line-4">@line</span><br>
         }
-        @propertyDetails.addressProperty.postcode.map { line =>
-            <span id="address-postcode">@line</span>
-        }
+        <span id="address-postcode">@propertyDetails.addressProperty.postcode</span>
     </div>
 }
 
