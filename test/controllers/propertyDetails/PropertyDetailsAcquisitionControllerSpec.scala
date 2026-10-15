@@ -171,7 +171,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
       "Authorised users" must {
 
         "show the chargeable property details view if we have id and data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(value = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(value = None)
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
@@ -190,7 +190,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
         }
 
         "show the chargeable property details view if we have id and data even with a propertyDetails value" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
@@ -213,7 +213,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
       "Authorised users" must {
 
         "show the owned before view if we id and data and add the summary back link" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           editFromSummary("1", propertyDetails) {
             result =>
               status(result) must be(OK)

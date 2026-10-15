@@ -30,13 +30,12 @@ case class PeriodInvalid(inputDateType: String) extends PeriodValidity
 case object PeriodValid extends PeriodValidity
 
 case class PropertyDetailsAddress(line_1: String, line_2: String, line_3: Option[String], line_4: Option[String],
-                                  postcode: Option[String] = None) {
+                                  postcode: String) {
   override def toString: String = {
 
     val line3display = line_3.map(line3 => s", $line3, " ).fold("")(x=>x)
     val line4display = line_4.map(line4 => s"$line4, " ).fold("")(x=>x)
-    val postcodeDisplay = postcode.map(postcode1 => s"$postcode1").fold("")(x=>x)
-    s"$line_1, $line_2 $line3display$line4display$postcodeDisplay"
+    s"$line_1, $line_2 $line3display$line4display$postcode"
   }
 }
 

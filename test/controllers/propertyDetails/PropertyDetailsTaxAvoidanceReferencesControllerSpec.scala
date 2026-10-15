@@ -174,7 +174,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       "Authorised users" must {
 
         "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) { result =>
             status(result) must be(OK)
@@ -186,7 +186,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         }
 
         "show the chargeable property details value view with no data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -207,7 +207,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       "Authorised users" must {
 
         "save the entry controller when edit from summary is called" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           editFromSummary(propertyDetails) { result =>
             status(result) must be(OK)
 
@@ -218,7 +218,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
           }
         }
         "show the chargeable property details value view with no data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           editFromSummary(propertyDetails) {
             result =>
@@ -232,7 +232,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         }
 
         "show the chargeable property details value view with no data with a propertyDetails period" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
 
           editFromSummary(propertyDetails) {
             result =>

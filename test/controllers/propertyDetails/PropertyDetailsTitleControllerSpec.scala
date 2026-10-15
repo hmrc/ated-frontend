@@ -191,7 +191,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       "Authorised users" must {
 
         "show the chargeable property details view if we id and data even when there is no propertyDetailsTitle" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(title = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(title = None)
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -203,7 +203,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
     "edit from summary" must {
       "show the details of a submitted return with a back link" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) { result =>
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1")) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
@@ -211,7 +211,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       }
 
       "show the details of a submitted return with a back link even when there is no propertyDetailsTitle" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(title = None)) { result =>
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1").copy(title = None)) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
@@ -272,7 +272,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         }
 
         "for valid data, forward onto the acquisition page" in new Setup {
-          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val title: PropertyDetailsTitle = propDetails.title.value
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
@@ -286,7 +286,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           }
         }
         "for valid data when editing a previous return, forward onto the value page" in new Setup {
-          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val title: PropertyDetailsTitle = propDetails.title.value
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
@@ -301,7 +301,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
           }
         }
         "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the owned before page" in new Setup {
-          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           val title: PropertyDetailsTitle = propDetails.title.value
 
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))

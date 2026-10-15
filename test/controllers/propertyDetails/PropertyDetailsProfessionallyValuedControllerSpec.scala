@@ -186,7 +186,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       "Authorised users" must {
 
         "show the chargeable property details view if we id and data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           getDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -201,7 +201,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
         }
 
         "show the chargeable property details edit view if we come from the summary page and have data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
           editDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -228,7 +228,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
       "Authorised users" must {
 
         "save the entry controller when edit from summary is called" in new Setup {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
 
           editDataWithAuthorisedUser("1", propertyDetails) { result =>
             status(result) must be(OK)
@@ -242,7 +242,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec
 
         "retrieve the saved entry controller when showing the chargeable property details view" in new Setup {
           val propertyDetails =
-            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+            PropertyDetailsBuilder.getPropertyDetails("1")
 
           when(
             mockDataCacheService.fetchAndGetData[String](

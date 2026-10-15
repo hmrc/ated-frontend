@@ -337,7 +337,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
       "submitting a valid request should create a new return if we have no Id" in new Setup {
         val value = 2015
-        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, None)
+        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, "")
         when(mockPropertyDetailsService.createDraftPropertyDetailsAddress
         (ArgumentMatchers.eq(value), ArgumentMatchers.eq(foundProperty))(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("newId"))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
@@ -350,7 +350,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       }
 
       "submitting a valid request should update a return if we have an Id" in new Setup {
-        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, None)
+        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, "")
         when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress
         (ArgumentMatchers.any(), ArgumentMatchers.eq(foundProperty))(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("1"))
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))

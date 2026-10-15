@@ -254,7 +254,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
         "retrieve the entry controller when showing the chargeable property details view" in new Setup {
           viewDataWithAuthorisedUser(
             "1",
-            PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")),
+            PropertyDetailsBuilder.getPropertyDetails("1"),
             fromConfirmAddressPage = false
           ) {
             result =>
@@ -279,7 +279,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
         }
 
         "show the chargeable property details view if we have id and data with fromConfirmAddressPage is false" in new Setup {
-          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = false) {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", "postCode"), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -295,7 +295,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
         }
 
         "show the chargeable property details view if we have id and data with fromConfirmAddressPage is true" in new Setup {
-          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = true) {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", "postCode"), fromConfirmAddressPage = true) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -335,7 +335,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
     "view submitted" must {
       "show the details of a submitted return" in new Setup {
-        viewSubmittedWithAuthorisedUser("1", Some(PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")))) {
+        viewSubmittedWithAuthorisedUser("1", Some(PropertyDetailsBuilder.getPropertyDetails("1", "postCode"))) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -361,7 +361,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     "edit from summary" must {
 
       "save the entry controller when edit from summary is called" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1")) {
           result =>
             status(result) must be(OK)
 
@@ -373,7 +373,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       }
 
       "show the details of a submitted return with a back link" in new Setup {
-        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
+        editFromSummary("1", PropertyDetailsBuilder.getPropertyDetails("1")) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))

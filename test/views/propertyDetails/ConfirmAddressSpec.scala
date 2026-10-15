@@ -48,7 +48,7 @@ class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
 
       Given("the client has entered an address")
       When("The user views the confirm address page")
-      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = "XX1 1XX")
       val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
       Then("The title should match - Confirm address - Submit and view your ATED returns - GOV.UK")

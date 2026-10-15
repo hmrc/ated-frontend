@@ -78,7 +78,7 @@ class PropertyDetailsAddressSpec extends AnyFeatureSpecLike with GuiceOneServerP
       assert(document.getElementsByAttributeValue("for", "line_2").text() === "Address line 2")
       assert(document.getElementsByAttributeValue("for", "line_3").text() === "Address line 3 (optional)")
       assert(document.getElementsByAttributeValue("for", "line_4").text() === "Address line 4 (optional)")
-      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode (optional)")
+      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode")
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
@@ -92,7 +92,7 @@ class PropertyDetailsAddressSpec extends AnyFeatureSpecLike with GuiceOneServerP
 
       given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress("LS1 1AA")
       val html = injectedViewInstance(
         Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"), fromConfirmAddressPage = false)
 
@@ -114,7 +114,7 @@ class PropertyDetailsAddressSpec extends AnyFeatureSpecLike with GuiceOneServerP
       assert(document.getElementsByAttributeValue("for", "line_2").text() === "Address line 2")
       assert(document.getElementsByAttributeValue("for", "line_3").text() === "Address line 3 (optional)")
       assert(document.getElementsByAttributeValue("for", "line_4").text() === "Address line 4 (optional)")
-      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode (optional)")
+      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode")
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
@@ -135,7 +135,7 @@ class PropertyDetailsAddressSpec extends AnyFeatureSpecLike with GuiceOneServerP
 
       given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress("LS1 1AA")
       val html = injectedViewInstance(
         Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), None, Html(""), Some("http://backLink"), fromConfirmAddressPage = true)
 
@@ -152,7 +152,7 @@ class PropertyDetailsAddressSpec extends AnyFeatureSpecLike with GuiceOneServerP
       assert(document.getElementsByAttributeValue("for", "line_2").text() === "Address line 2")
       assert(document.getElementsByAttributeValue("for", "line_3").text() === "Address line 3 (optional)")
       assert(document.getElementsByAttributeValue("for", "line_4").text() === "Address line 4 (optional)")
-      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode (optional)")
+      assert(document.getElementsByAttributeValue("for", "postcode").text() === "Postcode")
 
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 

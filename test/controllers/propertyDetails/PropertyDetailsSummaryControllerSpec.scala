@@ -170,7 +170,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
 
         "status should be OK when we have a valid property details" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
           getWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)
@@ -182,7 +182,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
 
         "no periods should be displayed with incomplete sections" in new Setup {
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount =
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", postCode = "postCode", liabilityAmount =
             Some(BigDecimal(1000.20))).copy(period = None)
           getWithAuthorisedUser(propertyDetails) {
             result =>
@@ -193,7 +193,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
               document.getElementById("address-line-2").text() must be("addr2")
               document.getElementById("address-line-3").text() must be("addr3")
               document.getElementById("address-line-4").text() must be("addr4")
-              document.getElementById("address-postcode").text() must be("123456")
+              document.getElementById("address-postcode").text() must be("postCode")
               document.select("#property-details > div:nth-child(1) > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/address/edit-summary/1")
               document.select("#property-details > div:nth-child(2) > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/title/edit/1")
               document.select("#value-purpose-ated-0 > div > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/owned-before/edit-summary/1")
@@ -224,7 +224,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       "called for authorised user" must {
 
         "return status OK" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
           getPrintFriendlyWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)

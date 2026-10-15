@@ -48,6 +48,12 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "postcode" -> "AA, 1AA"
     )
 
+    val propertyDetailsAddressFormDataBlankPostcode: Map[String, String] = Map(
+      "line_1" -> "addressId",
+      "line_2" -> "institute",
+      "postcode" -> ""
+    )
+
     "render propertyDetailsAddressForm successfully on entering valid input data" in {
       PropertyDetailsForms.propertyDetailsAddressForm.bind(propertyDetailsAddressFormData).fold(
         formWithErrors => {
@@ -56,7 +62,7 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         success => {
           success.line_1 must be("addressId")
           success.line_2 must be("institute")
-          success.postcode must be(Some("AA1 1AA"))
+          success.postcode must be("AA1 1AA")
         }
       )
     }
@@ -91,6 +97,16 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       )
     }
 
+    "throw error on entering blank postcode" in {
+      PropertyDetailsForms.propertyDetailsAddressForm.bind(propertyDetailsAddressFormDataBlankPostcode).fold(
+        formWithErrors => {
+          formWithErrors.errors.head.message must be("ated.error.address.postalcode.format")
+          formWithErrors.errors.length must be(1)
+        },
+        _ => {
+          fail("Form should give an error")
+        }
+      )
+    }
   }
-
 }

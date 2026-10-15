@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,25 @@ class AtedFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "return false for an invalid postcode with ," in {
       AtedForms.validatePostCodeFormat(Some("ZZ, 1AA")) must be(false)
+    }
+  }
+
+  "validateMandatoryPostCodeFormat" must {
+
+    "return true for a valid postcode" in {
+      AtedForms.validateMandatoryPostCodeFormat("ZZ1 1ZZ") must be(true)
+    }
+
+    "return false for an invalid postcode" in {
+      AtedForms.validateMandatoryPostCodeFormat("ZZ1") must be(false)
+    }
+
+    "return false for a blank postcode" in {
+      AtedForms.validateMandatoryPostCodeFormat("") must be(false)
+    }
+
+    "return false for an invalid postcode with ," in {
+      AtedForms.validateMandatoryPostCodeFormat("ZZ, 1AA") must be(false)
     }
   }
 

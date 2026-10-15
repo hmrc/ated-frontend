@@ -290,7 +290,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       "Authorised users" must {
 
         "retrieve the entry controller when showing the chargeable property details view" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) { result =>
             status(result) must be(OK)
@@ -303,7 +303,7 @@ class PropertyDetailsSupportingInfoControllerSpec
 
 
         "show the chargeable property details value view with no data" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "NE1 1AA").copy(period = None)
 
           getDataWithAuthorisedUser(propertyDetails) { result =>
             status(result) must be(OK)
@@ -322,7 +322,7 @@ class PropertyDetailsSupportingInfoControllerSpec
             .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02"))
             .map(_.copy(supportingInfo = Some("supportingInfoTextAreaData")))
 
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "NE1 1AA").copy(period = propertyDetailsPeriod)
           getDataWithAuthorisedUser(propertyDetails) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -338,7 +338,7 @@ class PropertyDetailsSupportingInfoControllerSpec
       "Authorised users" must {
 
         "save the entry controller when edit from summary is called" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           editFromSummary(propertyDetails) { result =>
             status(result) must be(OK)
 
@@ -350,7 +350,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         }
 
         "show the chargeable property details value view with no data and add a back link to the summary page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "NE1 1AA").copy(period = None)
 
           editFromSummary(propertyDetails) { result =>
             status(result) must be(OK)
@@ -363,7 +363,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         }
 
         "show the chargeable property details value view with no data and add a back link to the summary page even with a propertyDetails period" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "NE1 1AA")
 
           editFromSummary(propertyDetails) { result =>
             status(result) must be(OK)
@@ -402,7 +402,7 @@ class PropertyDetailsSupportingInfoControllerSpec
           }
         }
         "for valid data, return Forward to the summary page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", "NE1 1AA")
           val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
             .withMethod("POST")
             .withFormUrlEncodedBody(
@@ -454,7 +454,7 @@ class PropertyDetailsSupportingInfoControllerSpec
         }
 
         "for valid data with no line items, return forward to the summary page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode")).copy(period = None)
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", "NE1 1AA").copy(period = None)
           val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
             .withMethod("POST")
             .withFormUrlEncodedBody(

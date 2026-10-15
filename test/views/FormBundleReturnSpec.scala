@@ -86,7 +86,7 @@ class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
@@ -113,7 +113,7 @@ class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
@@ -184,7 +184,7 @@ class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
@@ -252,7 +252,7 @@ class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
@@ -327,7 +327,7 @@ class FormBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
+      val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)

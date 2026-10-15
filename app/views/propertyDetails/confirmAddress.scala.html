@@ -68,10 +68,7 @@
                 <br>
                 @propertyDetails.line_4.getOrElse("")
             }
-            @if(propertyDetails.postcode) {
-                <br>
-                @propertyDetails.postcode.getOrElse("")
-            }
+            <br>@propertyDetails.postcode
         </address>
     </div>
 

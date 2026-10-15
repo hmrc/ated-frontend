@@ -30,7 +30,7 @@ object ChangeLiabilityReturnBuilder {
     FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
   }
 
-  def generatePropertyDetailsAddress = PropertyDetailsAddress("line1", "line2", None, None, None)
+  def generatePropertyDetailsAddress = PropertyDetailsAddress("line1", "line2", None, None, "postcode")
 
   def generatePropertyDetailsTitle = Some(PropertyDetailsTitle("titleNo"))
 

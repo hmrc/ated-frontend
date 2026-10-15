@@ -57,7 +57,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
     "Save property Details Has Value Changed" must {
       "save the value and return the response from the connector" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftHasValueChanged(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
@@ -67,7 +67,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
       }
 
       "save and throw an Exception if it fails" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftHasValueChanged(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
@@ -81,7 +81,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
 
     "Save property Details Acquisition" must {
       "save the value and return the response from the connector" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
@@ -91,7 +91,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
       }
 
       "save and throw an Exception if it fails" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
@@ -105,7 +105,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
 
     "Save property Details Revalued" must {
       "save the value and return the response from the connector" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue = new PropertyDetailsRevalued()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -129,7 +129,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
 
     "Save property Details OwnedBefore" must {
       "save the value and return the response from the connector" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue = new PropertyDetailsOwnedBefore()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
@@ -154,7 +154,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
     "Save property Details NewBuild" must {
       "save the value and return the response from the connector" in new Setup {
 
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue = new PropertyDetailsNewBuild()
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
@@ -179,7 +179,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
 
     "Save property Details ProfessionallyValued" must {
       "save the value and return the response from the connector" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
         val propValue = new PropertyDetailsProfessionallyValued()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))

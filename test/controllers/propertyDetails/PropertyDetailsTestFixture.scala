@@ -110,7 +110,7 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
   }
 
   def setupPropertyDetailServiceMockExpectations() = {
-    val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("z11 1zz")).copy(value = None)
+    val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "z11 1zz").copy(value = None)
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails(any())(using any(), any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(any(), any())(using any(), any())).thenReturn(Future.successful(OK))
