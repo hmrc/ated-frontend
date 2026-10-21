@@ -62,9 +62,13 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
-        val returnType = if (x.get.amountDueOrRefund < BigDecimal(0)) "A" else if (x.get.amountDueOrRefund > BigDecimal(0)) "F" else "C"
-        Ok(views.html.editLiability.disposeLiabilitySentPrintFriendly(submittedResponse, returnType,
-          organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
+        x match {
+          case Some(liabilityReturnResponse) =>
+            val returnType = if (liabilityReturnResponse.amountDueOrRefund < BigDecimal(0)) "A" else if (liabilityReturnResponse.amountDueOrRefund > BigDecimal(0)) "F" else "C"
+            Ok(views.html.editLiability.disposeLiabilitySentPrintFriendly(submittedResponse, returnType,
+              organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
+          case None => throw new RuntimeException(s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent]No Liability Return Response found for $oldFormBundleNo from dataCacheService")
+        }
       }
     }
   }
