@@ -18,6 +18,7 @@ package controllers.editLiability
 
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
+
 import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -25,7 +26,7 @@ import services.{DataCacheService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
@@ -57,19 +58,52 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
 
   def viewPrintFriendlyDisposeLiabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      for {
-        submittedResponse <- dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
-        organisationName <- subscriptionDataService.getOrganisationName
-      } yield {
-        val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
-        x match {
-          case Some(liabilityReturnResponse) =>
-            val returnType = if (liabilityReturnResponse.amountDueOrRefund < BigDecimal(0)) "A" else if (liabilityReturnResponse.amountDueOrRefund > BigDecimal(0)) "F" else "C"
-            Ok(views.html.editLiability.disposeLiabilitySentPrintFriendly(submittedResponse, returnType,
-              organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
-          case None => throw new RuntimeException(s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent]No Liability Return Response found for $oldFormBundleNo from dataCacheService")
-        }
+
+      dataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId).flatMap {
+        case None =>
+          logger.warn(
+            s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent] " +
+              s"No cached EditLiabilityReturnsResponseModel found for formBundleNo: $oldFormBundleNo"
+          )
+          Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+
+        case Some(submittedResponse) =>
+          val maybeLiabilityReturn =
+            submittedResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
+
+          maybeLiabilityReturn match {
+            case None =>
+              logger.warn(
+                s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent] " +
+                  s"No Liability Return Response found in cache for formBundleNo: $oldFormBundleNo"
+              )
+              Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+
+            case Some(liabilityReturn) =>
+              subscriptionDataService.getOrganisationName.map { organisationNameOpt =>
+
+                val safePaymentRef =
+                  liabilityReturn.paymentReference.orElse(Some(""))
+
+                val returnType =
+                  if (liabilityReturn.amountDueOrRefund < 0) "A"
+                  else if (liabilityReturn.amountDueOrRefund > 0) "F"
+                  else "C"
+
+                Ok(
+                  views.html.editLiability.disposeLiabilitySentPrintFriendly(
+                    Some(submittedResponse),
+                    returnType,
+                    organisationNameOpt,
+                    safePaymentRef,
+                    liabilityReturn.amountDueOrRefund,
+                    liabilityReturn.liabilityAmount
+                  )
+                )
+              }
+          }
       }
     }
   }
+
 }
