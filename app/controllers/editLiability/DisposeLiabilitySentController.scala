@@ -47,9 +47,18 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(r) => Ok(template(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
-              case None => Redirect(controllers.routes.AccountSummaryController.view())
+              case None =>
+                logger.warn(
+                  s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent] " +
+                    s"No cached EditLiabilityReturnsResponseModel found for formBundleNo: $oldFormBundleNo"
+                )
+                Redirect(controllers.routes.AccountSummaryController.view())
             }
           case None =>
+            logger.warn(
+              s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent] " +
+                s"No Liability Return Response found in cache for formBundleNo: $oldFormBundleNo"
+            )
             throw new RuntimeException("Return Response not found in cache")
         }
       }
@@ -68,10 +77,9 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
           Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
 
         case Some(submittedResponse) =>
-          val maybeLiabilityReturn =
             submittedResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
 
-          maybeLiabilityReturn match {
+           match {
             case None =>
               logger.warn(
                 s"[DisposeLiabilitySentController][viewPrintFriendlyDisposeLiabilitySent] " +
@@ -81,9 +89,6 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
 
             case Some(liabilityReturn) =>
               subscriptionDataService.getOrganisationName.map { organisationNameOpt =>
-
-                val safePaymentRef =
-                  liabilityReturn.paymentReference.orElse(Some(""))
 
                 val returnType =
                   if (liabilityReturn.amountDueOrRefund < 0) "A"
@@ -95,7 +100,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
                     Some(submittedResponse),
                     returnType,
                     organisationNameOpt,
-                    safePaymentRef,
+                    liabilityReturn.paymentReference.orElse(Some("")),
                     liabilityReturn.amountDueOrRefund,
                     liabilityReturn.liabilityAmount
                   )
@@ -105,5 +110,4 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
       }
     }
   }
-
 }
