@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,16 +47,18 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsCacheResponse(propertyKey) {
-            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              currentBackLink.flatMap(backLink =>
-                Future.successful(Ok(template(propertyDetails,
-                  PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
-                  AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
-                  PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-                  serviceInfoContent,
-                  backLink)
-                )))
+          propertyDetailsService.calculateDraftPropertyDetails(propertyKey).flatMap { _ =>
+            propertyDetailsCacheResponse(propertyKey) {
+              case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+                currentBackLink.flatMap(backLink =>
+                  Future.successful(Ok(template(propertyDetails,
+                    PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
+                    AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
+                    PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+                    serviceInfoContent,
+                    backLink)
+                  )))
+            }
           }
         }
       }

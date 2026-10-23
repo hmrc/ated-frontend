@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,6 +205,15 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
               document.getElementById("save-as-draft").attr("href") must include("/ated/account-summary")
               document.getElementById("delete-draft").attr("href") must include("/ated/liability/delete/draft/1/2019")
           }
+        }
+      }
+
+      "calculate and display the draft liability amount when viewing the summary" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = "NE280NG", liabilityAmount = Some(BigDecimal("1000")))
+        getWithAuthorisedUser(propertyDetails) { result => status(result) must be(OK)
+          verify(mockPropertyDetailsService).calculateDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          val document = Jsoup.parse(contentAsString(result))
+          document.body().text() must include("£1,000")
         }
       }
     }
