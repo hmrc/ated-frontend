@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,19 +33,19 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val injectedViewInstance: accountSummary = inject[views.html.accountSummary]
-  val staticYearOf2026 = 2026
+  val testTaxYear = 2026
 
   val view: HtmlFormat.Appendable = injectedViewInstance(
     currentYearReturnsForDisplay,
     totalCurrentYearReturns = 2,
-    summaryReturnsModel(periodKey = currentTaxYear),
+    summaryReturnsModel(periodKey = testTaxYear),
     Some(organisationName),
     atedReference,
     Some(clientMandateDetails),
     Html(""),
     cancelAgentUrl,
-    staticYearOf2026,
-    staticYearOf2026,
+    testTaxYear,
+    testTaxYear,
     fromAccountSummary = true
   )
 
@@ -81,11 +81,12 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have correct deadline info text" in {
-        val yearPassedToView = staticYearOf2026
+        val nextTaxYear = testTaxYear + 1
         assert(doc.select(".govuk-body").get(0).text() contains
-          s"The deadline for 2026 to 2027 returns and payments for all ATED-eligible properties that you own on 1 April $yearPassedToView is 30 April $yearPassedToView")
+            s"The deadline for $testTaxYear to $nextTaxYear returns and payments " + s"for all ATED-eligible properties that you own on 1 April $testTaxYear " + s"is 30 April $testTaxYear")
+
         assert(doc.select(".govuk-body").get(1).text() contains
-          "Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds)")
+            "Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds)")
       }
 
       "have the correct service navigation link" in {
@@ -131,10 +132,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
       "show the Create a new return for current tax year button" in {
         assert(doc.select(
-          "#create-return-1").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
+          "#create-return-1").text === s"Create a new return for $testTaxYear to ${testTaxYear + 1}"
         )
         assert(doc.select(
-          "#create-return-1").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn?fromAccountSummary=true"
+          "#create-return-1").attr("href") === s"/ated/period-summary/$testTaxYear/createReturn?fromAccountSummary=true"
         )
       }
 
@@ -151,20 +152,20 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       lazy val view = injectedViewInstance(
         fiveReturns,
         totalCurrentYearReturns = totalCurrentYearReturns,
-        summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+        summaryReturnsModel(periodKey = testTaxYear, withPastReturns = true),
         Some(organisationName),
         atedReference,
         Some(clientMandateDetails),
         Html(""),
         cancelAgentUrl,
-        currentYear,
-        currentTaxYear,
+        testTaxYear,
+        testTaxYear,
         fromAccountSummary = false
       )
 
       "show the view all returns link" in {
-        assert(doc(view).select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
-        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
+        assert(doc(view).select("#view-all-returns").text === s"View all returns for $testTaxYear to ${testTaxYear + 1}")
+        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$testTaxYear")
       }
 
       "show content to say how many returns are being displayed" in {
