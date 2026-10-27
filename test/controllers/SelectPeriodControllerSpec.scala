@@ -34,7 +34,7 @@ import services.{BackLinkCacheService, DataCacheService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AtedConstants
+import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
 
 import java.time.LocalDate
@@ -217,7 +217,8 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
         "for authorised user" must {
           "with invalid form, return BadRequest" in new Setup {
 
-            val staticYear: Int = 2025
+            val peakStartYear: Int = PeriodUtils.calculatePeakStartYear()
+
             submitWithAuthorisedFormUser(FakeRequest()
               .withMethod("POST")
               .withFormUrlEncodedBody(
@@ -229,10 +230,10 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
                 doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
-                doc.getElementsByAttributeValue("for", "period-8").text() must be(s"2018 to 2019")
-                doc.getElementsByAttributeValue("for", "period-7").text() must be(s"2019 to 2020")
-                doc.getElementsByAttributeValue("for", "period-6").text() must be(s"2020 to 2021")
-                assert(doc.getElementById(s"period-${staticYear}_field") === null)
+                doc.getElementsByAttributeValue("for", "period-8").text() must be(s"${peakStartYear - 8} to ${peakStartYear - 7}")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be(s"${peakStartYear - 7} to ${peakStartYear - 6}")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be(s"${peakStartYear - 6} to ${peakStartYear - 5}")
+                doc.text() must not include s"$peakStartYear to ${peakStartYear + 1}"
             }
           }
 
