@@ -91,11 +91,22 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
             },
             dateOfChange => {
               dataCacheService.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
-              redirectWithBackLink(
-                newValuationController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode),
-                Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode).url)
-              )
+              for {
+                FortyThousandValueDateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
+              } yield {
+                DateOfChange(
+                  dateOfChange = FortyThousandValueDateOfChange.flatMap(_.dateOfChange)
+                )
+              }
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsFortyThousandValueDateOfChange(id, dateOfChange)
+                result <-           
+                  redirectWithBackLink(
+                  newValuationController.controllerId,
+                  controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode),
+                  Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode).url)
+                )
+              } yield result
             }
           )
         }

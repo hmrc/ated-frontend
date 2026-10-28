@@ -155,6 +155,21 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
   
+  def saveDraftPropertyDetailsFortyThousandValueDateOfChange(id: String, fortyThousandValueDateOfChange: DateOfChange)
+                                                      (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsFortyThousandValueDateOfChange(id, fortyThousandValueDateOfChange)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsFortyThousandValueDateOfChange] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsFortyThousandValueDateOfChange] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
   
   def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
                                       (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
