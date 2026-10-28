@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 
@@ -46,7 +45,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                                                        template: html.propertyDetails.propertyDetailsNewBuildValue)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = NewBuildValueControllerId
@@ -101,11 +100,11 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuildValue(id, propertyDetails)
                   result <-
-                      redirectWithBackLink(
-                        propertyDetailsProfessionallyValuedController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
-                        Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode).url)
-                      )
+                    redirectWithBackLink(
+                      propertyDetailsProfessionallyValuedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id, mode).url)
+                    )
                 } yield result
               }
             )

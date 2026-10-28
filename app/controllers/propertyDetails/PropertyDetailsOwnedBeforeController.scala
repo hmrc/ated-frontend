@@ -20,14 +20,13 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
-import controllers.ControllerIds
 
 import javax.inject.Inject
 import models.PropertyDetailsOwnedBefore
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
+import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
@@ -45,7 +44,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsOwnedBeforeController"
@@ -59,40 +58,28 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
-
-                    val isSummaryEditPage =
-                      mode.contains(EDIT_FROM_SUMMARY) &&
-                        entryController.contains(controllerId)
-
-                    val modeView =
-                      if (!mode.contains(EDIT_FROM_SUMMARY))
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                      else
-                        mode
-
-                    val backLinkView =
-                      if (isSummaryEditPage)
-                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                      else
-                        backLink
-
-                    val displayData = PropertyDetailsOwnedBefore(
-                      propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
-                      propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue)
-                    )
-
-                    Ok(
-                      template(
-                        id,
-                        propertyDetails.periodKey,
-                        propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
-                        modeView,
-                        serviceInfoContent,
-                        backLinkView
-                      )
-                    )
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
                   }
+//                  val backLinkView = {
+//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+//                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+//                    }
+//                    else {
+//                      backLink
+//                    }
+//                  }
+                  val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
+                    propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
+                  Future.successful(Ok(template(id,
+                    propertyDetails.periodKey,
+                    propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
+                    modeView,
+                    serviceInfoContent,
+                    backLink)
+                  ))
                 }
               }
           }
@@ -107,33 +94,17 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              for {
-                isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
-                _ <- dataCacheService.saveFormData(
-                  editFromSummaryControllerId,
-                  controllerId
-                )
-              } yield {
-
-                val displayData = PropertyDetailsOwnedBefore(
-                  propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
-                  propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue)
-                )
-
-                val mode =
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                    .getOrElse(EDIT_FROM_SUMMARY)
-
-                Ok(
-                  template(
-                    id,
-                    propertyDetails.periodKey,
-                    propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
-                    Some(mode),
-                    serviceInfoContent,
-                    AtedUtils.getSummaryBackLink(id, None)
-                  )
-                )
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
+                  propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
+                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
+                Future.successful(Ok(template(id,
+                  propertyDetails.periodKey,
+                  propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
+                  Some(mode),
+                  serviceInfoContent,
+                  AtedUtils.getSummaryBackLink(id, None))
+                ))
               }
           }
         }
@@ -141,36 +112,37 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
     }
   }
 
-      def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-        authAction.authorisedAction { implicit authContext =>
-          ensureClientContext {
-            serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-              PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bindFromRequest()).fold(
-                formWithError => {
-                  currentBackLink.map(backLink =>
-                    BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
-                  )
-                },
-                propertyDetails => {
-                  for {
-                    _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
-                    result <-
-                      if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
-                          redirectWithBackLink(
-                            propertyDetailsProfessionallyValuedController.controllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
-                            Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
-                      } else {
-                        redirectWithBackLink(
-                          propertyDetailsNewBuildController.controllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode),
-                          Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
-                      }
-                  } yield result
-                }
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bindFromRequest()).fold(
+            formWithError => {
+              currentBackLink.map(backLink =>
+                BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
+                result <-
+                  if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
+                    redirectWithBackLink(
+                      propertyDetailsProfessionallyValuedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                  } else {
+                    redirectWithBackLink(
+                      propertyDetailsNewBuildController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                  }
+              } yield result
             }
-          }
+          )
         }
       }
     }
+  }
+
+}

@@ -25,7 +25,7 @@ import models.PropertyDetailsProfessionallyValued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
+import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
@@ -47,48 +47,34 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
   val controllerId: String = "PropertyDetailsProfessionallyValuedController"
 
 
-  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String,  mode: Option[String] = None) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheService.fetchAndGetData[String](editFromSummaryControllerId).map { entryController =>
-
-                    val isSummaryEditPage =
-                      mode.contains(EDIT_FROM_SUMMARY) &&
-                        entryController.contains(controllerId)
-
-                    val modeView =
-                      if (!mode.contains(EDIT_FROM_SUMMARY))
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                      else
-                        mode
-
-                    val backLinkView =
-                      if (isSummaryEditPage)
-                        AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-                      else
-                        backLink
-
-                    val displayData =
-                      PropertyDetailsProfessionallyValued(
-                        propertyDetails.value.flatMap(_.isValuedByAgent)
-                      )
-
-                    Ok(
-                      template(
-                        id,
-                        propertyDetails.periodKey,
-                        propertyDetailsProfessionallyValuedForm.fill(displayData),
-                        modeView,
-                        serviceInfoContent,
-                        backLinkView
-                      )
-                    )
+                dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                  } else {
+                    mode
                   }
+                /*  val backLinkView = {
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                    }
+                    else {
+                      backLink
+                    }
+                  }*/
+                  val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+                  Ok(template(id,
+                    propertyDetails.periodKey,
+                    propertyDetailsProfessionallyValuedForm.fill(displayData),
+                    modeView,
+                    serviceInfoContent,
+                    backLink))
                 }
               }
           }
@@ -97,40 +83,21 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
     }
   }
 
-  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-
-              for {
-                isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
-                _ <- dataCacheService.saveFormData(
-                  editFromSummaryControllerId,
-                  controllerId
-                )
-              } yield {
-
-                val displayData =
-                  PropertyDetailsProfessionallyValued(
-                    propertyDetails.value.flatMap(_.isValuedByAgent)
-                  )
-
-                val mode =
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                    .getOrElse(EDIT_FROM_SUMMARY)
-
-                Ok(
-                  template(
-                    id,
-                    propertyDetails.periodKey,
-                    propertyDetailsProfessionallyValuedForm.fill(displayData),
-                    Some(mode),
-                    serviceInfoContent,
-                    AtedUtils.getSummaryBackLink(id, None)
-                  )
-                )
+              dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn).getOrElse(EDIT_FROM_SUMMARY)
+                Ok(template(id,
+                  propertyDetails.periodKey,
+                  propertyDetailsProfessionallyValuedForm.fill(displayData),
+                  Some(mode),
+                  serviceInfoContent,
+                  AtedUtils.getSummaryBackLink(id, None)))
               }
           }
         }

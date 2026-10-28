@@ -39,7 +39,6 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
-import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future

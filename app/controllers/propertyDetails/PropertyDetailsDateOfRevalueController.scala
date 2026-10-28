@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 import models.*
@@ -42,7 +41,7 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        isFullTaxPeriodController: IsFullTaxPeriodController)
                                                       (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsDateOfRevalueController"
@@ -106,12 +105,11 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
               propertyDetailsFuture.flatMap { propertyDetails =>
                 for {
                   _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-                  result <-
-                       redirectWithBackLink(
-                         isFullTaxPeriodController.controllerId,
-                         controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
-                         Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
-                       )
+                  result <- redirectWithBackLink(
+                    isFullTaxPeriodController.controllerId,
+                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
+                  )
                 } yield result
               }
             }
