@@ -64,7 +64,6 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                         mode
                       }
                       val filledForm = propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued))
-                      println(s"PropertyDetailsHasBeenRevaluedController.view: filledForm = $filledForm")
                       println(cachedHasBeenRevalued)
                       Ok(template(id,
                         propertyDetails.periodKey,
@@ -94,10 +93,10 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
               },
               hasBeenRevalued => {
                 dataCacheService.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
-                val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
+                for {
                   hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
                 } yield {
-                  PropertyDetailsRevalued(
+                  HasBeenRevalued(
                     isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued)
                   )
                 }
