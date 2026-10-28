@@ -89,11 +89,15 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
             },
             revaluedValue => {
               dataCacheService.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
-              redirectWithBackLink(
-                propertyDetailsDateOfRevalueController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode),
-                Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode).url)
-              )
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsNewValuation(id,revaluedValue)
+                result <-
+                  redirectWithBackLink(
+                  propertyDetailsDateOfRevalueController.controllerId,
+                  controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode),
+                  Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode).url)
+                )
+              } yield result
             }
           )
         }

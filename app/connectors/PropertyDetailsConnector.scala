@@ -51,6 +51,7 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
   val saveDraftPropertyDetailsRevaluedURI = "property-details/revalued"
   val saveDraftPropertyDetailsHasBeenRevaluedURI = "property-details/has-been-revalued"
   val saveDraftPropertyDetailsFortyThousandValueDateOfChangeURI = "property-details/date-of-change"
+  val saveDraftPropertyDetailsNewValuationURI = "property-details/new-valuation"
   val saveDraftPropertyDetailsOwnedBeforeURI = "property-details/owned-before"
   val saveDraftPropertyDetailsNewBuildURI = "property-details/new-build"
   val saveDraftPropertyDetailsNewBuildDatesURI = "property-details/new-build-dates"
@@ -125,6 +126,14 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
     val authLink = authContext.atedReferenceNumber
     val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailsFortyThousandValueDateOfChangeURI/$id"
     val jsonData = Json.toJson(fortyThousandValueDateOfChange)
+    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
+  }
+  
+  def saveDraftPropertyDetailsNewValuation(id: String, propertyDetails: PropertyDetailsNewValuation)
+                                   (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.atedReferenceNumber
+    val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailsNewValuationURI/$id"
+    val jsonData = Json.toJson(propertyDetails)
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
   }
   
