@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
+import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 import models.*
@@ -90,28 +91,30 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
             },
             dateOfRevalue => {
               dataCacheService.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
-              val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                hasPropertyBeenRevalued <- dataCacheService.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
-                revaluedValue <- dataCacheService.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                dateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
+              for {
+                DateOfRevalueConstant <- dataCacheService.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant)
               } yield {
-                PropertyDetailsRevalued(
-                  isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),
-                  revaluedValue = revaluedValue.flatMap(_.revaluedValue),
-                  revaluedDate = dateOfRevalue.dateOfRevalue,
-                  partAcqDispDate = dateOfChange.flatMap(_.dateOfChange)
+                DateOfRevalue(
+                  dateOfRevalue = DateOfRevalueConstant.flatMap(_.dateOfRevalue)
                 )
               }
-              propertyDetailsFuture.flatMap { propertyDetails =>
                 for {
-                  _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-                  result <- redirectWithBackLink(
-                    isFullTaxPeriodController.controllerId,
-                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
-                  )
+                  _ <- propertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue)
+                  result <- if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    redirectWithBackLink(
+                      isFullTaxPeriodController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      isFullTaxPeriodController.controllerId,
+                      controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
+                    )
+                  }
                 } yield result
-              }
+
             }
           )
         }

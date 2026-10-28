@@ -187,6 +187,22 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
   
+  def saveDraftPropertyDetailsDateOfRevaluation(id: String, dateOfRevalue: DateOfRevalue)
+                                        (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewValuationDateOfChange] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsNewValuationDateOfChange] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+  
   def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
                                       (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
