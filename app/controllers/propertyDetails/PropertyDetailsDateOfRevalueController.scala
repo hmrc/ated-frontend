@@ -39,7 +39,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val backLinkCacheService: BackLinkCacheService,
                                                        val dataCacheService: DataCacheService,
-                                                       isFullTaxPeriodController: IsFullTaxPeriodController)
+                                                       isFullTaxPeriodController: IsFullTaxPeriodController,
+                                                       propertyDetailsSummaryController: PropertyDetailsSummaryController)
                                                       (using val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -102,7 +103,7 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                   _ <- propertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue)
                   result <- if (mode.contains(EDIT_FROM_SUMMARY)) {
                     redirectWithBackLink(
-                      isFullTaxPeriodController.controllerId,
+                      propertyDetailsSummaryController.controllerId,
                       controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
                       Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id, mode).url)
                     )

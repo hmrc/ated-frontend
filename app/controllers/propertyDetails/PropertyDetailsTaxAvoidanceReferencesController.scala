@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesControllerComponents,
                                                                 authAction: AuthAction,
                                                                 propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                                propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                                 serviceInfoService: ServiceInfoService,
                                                                 val propertyDetailsService: PropertyDetailsService,
                                                                 val dataCacheService: DataCacheService,
@@ -112,11 +113,19 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences(id, propertyDetails)
                 result <-
-                  redirectWithBackLink(
-                    propertyDetailsSupportingInfoController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
-                  )
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    redirectWithBackLink(
+                      propertyDetailsSummaryController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      propertyDetailsSupportingInfoController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id, mode).url)
+                    )
+                  }
               } yield result
             }
           )

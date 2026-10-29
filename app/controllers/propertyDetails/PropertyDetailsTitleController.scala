@@ -62,14 +62,14 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                   } else {
                     mode
                   }
-//                  val backLinkView = {
-//                    if (mode.contains(EDIT_FROM_SUMMARY)) {
-//                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
-//                    }
-//                    else {
-//                      backLink
-//                    }
-//                  }
+                  val backLinkView = {
+                    if (mode.contains(EDIT_FROM_SUMMARY)) {
+                      AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
+                    }
+                    else {
+                      backLink
+                    }
+                  }
                   Ok(template(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
                     modeView,
                     serviceInfoContent,
@@ -120,7 +120,13 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
               for {
                 _ <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
                 result <-
-                  if (AtedUtils.isEditSubmittedMode(mode)) {
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    redirectWithBackLink(
+                      propertyDetailsSummaryControllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                      backLink
+                    )
+                  } else if (AtedUtils.isEditSubmittedMode(mode)) {
                     redirectWithBackLink(
                       editLiabilityHasValueChangedController.controllerId,
                       controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(id),

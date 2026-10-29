@@ -35,6 +35,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthAction,
                                           propertyDetailsInReliefController: PropertyDetailsInReliefController,
                                           propertyDetailsTaxAvoidanceSchemeController : PropertyDetailsTaxAvoidanceSchemeController,
+                                          propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
                                           val dataCacheService: DataCacheService,
@@ -108,14 +109,26 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             propertyDetails => {
               propertyDetails.isFullPeriod match {
                 case Some(true) =>
-                  val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
-                    Some(PeriodUtils.periodEndDate(periodKey)))))
-                  propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
-                    redirectWithBackLink(
-                      propertyDetailsTaxAvoidanceSchemeController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-                      Some(routes.IsFullTaxPeriodController.view(id, mode).url))
-                  )
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
+                      Some(PeriodUtils.periodEndDate(periodKey)))))
+                    propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
+                      redirectWithBackLink(
+                        propertyDetailsSummaryController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(routes.IsFullTaxPeriodController.view(id, mode).url))
+                    )
+                  } else {
+                    val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
+                      Some(PeriodUtils.periodEndDate(periodKey)))))
+                    propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
+                      redirectWithBackLink(
+                        propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+                        Some(routes.IsFullTaxPeriodController.view(id, mode).url))
+                    )
+                  }
+     
                 case _ =>
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>
                     redirectWithBackLink(

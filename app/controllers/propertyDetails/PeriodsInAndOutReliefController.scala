@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponents,
                                                 authAction: AuthAction,
                                                 propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController,
+                                                propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
                                                 val dataCacheService: DataCacheService,
@@ -100,13 +101,21 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-  def continue(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def continue(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(redirectWithBackLink(
-        propertyDetailsTaxAvoidanceController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-        Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
-      ))
+      if (mode.contains(EDIT_FROM_SUMMARY)) {
+        ensureClientContext(redirectWithBackLink(
+          propertyDetailsSummaryController.controllerId,
+          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+          Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+        ))
+      } else {
+        ensureClientContext(redirectWithBackLink(
+          propertyDetailsTaxAvoidanceController.controllerId,
+          controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+          Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+        ))
+      }
     }
   }
 }
