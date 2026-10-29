@@ -48,7 +48,7 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
   val saveDraftPropertyDetailsTitleURI = "property-details/title"
   val saveDraftPropertyHasValueChangedURI = "property-details/has-value-change"
   val saveDraftPropertyDetailsAcquisitionURI = "property-details/acquisition"
-  val saveDraftPropertyDetailsRevaluedURI = "property-details/revalued"
+//  val saveDraftPropertyDetailsRevaluedURI = "property-details/revalued"
   val saveDraftPropertyDetailsHasBeenRevaluedURI = "property-details/has-been-revalued"
   val saveDraftPropertyDetailsFortyThousandValueDateOfChangeURI = "property-details/date-of-change"
   val saveDraftPropertyDetailsNewValuationURI = "property-details/new-valuation"
@@ -146,13 +146,13 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
   }
   
-  def saveDraftPropertyDetailsRevalued(id: String, propertyDetails: PropertyDetailsRevalued)
-                                         (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.atedReferenceNumber
-    val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailsRevaluedURI/$id"
-    val jsonData = Json.toJson(propertyDetails)
-    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
-  }
+//  def saveDraftPropertyDetailsRevalued(id: String, propertyDetails: PropertyDetailsRevalued)
+//                                         (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+//    val authLink = authContext.atedReferenceNumber
+//    val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailsRevaluedURI/$id"
+//    val jsonData = Json.toJson(propertyDetails)
+//    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
+//  }
 
   def saveDraftPropertyDetailsOwnedBefore(id: String, propertyDetails: PropertyDetailsOwnedBefore)
                                       (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {

@@ -85,15 +85,14 @@ object HasValueChanged {
   given formats: OFormat[HasValueChanged] = Json.format[HasValueChanged]
 }
 
-
-case class PropertyDetailsRevalued(isPropertyRevalued: Option[Boolean] = None,
-                                   revaluedValue: Option[BigDecimal] = None,
-                                   revaluedDate: Option[LocalDate] = None,
-                                   partAcqDispDate: Option[LocalDate] = None)
-
-object PropertyDetailsRevalued {
-  given formats: OFormat[PropertyDetailsRevalued] = Json.format[PropertyDetailsRevalued]
-}
+//case class PropertyDetailsRevalued(isPropertyRevalued: Option[Boolean] = None,
+//                                   revaluedValue: Option[BigDecimal] = None,
+//                                   revaluedDate: Option[LocalDate] = None,
+//                                   partAcqDispDate: Option[LocalDate] = None)
+//
+//object PropertyDetailsRevalued {
+//  given formats: OFormat[PropertyDetailsRevalued] = Json.format[PropertyDetailsRevalued]
+//}
 
 case class PropertyDetailsNewValuation(revaluedValue: Option[BigDecimal] = None)
 

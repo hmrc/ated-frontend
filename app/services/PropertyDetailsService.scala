@@ -203,21 +203,21 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
   
-  def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
-                                      (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
-    for {
-      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, revalued)
-    } yield {
-      propertyDetailsResponse.status match {
-        case OK => OK
-        case status =>
-          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] " +
-            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
-          throw new InternalServerException(s"[PropertyDetailsService]" +
-            s"[saveDraftPropertyDetailsRevalued] Invalid status when saving Property Details :$status")
-      }
-    }
-  }
+//  def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
+//                                      (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+//    for {
+//      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, revalued)
+//    } yield {
+//      propertyDetailsResponse.status match {
+//        case OK => OK
+//        case status =>
+//          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] " +
+//            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+//          throw new InternalServerException(s"[PropertyDetailsService]" +
+//            s"[saveDraftPropertyDetailsRevalued] Invalid status when saving Property Details :$status")
+//      }
+//    }
+//  }
 
   def saveDraftPropertyDetailsProfessionallyValued(id: String, updated: PropertyDetailsProfessionallyValued)
                                                   (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {

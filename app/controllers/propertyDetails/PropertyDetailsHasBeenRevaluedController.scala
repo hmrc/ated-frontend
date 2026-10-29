@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
-import models.{HasBeenRevalued, PropertyDetailsRevalued}
+import models.HasBeenRevalued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -64,7 +64,6 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                         mode
                       }
                       val filledForm = propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued))
-                      println(cachedHasBeenRevalued)
                       Ok(template(id,
                         propertyDetails.periodKey,
                         backLink,
@@ -102,7 +101,8 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                 }
                   for {
                     _ <- propertyDetailsService.saveDraftPropertyDetailsIsPropertyRevalued(id, hasBeenRevalued)
-                    result <- if (hasBeenRevalued.isPropertyRevalued.getOrElse(false))                 {
+                    result <- if (hasBeenRevalued.isPropertyRevalued.getOrElse(false))
+                    {
                       redirectWithBackLink(
                         dateOfChangeController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode),
