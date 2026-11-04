@@ -21,18 +21,19 @@ import config.ApplicationConfig
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-import javax.inject.Inject
 import models.{PropertyDetailsAddress, SelectPeriod}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.*
 import utils.AtedUtils
-import scala.concurrent.{ExecutionContext, Future}
 import utils.AtedUtils.EDIT_FROM_SUMMARY
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
                                                  auditConnector: DefaultAuditConnector,
@@ -78,7 +79,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def createNewDraft(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def createNewDraft(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -98,7 +99,6 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val showEditMessage: Boolean =
             if (mode.contains(EDIT_FROM_SUMMARY)) true else fromConfirmAddressPage
-
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
 
@@ -156,6 +156,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
+
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -198,7 +199,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def addressLookupRedirect(id: Option[String], periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def addressLookupRedirect(id: Option[String], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val returnUrl = id match {
@@ -284,4 +285,5 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
       "submittedPostcode" -> address.postcode,
       "submittedCountry" -> "UK")) //country is Hardcoded as UK as all property should be.
   }
-  }
+
+}

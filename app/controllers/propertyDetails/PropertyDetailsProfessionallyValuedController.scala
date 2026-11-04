@@ -44,6 +44,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsProfessionallyValuedController"
 
 
@@ -103,7 +104,6 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-
               for {
                 isPrevReturn <- dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn)
                 _ <- dataCacheService.saveFormData(
@@ -138,7 +138,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
     }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
