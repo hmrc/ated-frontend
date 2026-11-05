@@ -17,12 +17,13 @@
 package controllers.editLiability
 
 import java.util.UUID
-import builders._
+import builders.*
 import config.ApplicationConfig
 import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
+
 import java.time.format.DateTimeFormatter
-import java.time.{ZonedDateTime, LocalDate}
+import java.time.{LocalDate, ZoneId, ZonedDateTime}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
@@ -65,7 +66,8 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   val formBundleNo2: String = "123456789011"
   val organisationName: String = "ACME Limited"
 
-  val date: String = LocalDate.now.format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
+  val date: ZonedDateTime =
+    ZonedDateTime.of(2024, 3, 14, 12, 0, 0, 0, ZoneId.of("Europe/London"))
 
   class Setup {
 
@@ -85,7 +87,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     )
 
     def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId: String = "user-ated-test"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
@@ -96,7 +98,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     def getPrintFriendlyWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId: String = "user-ated-test"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheService.fetchAndGetData[EditLiabilityReturnsResponseModel]
@@ -119,10 +121,10 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   "DisposeLiabilitySentController.view" should {
     "return amended return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
 
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      viewWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      viewWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
@@ -156,10 +158,10 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     "take user to print friendly dispose liability confirmation" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      getPrintFriendlyWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      getPrintFriendlyWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
@@ -183,57 +185,110 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     }
 
     "take user to print friendly dispose liability confirmation bigger than zero" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      getPrintFriendlyWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      getPrintFriendlyWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
-          val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("header").text() must include("Your amended return has been successfully submitted")
+          Jsoup.parse(contentAsString(result)).getElementById("header").text() must include("Your amended return has been successfully submitted")
       }
     }
     "take user to print friendly dispose liability confirmation exactly zero" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      getPrintFriendlyWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      getPrintFriendlyWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
-          val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("header").text() must include("Your amended return has been successfully submitted")
+          Jsoup.parse(contentAsString(result)).getElementById("header").text() must include("Your amended return has been successfully submitted")
+      }
+    }
+
+    "redirect to account summary when no cached model exists" in new Setup {
+      getPrintFriendlyWithAuthorisedUser(None) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result) must be(Some("/ated/account-summary"))
+      }
+    }
+
+    "redirect to account summary when cached model exists but formBundle does not match" in new Setup {
+
+      val liabilityReturn = EditLiabilityReturnsResponse(
+        mode = "Post",
+        oldFormBundleNumber = formBundleNo2,
+        formBundleNumber = Some(formBundleNo2),
+        liabilityAmount = BigDecimal(1234.56),
+        amountDueOrRefund = BigDecimal(0.00),
+        paymentReference = Some("payment-ref-01")
+      )
+
+      val cachedResponseModel = EditLiabilityReturnsResponseModel(
+        date,
+        liabilityReturnResponse = Seq(liabilityReturn),
+        BigDecimal(0.00)
+      )
+
+      getPrintFriendlyWithAuthorisedUser(Some(cachedResponseModel)) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result) must be(Some("/ated/account-summary"))
+      }
+    }
+
+
+    "take user to print friendly dispose liability confirmation when paymentReference is missing" in new Setup {
+      val liabilityReturn: EditLiabilityReturnsResponse =
+        EditLiabilityReturnsResponse(
+          mode = "Post",
+          oldFormBundleNumber = formBundleNo1,
+          formBundleNumber = Some(formBundleNo2),
+          liabilityAmount = BigDecimal(1234.56),
+          amountDueOrRefund = BigDecimal(500.00),
+          paymentReference = None
+        )
+
+      val cachedResponseModel: EditLiabilityReturnsResponseModel =
+        EditLiabilityReturnsResponseModel(
+          date,
+          liabilityReturnResponse = Seq(liabilityReturn),
+          BigDecimal(0.00)
+        )
+
+      getPrintFriendlyWithAuthorisedUser(Some(cachedResponseModel)) { result =>
+        status(result) must be(OK)
+
+        Jsoup.parse(contentAsString(result)).getElementById("header").text() must include("Your amended return has been successfully submitted")
+
       }
     }
 
     "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      viewWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      viewWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
-          val document = Jsoup.parse(contentAsString(result))
-          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
+          Jsoup.parse(contentAsString(result)).title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
       }
     }
 
     "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      viewWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      viewWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(OK)
-          val document = Jsoup.parse(contentAsString(result))
-          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
+          Jsoup.parse(contentAsString(result)).title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
       }
     }
 
     "redirect to account summary, if response found in cache but formbundle doesn't match" in new Setup {
-      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
+      val liabilityReturn: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-      viewWithAuthorisedUser(Some(resp)) {
+      val cachedResponseModel: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(date, liabilityReturnResponse = Seq(liabilityReturn), BigDecimal(0.00))
+      viewWithAuthorisedUser(Some(cachedResponseModel)) {
         result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result) must be(Some("/ated/account-summary"))
