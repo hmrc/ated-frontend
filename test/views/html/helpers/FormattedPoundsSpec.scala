@@ -48,5 +48,11 @@ class FormattedPoundsSpec extends PlaySpec with GuiceOneAppPerTest {
       document.body().text() mustBe "£1,000"
     }
 
+    "support large values without overflow" in {
+
+      val document: Document = Jsoup.parse(contentAsString(views.html.helpers.formattedPounds(BigDecimal(100999999999.00))))
+      document.body().text() mustBe "£100,999,999,999"
+    }
+
   }
 }
