@@ -19,4 +19,5 @@
 
 @(value: BigDecimal, decimalPlaces: Int=0)
 
-@pounds(value.setScale(decimalPlaces, RoundingMode.HALF_UP))
+@pounds(value.setScale(decimalPlaces, RoundingMode.HALF_UP),
+ decimalPlaces)

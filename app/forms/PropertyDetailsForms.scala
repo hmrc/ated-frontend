@@ -126,9 +126,9 @@ object PropertyDetailsForms {
   private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
     model match {
       case Some(v) => {
-        if(v.toDouble >= maximumPropertyValue){
+        if(v >= maximumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-high")
-        } else if(v.toDouble < minimumPropertyValue){
+        } else if(v < minimumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-low")
         } else {
           Valid
@@ -256,36 +256,41 @@ object PropertyDetailsForms {
   )
 
   def propertyDetailsValueValidation: Mapping[Option[BigDecimal]] = {
-    import PropertyValueField._
-
     optional(text)
       .verifying("ated.property-details-value.incorrect-format", propertyValue => {
         propertyValue match {
           case Some(x) =>
-            val noDecimals = x.split("\\.").head
-            val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
-            strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", ""))
+            val cleaned =
+              x.trim
+                .replaceAll(" ", "")
+                .replace(",", "")
+                .replace("£", "")
+
+            cleaned.matches("[0-9]+(\\.[0-9]{1,2})?")
           case None => true
         }
       })
       .transform[Option[BigDecimal]](
         {
           case Some(a) =>
-            val noDecimals = a.split("\\.").head
-            val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
-            if (strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", "")))
-              Some(BigDecimal(strippedAndTrimmed.replace("£", "")))
-            else None
+            val cleaned =
+              a.trim
+                .replaceAll(" ", "")
+                .replace(",", "")
+                .replace("£", "")
+
+            if (cleaned.matches("[0-9]+(\\.[0-9]{1,2})?"))
+              Some(BigDecimal(cleaned))
+            else
+              None
+
           case _ => None
-        }, {
+        },
+        {
           case Some(a) => Some(a.toString)
-          case _ => None
+          case _       => None
         }
       )
-  }
-
-  object PropertyValueField {
-    def isValid(value: String): Boolean = Try(value.toLong).isSuccess
   }
 
   def validatePropertyDetailsTaxAvoidanceReference(f: Form[PropertyDetailsTaxAvoidanceReferences]): Form[PropertyDetailsTaxAvoidanceReferences] = {

@@ -82,4 +82,42 @@ class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPer
     }
   }
 
+  "propertyDetailsValueValidation" should {
+
+    "accept a whole number" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "100"))
+      result mustBe Right(Some(BigDecimal("100")))
+    }
+
+    "accept a decimal with 2 decimal places" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "100.99"))
+      result mustBe Right(Some(BigDecimal("100.99")))
+    }
+
+    "accept a currency symbol and commas" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "£100,000.99"))
+      result mustBe Right(Some(BigDecimal("100000.99")))
+    }
+
+    "accept a decimal with 1 decimal place" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "100.9"))
+      result mustBe Right(Some(BigDecimal("100.9")))
+    }
+
+    "reject more than 2 decimal places" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "100.999"))
+      result.isLeft mustBe true
+    }
+
+    "reject non-numeric values" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "abc"))
+      result.isLeft mustBe true
+    }
+
+    "reject malformed decimal values" in {
+      val result = propertyDetailsValueValidation.bind(Map("" -> "100..99"))
+      result.isLeft mustBe true
+    }
+  }
+
 }
