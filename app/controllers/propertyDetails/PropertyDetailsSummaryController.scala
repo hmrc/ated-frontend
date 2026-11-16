@@ -65,6 +65,26 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
+  def viewWithoutCalculation(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(propertyKey) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap(backLink =>
+                Future.successful(Ok(template(propertyDetails,
+                  PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
+                  AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
+                  PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+                  serviceInfoContent,
+                  backLink)
+                )))
+          }
+        }
+      }
+    }
+  }
+
   def submit(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext(redirectWithBackLink(

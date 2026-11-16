@@ -50,7 +50,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap { x =>
           x.fold(
             Future.successful(
-              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(oldFormBundleNo)))
+              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewWithoutCalculation(oldFormBundleNo)))
           ) { propertyDetails =>
               propertyDetails.calculated.flatMap(_.amountDueOrRefund) match {
                 case Some(amount) if amount < 0 =>
@@ -72,7 +72,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap(
           x => x.fold(
             Future.successful(
-              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(oldFormBundleNo))
+              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewWithoutCalculation(oldFormBundleNo))
             )
           )
           (y => viewSummaryDetails(y))
