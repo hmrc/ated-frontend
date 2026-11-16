@@ -54,6 +54,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
   val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController = mock[PropertyDetailsTaxAvoidanceSchemeController]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   given messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -76,6 +77,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       mockMcc,
       mockAuthAction,
       mockPropertyDetailsTaxAvoidanceController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,
@@ -91,7 +93,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       test(result)
     }
 
-    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
+    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails, mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -103,11 +105,11 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testPeriodsInAndOutReliefController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.view(propertyDetails.id, mode).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def deleteWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
+    def deleteWithAuthorisedUser(mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -117,7 +119,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
       when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
-      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01"), None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01"), mode).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -179,6 +181,19 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
               document.getElementById("submit").text() must be("Save and continue")
           }
         }
+
+        "preserve edit from summary mode when displaying the view" in new Setup {
+          val propertyDetails: PropertyDetails =
+            PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
+
+          getDataWithAuthorisedUser(propertyDetails, Some(EDIT_FROM_SUMMARY)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.select("form").attr("action") must include("mode=editFromSummary")
+          }
+        }
       }
     }
 
@@ -192,6 +207,16 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
             document.title() must be(TitleBuilder.buildTitle("Add periods when the property was in relief and when it was liable for an ATED charge"))
 
             document.getElementById("submit").text() must be("Save and continue")
+        }
+      }
+
+      "preserve edit from summary mode when deleting a period" in new Setup {
+        deleteWithAuthorisedUser(Some(EDIT_FROM_SUMMARY)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+
+            document.select("form").attr("action") must include("mode=editFromSummary")
         }
       }
     }
@@ -219,14 +244,14 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
         }
       }
 
-      "for valid data when editing from summary forward to the Property Details tax avoidance Page" in new Setup {
+      "for valid data when editing from summary forward to the Property Details Summary Page" in new Setup {
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
 
         continueWithAuthorisedUser(Some(EDIT_FROM_SUMMARY)) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
         }
       }
     }

@@ -39,6 +39,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -54,6 +55,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockDataCacheService: DataCacheService = mock[DataCacheService]
   val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController = mock[PropertyDetailsTaxAvoidanceSchemeController]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   given messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -74,6 +76,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       mockMcc,
       mockAuthAction,
       mockPropertyDetailsTaxAvoidanceController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,
@@ -120,7 +123,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPeriodDatesLiableController.save("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodDatesLiableController.save("1", periodKey, None, Some(EDIT_FROM_SUMMARY)).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -269,7 +272,8 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
               redirectLocation(result).get must include("/liability/create/tax-avoidance/view")
           }
         }
-        "for valid data when editing from summary forward to the Property Details tax avoidance Page" in new Setup {
+
+        "for valid data when editing from summary, redirect to the summary page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1").copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
@@ -283,7 +287,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
           submitWithAuthorisedUser(formBody, propertyDetails, Some(EDIT_FROM_SUMMARY)) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
+              redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
 
