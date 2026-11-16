@@ -137,11 +137,11 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
   }
   
-  def saveDraftPropertyDetailsDateOfRevaluation(id: String, propertyDetails: DateOfRevalue)
+  def saveDraftPropertyDetailsDateOfRevaluation(id: String, dateOfRevalue: DateOfRevalue)
                                    (using authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     val authLink = authContext.atedReferenceNumber
     val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailDateOfRevaluationURI/$id"
-    val jsonData = Json.toJson(propertyDetails)
+    val jsonData = Json.toJson(dateOfRevalue)
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
   }
 

@@ -195,10 +195,10 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewValuationDateOfChange] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsDateOfRevaluation] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
-            s"[saveDraftPropertyDetailsNewValuationDateOfChange] Invalid status when saving Property Details :$status")
+            s"[saveDraftPropertyDetailsDateOfRevaluation] Invalid status when saving Property Details :$status")
       }
     }
   }

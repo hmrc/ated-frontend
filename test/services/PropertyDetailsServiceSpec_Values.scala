@@ -51,6 +51,8 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
   }
 
   override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockPropertyDetailsConnector, mockDataCacheService)
   }
 
   "PropertyDetailsService" must {
@@ -103,27 +105,143 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
       }
     }
 
-    "Save property Details Revalued" must {
+    "Save property Details IsPropertyRevalued" must {
       "save the value and return the response from the connector" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
-        val propValue = new PropertyDetailsRevalued()
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
+        val propValue = mock[HasBeenRevalued]
 
-        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsRevalued("1", propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsHasBeenRevalued(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsIsPropertyRevalued("1", propValue)
+
         await(result) must be(OK)
-
       }
 
       "save and throw an Exception if it fails" in new Setup {
-        val propValue = new PropertyDetailsRevalued()
-        val successResponse: JsValue = Json.toJson(propValue)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
+        val propValue = mock[HasBeenRevalued]
 
-        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsRevalued("1", propValue)
-        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
-        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] Invalid status when saving Property Details :$BAD_REQUEST")
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsHasBeenRevalued(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsIsPropertyRevalued("1", propValue)
+
+        val thrown: InternalServerException =
+          the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(
+          s"[PropertyDetailsService][saveDraftPropertyDetailsIsPropertyRevalued] Invalid status when saving Property Details :$BAD_REQUEST"
+        )
+      }
+    }
+
+    "Save property Details FortyThousandValueDateOfChange" must {
+      "save the value and return the response from the connector" in new Setup {
+        val propValue = mock[DateOfChange]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsFortyThousandValueDateOfChange(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsFortyThousandValueDateOfChange("1", propValue)
+
+        await(result) must be(OK)
+      }
+
+      "save and throw an Exception if it fails" in new Setup {
+        val propValue = mock[DateOfChange]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsFortyThousandValueDateOfChange(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsFortyThousandValueDateOfChange("1", propValue)
+
+        val thrown: InternalServerException =
+          the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(
+          s"[PropertyDetailsService][saveDraftPropertyDetailsFortyThousandValueDateOfChange] Invalid status when saving Property Details :$BAD_REQUEST"
+        )
+      }
+    }
+
+    "Save property Details NewValuation" must {
+      "save the value and return the response from the connector" in new Setup {
+        val propValue = mock[PropertyDetailsNewValuation]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewValuation(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsNewValuation("1", propValue)
+
+        await(result) must be(OK)
+      }
+
+      "save and throw an Exception if it fails" in new Setup {
+        val propValue = mock[PropertyDetailsNewValuation]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewValuation(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsNewValuation("1", propValue)
+
+        val thrown: InternalServerException =
+          the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(
+          s"[PropertyDetailsService][saveDraftPropertyDetailsNewValuation] Invalid status when saving Property Details :$BAD_REQUEST"
+        )
+      }
+    }
+
+    "Save property Details DateOfRevaluation" must {
+      "save the value and return the response from the connector" in new Setup {
+        val propValue = mock[DateOfRevalue]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDateOfRevaluation(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation("1", propValue)
+
+        await(result) must be(OK)
+      }
+
+      "save and throw an Exception if it fails" in new Setup {
+        val propValue = mock[DateOfRevalue]
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDateOfRevaluation(
+          ArgumentMatchers.eq("1"), ArgumentMatchers.eq(propValue)
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+
+        val result: Future[Int] =
+          testPropertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation("1", propValue)
+
+        val thrown: InternalServerException =
+          the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(
+          s"[PropertyDetailsService][saveDraftPropertyDetailsDateOfRevaluation] Invalid status when saving Property Details :$BAD_REQUEST"
+        )
       }
     }
 
