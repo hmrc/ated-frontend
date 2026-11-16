@@ -104,6 +104,21 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
+    def getWithoutCalculationWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
+
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
+      when(mockDataCacheService.fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheService.fetchAndGetBackLink(ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      val result = testPropertyDetailsSummaryController.viewWithoutCalculation(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def getWithDeleteDraftLink(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2017
       val userId = s"user-${UUID.randomUUID}"
@@ -214,6 +229,21 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
           verify(mockPropertyDetailsService).calculateDraftPropertyDetails(ArgumentMatchers.eq("1"))(using ArgumentMatchers.any(), ArgumentMatchers.any())
           val document = Jsoup.parse(contentAsString(result))
           document.body().text() must include("£1,000")
+        }
+      }
+    }
+
+    "viewWithoutCalculation" must {
+      "display the cached property details without calculating the draft property details" in new Setup {
+        val oldFormBundleNo = "12345678901"
+        val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = oldFormBundleNo, postCode = "NE280NG", liabilityAmount = Some(BigDecimal("1000")))
+
+        getWithoutCalculationWithAuthorisedUser(oldFormBundleNo, propertyDetails) { result => status(result) mustBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          document.title() mustBe TitleBuilder.buildTitle("Check your details are correct")
+          document.body().text() must include("£1,000")
+          verify(mockPropertyDetailsService).retrieveDraftPropertyDetails(ArgumentMatchers.eq(oldFormBundleNo))(using ArgumentMatchers.any(), ArgumentMatchers.any())
+          verify(mockPropertyDetailsService, never()).calculateDraftPropertyDetails(ArgumentMatchers.any[String]())(using ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
     }
