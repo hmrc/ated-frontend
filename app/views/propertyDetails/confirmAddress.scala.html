@@ -84,11 +84,11 @@
 
 
     @if(!mode.contains(EDIT_FROM_SUMMARY)){
-    <p id="selectADifferentProperty" class="govuk-body">
-        <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
-        @messages("ated.confirm-address.selectDifferentProperty")
-        </a>
-    </p>
+        <p id="selectADifferentProperty" class="govuk-body">
+            <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
+              @messages("ated.confirm-address.selectDifferentProperty")
+            </a>
+        </p>
     }
 
     @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
