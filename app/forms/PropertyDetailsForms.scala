@@ -126,9 +126,9 @@ object PropertyDetailsForms {
   private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
     model match {
       case Some(v) => {
-        if(v >= maximumPropertyValue){
+        if(v.toDouble > maximumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-high")
-        } else if(v < minimumPropertyValue){
+        } else if(v.toDouble < minimumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-low")
         } else {
           Valid
@@ -482,7 +482,7 @@ object PropertyDetailsForms {
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {
     if (requiresValidation) {
       if (f.data.contains(fieldName) && !f.data.get(fieldName).contains("")) {
-        if (fieldValue.exists(a => a.toDouble >= maximumPropertyValue)) {
+        if (fieldValue.exists(a => a.toDouble > maximumPropertyValue)) {
           Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-high")))
         } else if (fieldValue.exists(a => a.toDouble < minimumPropertyValue)) {
           Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-low")))
