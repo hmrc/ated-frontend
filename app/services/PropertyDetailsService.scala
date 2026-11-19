@@ -292,12 +292,16 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     validateCalculateDraftPropertyDetails(id, isChangeLiability = true).flatMap {
       case true =>
       propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
-        (propertyDetailsResponse.status: @unchecked) match {
+        propertyDetailsResponse.status match {
           case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
           case NO_CONTENT =>
             logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
               "Return details incomplete - redirecting to summary without calc")
             None
+          case status =>
+            throw new InternalServerException(s"[PropertyDetailsService][calculateDraftChangeLiability]" +
+              s" Invalid status when calculating change liability - status: $status," +
+              s" response.body : ${propertyDetailsResponse.body}")
         }
       }
       case false => Future.successful(None)
