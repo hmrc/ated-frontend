@@ -43,12 +43,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val urBannerLink: String = loadConfig("urBanner.link")
   lazy val serviceSignOut:String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${loadConfig("service-signout.url")}"""
 
-  lazy val baseUri: String = conf.baseUrl("cachable.session-cache")
-  lazy val defaultSource: String = "ated-frontend"
-  lazy val domain: String = conf.getConfString(
-    "cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'")
-  )
-
   lazy val basGatewayHost: String = s"${conf.getString("microservice.services.auth.bas-gateway-frontend.host")}"
   lazy val loginCallback: String = conf.getString("microservice.services.auth.login-callback.url")
   lazy val loginPath: String = s"${conf.getString("microservice.services.auth.login-path")}"

@@ -58,8 +58,6 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
       "microservice.services.ated.port"                          -> wireMockPort,
       "microservice.services.session-cache.host"                 -> wireMockHost,
       "microservice.services.session-cache.port"                 -> wireMockPort,
-      "microservice.services.cachable.session-cache.host"        -> wireMockHost,
-      "microservice.services.cachable.session-cache.port"        -> wireMockPort,
       "microservice.services.etmp-hod.host"                      -> wireMockHost,
       "microservice.services.etmp-hod.port"                      -> wireMockPort,
       "microservice.services.auth.company-auth.host"             -> wireMockHost,
