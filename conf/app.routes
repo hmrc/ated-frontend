@@ -253,6 +253,7 @@ POST     /liability/create/periods-in-relief/continue/:propertyKey/period/:perio
 GET      /liability/create/periods-in-relief/delete/:propertyKey/period/:startDate   controllers.propertyDetails.PeriodsInAndOutReliefController.deletePeriod(propertyKey: String, startDate: java.time.LocalDate, mode: Option[String])
 
 GET      /liability/create/summary/:propertyKey                         controllers.propertyDetails.PropertyDetailsSummaryController.view(propertyKey: String)
+GET      /liability/create/summary/:id/no-calculation                   controllers.propertyDetails.PropertyDetailsSummaryController.viewWithoutCalculation(id: String)
 POST     /liability/create/summary/:propertyKey                         controllers.propertyDetails.PropertyDetailsSummaryController.submit(propertyKey: String)
 GET      /liability/create/summary/:propertyKey/print                   controllers.propertyDetails.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyKey: String)
 GET      /liability/delete/draft/:propertyKey/:periodKey                controllers.propertyDetails.PropertyDetailsSummaryController.deleteDraft(propertyKey: String, periodKey: Int)
