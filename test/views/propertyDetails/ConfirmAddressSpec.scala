@@ -29,6 +29,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import utils.AtedUtils.{EDIT_FROM_SUMMARY, EDIT_PREV_RETURN, EDIT_SUBMITTED}
 import views.html.propertyDetails.confirmAddress
 
 class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -44,7 +45,7 @@ class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
 
     info("as a client I want to view my property address details")
 
-    Scenario("return the property address") {
+    Scenario("return the property address when mode is other than edit from summary, edit from prev return and edit submitted") {
 
       Given("the client has entered an address")
       When("The user views the confirm address page")
@@ -66,11 +67,62 @@ class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.getElementById("address").text() contains "addr4")
       assert(document.getElementById("address").text() contains "XX1 1XX")
       assert(document.getElementById("edit-address-link").text() === "Edit address")
+      assert(document.getElementById("selectADifferentProperty").text() === "Select a different property")
       assert(document.getElementsByClass("govuk-button").text() === "Confirm and continue")
 
       Then("The back link is correct")
       assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
+    }
+
+    Scenario("return the property address when mode edit from summary") {
+
+      Given("the client has entered an address")
+      When("The user views the confirm address page")
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = "XX1 1XX")
+      val html = injectedViewInstance("1", 2015, propertyDetails, mode = Some(EDIT_FROM_SUMMARY), Html(""), Some("http://backLink"))
+      val document = Jsoup.parse(html.toString())
+      Then("The title should match - Confirm address - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Confirm address - Submit and view your ATED returns - GOV.UK")
+
+      Then("The header should match - Confirm address")
+      assert(document.getElementsByTag("h1").text() contains "Confirm address")
+
+      Then("The subheader should be - Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+
+      assert(document.getElementById("selectADifferentProperty") === null)
+
+    }
+    Scenario("return the property address when mode edit from previous returns") {
+
+      Given("the client has entered an address")
+      When("The user views the confirm address page")
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = "XX1 1XX")
+      val html = injectedViewInstance("1", 2015, propertyDetails, mode = Some(EDIT_PREV_RETURN), Html(""), Some("http://backLink"))
+      val document = Jsoup.parse(html.toString())
+
+      Then("The header should match - Confirm address")
+      assert(document.getElementsByTag("h1").text() contains "Confirm address")
+
+      assert(document.getElementById("selectADifferentProperty") === null)
+
+    }
+    Scenario("return the property address when mode edit from submitted returns") {
+
+      Given("the client has entered an address")
+      When("The user views the confirm address page")
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = "XX1 1XX")
+      val html = injectedViewInstance("1", 2015, propertyDetails, mode = Some(EDIT_SUBMITTED), Html(""), Some("http://backLink"))
+      val document = Jsoup.parse(html.toString())
+      Then("The title should match - Confirm address - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Confirm address - Submit and view your ATED returns - GOV.UK")
+
+      Then("The header should match - Confirm address")
+      assert(document.getElementsByTag("h1").text() contains "Confirm address")
+
+      assert(document.getElementById("selectADifferentProperty") === null)
+
     }
   }
 }
