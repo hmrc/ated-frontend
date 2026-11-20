@@ -17,34 +17,35 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
 import models.*
 import play.api.i18n.{I18nSupport, Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedUtils.EDIT_FROM_SUMMARY
+import utils.AtedUtils
+import utils.AtedUtils.{EDIT_FROM_SUMMARY, isPrevReturn}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
+                                            propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                             serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
                                             val dataCacheService: DataCacheService,
                                             val backLinkCacheService: BackLinkCacheService,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with ControllerIds{
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PeriodDatesLiableController"
 
   given messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
@@ -66,7 +67,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
               }
               getBackLink(id, addOption, mode).map { backLink =>
                 Ok(template(id, propertyDetails.periodKey, filledForm,
-                  getTitle(addOption), addOption,  mode, serviceInfoContent, backLink))
+                  getTitle(addOption), addOption, mode, serviceInfoContent, backLink))
               }
           }
         }
@@ -78,8 +79,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-//         val mode = Some("add")
-         val addOption = Some("add")
+          val addOption = Some("add")
           getBackLink(id, addOption, mode).map { backLink =>
             Ok(template(id, periodKey, periodDatesLiableForm,
               getTitle(addOption), addOption, mode, serviceInfoContent, backLink))
@@ -89,7 +89,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def save(id: String, periodKey: Int, addOption: Option[String] = None, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, periodKey: Int, addOption: Option[String] = None, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         propertyDetailsCacheResponse(id) {
@@ -99,7 +99,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
               formWithError => {
                 getBackLink(id, addOption, mode).map { backLink =>
                   BadRequest(template(id, periodKey, formWithError,
-                    getTitle(addOption), addOption,mode, serviceInfoContent, backLink))
+                    getTitle(addOption), addOption, mode, serviceInfoContent, backLink))
                 }
               },
               propertyDetails => {
@@ -108,18 +108,24 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                     for {
                       _ <- propertyDetailsService.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
                     } yield {
-                      Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id,mode))
+                      Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode))
                     }
                   case _ =>
                     for {
                       _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                      result <- ensureClientContext(
-                        redirectWithBackLink(
-                        propertyDetailsTaxAvoidanceSchemeController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-                        Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, addOption,  mode).url)
-                      )
-                      )
+                      result <- if (mode.contains(EDIT_FROM_SUMMARY)) {
+                        ensureClientContext(redirectWithBackLink(
+                          propertyDetailsSummaryController.controllerId,
+                          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                          Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, mode).url)
+                        ))
+                      } else {
+                        ensureClientContext(redirectWithBackLink(
+                          propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                          controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+                          Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, mode).url)
+                        ))
+                      }
                     } yield {
                       result
                     }
@@ -133,7 +139,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
 
   private def getBackLink(id: String, addOption: Option[String], mode: Option[String])(using hc: HeaderCarrier) = {
     addOption match {
-      case Some("add") => Future.successful(Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id,  mode).url))
+      case Some("add") => Future.successful(Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url))
       case _ => currentBackLink
     }
   }

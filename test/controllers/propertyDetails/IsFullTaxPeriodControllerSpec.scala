@@ -57,6 +57,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockBackLinkCacheService: BackLinkCacheService = mock[BackLinkCacheService]
   val mockPropertyDetailsInReliefController: PropertyDetailsInReliefController = mock[PropertyDetailsInReliefController]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController = mock[PropertyDetailsTaxAvoidanceSchemeController]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   given messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -78,6 +79,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       mockAuthAction,
       mockPropertyDetailsInReliefController,
       mockPropertyDetailsTaxAvoidanceController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,
@@ -323,7 +325,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             redirectLocation(result).get must include("/liability/create/tax-avoidance/view")
         }
       }
-      "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the stax avoidance page" in new Setup {
+      "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), redirect to the summary page" in new Setup {
         when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser(FakeRequest()
           .withMethod("POST")
@@ -332,7 +334,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
           Some(EDIT_FROM_SUMMARY)
         ) { result =>
           status(result) must be(SEE_OTHER)
-          redirectLocation(result).get must include("/ated/liability/create/tax-avoidance/view/1?mode=editFromSummary")
+          redirectLocation(result).get must include("/ated/liability/create/summary/1")
         }
       }
     }

@@ -18,12 +18,12 @@ package controllers.propertyDetails
 
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms.*
 import models.DateOfChange
 import play.api.i18n.{Messages, MessagesImpl}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.*
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{FortyThousandValueDateOfChange, SelectedPreviousReturn}
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
@@ -44,9 +44,10 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsDateOfChangeController"
 
-  def view(id: String,  mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -55,7 +56,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
               currentBackLink.flatMap { backlink =>
                 dataCacheService.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
-                    val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
+                    val dateOfChange = propertyDetails.value.flatMap(_.partAcqDispDate).orElse(cachedDateOfChange.flatMap(_.dateOfChange))
                     val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                     } else {
@@ -91,11 +92,22 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
             },
             dateOfChange => {
               dataCacheService.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
-              redirectWithBackLink(
-                newValuationController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode),
-                Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode).url)
-              )
+              for {
+                FortyThousandValueDateOfChange <- dataCacheService.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
+              } yield {
+                DateOfChange(
+                  dateOfChange = FortyThousandValueDateOfChange.flatMap(_.dateOfChange)
+                )
+              }
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsFortyThousandValueDateOfChange(id, dateOfChange)
+                result <-
+                  redirectWithBackLink(
+                    newValuationController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id, mode).url)
+                  )
+              } yield result
             }
           )
         }

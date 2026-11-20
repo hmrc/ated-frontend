@@ -20,16 +20,15 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityDatesLiableController
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerComponents,
@@ -47,6 +46,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   override val controllerId: String = "PropertyDetailsInReliefController"
 
 
@@ -99,7 +99,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                       )
                     case (false, false) =>
                       redirectWithBackLink(periodDatesLiableController.controllerId,
-                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id,None, mode),
+                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id, None, mode),
                         backLink
                       )
                     case (false, true) =>

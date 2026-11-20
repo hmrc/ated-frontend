@@ -17,24 +17,23 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
-import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 import utils.{AtedUtils, PeriodUtils}
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponents,
                                                 authAction: AuthAction,
                                                 propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController,
+                                                propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
                                                 val dataCacheService: DataCacheService,
@@ -42,12 +41,13 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.propertyDetails.periodsInAndOutRelief)
                                                (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PeriodsInAndOutReliefController"
 
-  def view(id: String, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -74,26 +74,26 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-  def deletePeriod(id: String, startDate: LocalDate, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def deletePeriod(id: String, startDate: LocalDate, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           propertyDetails <- propertyDetailsService.deleteDraftPropertyDetailsPeriod(id, startDate)
           serviceInfoContent <- serviceInfoService.getPartial
           result <-
-          currentBackLink.flatMap(backLink =>
-            val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
-              AtedUtils.getEditSubmittedMode(propertyDetails)
-            } else {
-              mode
-            }
-            Future.successful(Ok(template(id, propertyDetails.periodKey,
-              periodsInAndOutReliefForm,
-              PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
-              modeView,
-              serviceInfoContent,
-              backLink))
-            ))
+            currentBackLink.flatMap(backLink =>
+              val modeView = if (!mode.contains(EDIT_FROM_SUMMARY)) {
+                AtedUtils.getEditSubmittedMode(propertyDetails)
+              } else {
+                mode
+              }
+              Future.successful(Ok(template(id, propertyDetails.periodKey,
+                periodsInAndOutReliefForm,
+                PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
+                modeView,
+                serviceInfoContent,
+                backLink))
+              ))
         } yield {
           result
         }
@@ -101,15 +101,21 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-  def continue(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+  def continue(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(
-          redirectWithBackLink(
-            propertyDetailsTaxAvoidanceController.controllerId,
-            controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
-            Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
-          )
-    )
+      if (mode.contains(EDIT_FROM_SUMMARY)) {
+        ensureClientContext(redirectWithBackLink(
+          propertyDetailsSummaryController.controllerId,
+          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+          Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+        ))
+      } else {
+        ensureClientContext(redirectWithBackLink(
+          propertyDetailsTaxAvoidanceController.controllerId,
+          controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode),
+          Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id, mode).url)
+        ))
+      }
     }
   }
 }

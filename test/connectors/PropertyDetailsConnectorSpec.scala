@@ -120,12 +120,40 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
       }
     }
 
-    "save property details Revalued" must {
-      val propertyDetails = new PropertyDetailsRevalued()
+    "save property details has been revalued" must {
+      "call correct url and http method to save " in new Setup {
+        val isPropertyRevalued: HasBeenRevalued = HasBeenRevalued(Some(true))
+        testPropertyDetailsConnector.saveDraftPropertyDetailsHasBeenRevalued(id, isPropertyRevalued = isPropertyRevalued)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsHasBeenRevaluedURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
+      }
+    }
 
-      "call correct url and http method to save saveDraftPropertyDetailsRevalued" in new Setup {
-        testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsRevaluedURI)))(hc)
+    "save property details date of revalue" must {
+      "call correct url and http method to save " in new Setup {
+        val dateOfRevalue: DateOfRevalue = DateOfRevalue(Some(LocalDate.parse("2024-04-01")))
+        testPropertyDetailsConnector.saveDraftPropertyDetailsDateOfRevaluation(id, dateOfRevalue = dateOfRevalue)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailDateOfRevaluationURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
+      }
+    }
+
+    "save property details revaluation value" must {
+      "call correct url and http method to save " in new Setup {
+        val revaluedValue: PropertyDetailsNewValuation = PropertyDetailsNewValuation(Some(BigDecimal(500000)))
+
+        testPropertyDetailsConnector.saveDraftPropertyDetailsNewValuation(id, revaluedValue)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsNewValuationURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
+      }
+    }
+
+    "save property details date of change" must {
+      "call correct url and http method to save " in new Setup {
+        val fortyThousandValueDateOfChange: DateOfChange = DateOfChange(Some(LocalDate.parse("2024-04-01")))
+
+        testPropertyDetailsConnector.saveDraftPropertyDetailsFortyThousandValueDateOfChange(id, fortyThousandValueDateOfChange = fortyThousandValueDateOfChange)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsFortyThousandValueDateOfChangeURI)))(hc)
         verifyNoMoreInteractions(mockHttpClient)
       }
     }

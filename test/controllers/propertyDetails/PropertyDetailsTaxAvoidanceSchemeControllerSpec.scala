@@ -60,6 +60,8 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
+  
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
@@ -76,6 +78,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
       mockAuthAction,
       mockPropertyDetailsTaxAvoidanceReferencesController,
       mockPropertyDetailsSupportingInfoController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,
@@ -225,7 +228,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
           }
         }
 
-        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the Supporting infor page" in new Setup {
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), redirect to summary page" in new Setup {
 
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
@@ -236,7 +239,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
             Some(EDIT_FROM_SUMMARY)
           ) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/supporting-info/view/1?mode=editFromSummary")
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
       }
