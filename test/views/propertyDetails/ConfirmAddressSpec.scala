@@ -45,7 +45,7 @@ class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
 
     info("as a client I want to view my property address details")
 
-    Scenario("return the property address when mode is other than edit from summary") {
+    Scenario("return the property address when mode is other than edit from summary, edit from prev return and edit submitted") {
 
       Given("the client has entered an address")
       When("The user views the confirm address page")
