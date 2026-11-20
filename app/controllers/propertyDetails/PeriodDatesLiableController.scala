@@ -29,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -95,7 +96,11 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest(), mode.contains("add"), lineItems, dateFields).fold(
+            val cleanedData = AtedUtils.trimDateFields(
+              request.body.asFormUrlEncoded.getOrElse(Map.empty)
+            )
+
+            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest(cleanedData), mode.contains("add"), lineItems, dateFields).fold(
               formWithError => {
                 getBackLink(id, addOption, mode).map { backLink =>
                   BadRequest(template(id, periodKey, formWithError,

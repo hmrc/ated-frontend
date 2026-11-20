@@ -86,7 +86,10 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            validateWhenAcquiredDate(periodKey, propertyDetailsWhenAcquiredDatesForm.bindFromRequest(), dateFields).fold(
+            val cleanedData = AtedUtils.trimDateFields(
+              request.body.asFormUrlEncoded.getOrElse(Map.empty)
+            )
+            validateWhenAcquiredDate(periodKey, propertyDetailsWhenAcquiredDatesForm.bindFromRequest(cleanedData), dateFields).fold(
               formWithError => {
                 currentBackLink.map(backLink =>
                   BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))

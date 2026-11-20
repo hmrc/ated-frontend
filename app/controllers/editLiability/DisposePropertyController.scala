@@ -26,6 +26,7 @@ import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, BackLinkService, DataCacheService, DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -94,7 +95,10 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          validateForm(disposeLiabilityForm.bindFromRequest(), dateFields).fold(
+          val cleanedData = AtedUtils.trimDateFields(
+            request.body.asFormUrlEncoded.getOrElse(Map.empty)
+          )
+          validateForm(disposeLiabilityForm.bindFromRequest(cleanedData), dateFields).fold(
             formWithErrors => {
               currentBackLink.map { backLink =>
                 BadRequest(

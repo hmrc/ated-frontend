@@ -89,7 +89,10 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest(), dateFields).fold(
+            val cleanedData = AtedUtils.trimDateFields(
+              request.body.asFormUrlEncoded.getOrElse(Map.empty)
+            )
+            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest(cleanedData), dateFields).fold(
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>
