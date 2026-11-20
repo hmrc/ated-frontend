@@ -24,8 +24,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, BackLinkService, DataCacheService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedUtils._
-import utils.{PeriodUtils, ReliefsUtils}
+import utils.AtedUtils.*
+import utils.{AtedUtils, PeriodUtils, ReliefsUtils}
 
 import javax.inject.Inject
 import scala.collection.mutable.ArrayBuffer
@@ -97,7 +97,10 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           validatePeriodKey(periodKey) {
             val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString).toSeq))
-            validateForm(reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get))).fold(
+            val cleanedData = AtedUtils.trimDateFields(
+              ReliefsUtils.cleanDateTuples(data.get)
+            )
+            validateForm(reliefsForm.bindFromRequest(cleanedData)).fold(
               formWithError =>
                 currentBackLink.map { backLink =>
                   BadRequest(template(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))

@@ -85,7 +85,10 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(), dateFields).fold(
+          val cleanedData = AtedUtils.trimDateFields(
+            request.body.asFormUrlEncoded.getOrElse(Map.empty)
+          )
+          validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(cleanedData), dateFields).fold(
             formWithError => {
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
