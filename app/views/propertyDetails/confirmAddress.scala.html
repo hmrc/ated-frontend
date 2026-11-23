@@ -82,7 +82,7 @@
         </a>
     </p>
 
-    @if(!mode.contains(EDIT_FROM_SUMMARY) && !mode.contains(EDIT_SUBMITTED) && !mode.contains(EDIT_PREV_RETURN)){
+    @if(!mode.contains(EDIT_FROM_SUMMARY) && !mode.contains(EDIT_SUBMITTED)){
         <p id="selectADifferentProperty" class="govuk-body">
             <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
               @messages("ated.confirm-address.selectDifferentProperty")

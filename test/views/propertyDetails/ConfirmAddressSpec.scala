@@ -94,20 +94,6 @@ class ConfirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.getElementById("selectADifferentProperty") === null)
 
     }
-    Scenario("return the property address when mode edit from previous returns") {
-
-      Given("the client has entered an address")
-      When("The user views the confirm address page")
-      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = "XX1 1XX")
-      val html = injectedViewInstance("1", 2015, propertyDetails, mode = Some(EDIT_PREV_RETURN), Html(""), Some("http://backLink"))
-      val document = Jsoup.parse(html.toString())
-
-      Then("The header should match - Confirm address")
-      assert(document.getElementsByTag("h1").text() contains "Confirm address")
-
-      assert(document.getElementById("selectADifferentProperty") === null)
-
-    }
     Scenario("return the property address when mode edit from submitted returns") {
 
       Given("the client has entered an address")
