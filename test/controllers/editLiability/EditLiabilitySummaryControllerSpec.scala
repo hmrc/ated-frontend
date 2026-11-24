@@ -186,7 +186,9 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServerPer
         viewWithAuthorisedUser(None) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/create/summary/12345678901"))
+            redirectLocation(result) must be(Some("/ated/liability/create/summary/12345678901/no-calculation"))
+            verify(mockPropertyDetailsService, never()).calculateDraftPropertyDetails(ArgumentMatchers.any[String]())(
+                using ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
     }
