@@ -22,6 +22,7 @@
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
+@import utils.AtedUtils.{EDIT_FROM_SUMMARY, EDIT_SUBMITTED, EDIT_PREV_RETURN}
 
 @this(newMain: newMain,
       govukBackLink : GovukBackLink,
@@ -81,11 +82,13 @@
         </a>
     </p>
 
-    <p id="selectADifferentProperty" class="govuk-body">
-        <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
-            @messages("ated.confirm-address.selectDifferentProperty")
-        </a>
-    </p>
+    @if(!mode.contains(EDIT_FROM_SUMMARY) && !mode.contains(EDIT_SUBMITTED)){
+        <p id="selectADifferentProperty" class="govuk-body">
+            <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
+              @messages("ated.confirm-address.selectDifferentProperty")
+            </a>
+        </p>
+    }
 
     @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
         <div class="govuk-form-group govuk-!-padding-top-3">
