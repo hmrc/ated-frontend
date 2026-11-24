@@ -251,6 +251,17 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
       }
 
+      "submitting a valid request with postcode with spaces should be accepted and move to results page" in new Setup {
+        val searchCriteria: AddressLookup = AddressLookup("X X 1 1 X X", None)
+        findWithAuthorisedUser(None, FakeRequest().withMethod("POST").withFormUrlEncodedBody("postcode" -> "X X 1 1 X X"), AddressSearchResults(searchCriteria, Nil)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
+            document.getElementById("no-address-found").text() must include("No addresses were found for this postcode")
+        }
+      }
+
       "submitting a valid request should lookup search results and return them to the screen" in new Setup {
         val searchCriteria: AddressLookup = AddressLookup("XX1 1XX", None)
         val results = List(address1, address2, address3)
