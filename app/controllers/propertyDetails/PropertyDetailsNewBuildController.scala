@@ -19,8 +19,6 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
-
-import javax.inject.Inject
 import models.PropertyDetailsNewBuild
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
@@ -29,6 +27,7 @@ import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -45,9 +44,10 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsNewBuildController"
 
-  def view(id: String,  mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -101,7 +101,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                     case Some(false) =>
                       redirectWithBackLink(
                         propertyDetailsWhenAcquiredController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id,mode),
+                        controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode).url)
                       )
                     case _ => Future.successful(Ok)

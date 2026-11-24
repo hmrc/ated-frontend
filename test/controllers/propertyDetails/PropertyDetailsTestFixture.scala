@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
+import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => eqs}
 import org.mockito.Mockito.{verify, when}
@@ -110,11 +110,31 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
   }
 
   def setupPropertyDetailServiceMockExpectations() = {
-    val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", "z11 1zz").copy(value = None)
+    val propertyDetails = PropertyDetailsBuilder
+      .getPropertyDetails("1", "z11 1zz")
+      .copy(value = None)
+
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails(any())(using any(), any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(any(), any())(using any(), any())).thenReturn(Future.successful(OK))
 
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsIsPropertyRevalued(any(), any())(using any(), any()))
+      .thenReturn(Future.successful(OK))
+
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsFortyThousandValueDateOfChange(any(), any())(using any(), any()))
+      .thenReturn(Future.successful(OK))
+
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsNewValuation(any(), any())(using any(), any()))
+      .thenReturn(Future.successful(OK))
+
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsDateOfRevaluation(any(), any())(using any(), any()))
+      .thenReturn(Future.successful(OK))
+  }
+
+  def verifySaveDateOfRevaluation(date: LocalDate): Unit = {
+    verify(mockPropertyDetailsService).saveDraftPropertyDetailsDateOfRevaluation(
+      ArgumentMatchers.eq("1"),
+      ArgumentMatchers.eq(DateOfRevalue(Some(date)))
+    )(using any(), any())
   }
 
   def verifySaveBackLinkIsCalled = {
@@ -125,19 +145,6 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
     verify(mockDataCacheService).fetchAndGetData[HasBeenRevalued](
       eqs(revalued)
     )(using any(), any())
-  }
-
-  def verifyPropertyDetailsService(isPropertyRevalued: Option[Boolean],
-                                   revaluedValue: Option[BigDecimal],
-                                   revaluedDate: Option[LocalDate],
-                                   partAcqDispDate: Option[LocalDate]) = {
-    val expectedPropertyDetails = PropertyDetailsRevalued(
-      isPropertyRevalued = isPropertyRevalued,
-      revaluedValue = revaluedValue,
-      revaluedDate = revaluedDate,
-      partAcqDispDate = partAcqDispDate
-    )
-    verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(any(), eqs(expectedPropertyDetails))(using any(), any())
   }
 
   def beforeEach(): Unit = {

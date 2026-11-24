@@ -17,17 +17,25 @@
 package controllers.propertyDetails
 
 import builders.SessionBuilder
+import models.DateOfRevalue
+import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.{reset, verify}
+import org.scalatest.BeforeAndAfterEach
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import utils.AtedConstants.HasPropertyBeenRevalued
+import utils.AtedUtils.EDIT_FROM_SUMMARY
 import views.html.propertyDetails.propertyDetailsDateOfRevalue
 
 import java.time.LocalDate
 
-class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixture {
+class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixture with BeforeAndAfterEach {
   val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
+  
 
   val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
     mockMcc,
@@ -37,8 +45,18 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     mockPropertyDetailsService,
     mockBackLinkCacheService,
     mockDataCacheService,
-    mockIsFullTaxPeriodController
+    mockIsFullTaxPeriodController,
+    mockPropertyDetailsSummaryController
   )
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(
+      mockPropertyDetailsService,
+      mockDataCacheService,
+      mockBackLinkCacheService
+    )
+  }
 
   "PropertyDetailsDateOfRevalueController.view" must {
     "redirect to the unauthorised page" when {
@@ -55,6 +73,18 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
         val result = testController.view("1", None).apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
       }
+    }
+
+    "preserve edit from summary mode when displaying the view" in new Setup {
+      setupPropertyDetailServiceMockExpectations()
+
+      val result = testController.view("1", Some(EDIT_FROM_SUMMARY))
+        .apply(SessionBuilder.buildRequestWithSession(userId))
+
+      status(result) mustBe OK
+
+      val document = Jsoup.parse(contentAsString(result))
+      document.select("form").attr("action") must include("mode=editFromSummary")
     }
 
     "for page errors, return BAD_REQUEST" in new Setup {
@@ -77,27 +107,26 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
       }
     }
 
-    "collect information from cache and save to database" when {
+    "save the date of revaluation to the database" when {
       "save invoked for a valid period" in new Setup {
         val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
           .withMethod("POST")
           .withFormUrlEncodedBody(
             "dateOfRevalue.day" -> "1",
             "dateOfRevalue.month" -> "4",
-            "dateOfRevalue.year" -> "2020")
-        setupDataCacheServiceExpectations(
-          newValuation = Some(BigDecimal.valueOf(1000000)),
-          hasPropertyBeenRevalued = Some(true),
-          dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
-        )
+            "dateOfRevalue.year" -> "2020"
+          )
+
         setupPropertyDetailServiceMockExpectations()
 
-        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
+        val result = testController.save("1", 2020, None).apply(
+          SessionBuilder.updateRequestFormWithSession(fakeRequest, userId)
+        )
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
 
-        verifyPropertyDetailsService(Some(true), Some(1000000), Some(LocalDate.of(2020, 4, 1)), Some(LocalDate.of(2021, 6, 15)))
-        verifyDataCacheServiceRetursHasBeenRevalued(HasPropertyBeenRevalued)
+        verifySaveDateOfRevaluation(LocalDate.of(2020, 4, 1))
         verifySaveBackLinkIsCalled
       }
     }
@@ -113,10 +142,32 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
             "dateOfRevalue.year" -> "2015")
         setupPropertyDetailServiceMockExpectations()
 
-        val result = testController.save("1", 2015, None).apply(
-            SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
+        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
+      }
+    }
+
+    "redirect to the property details summary page" when {
+      "user enters valid date when editing from summary" in new Setup {
+
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "dateOfRevalue.day" -> "1",
+            "dateOfRevalue.month" -> "4",
+            "dateOfRevalue.year" -> "2015"
+          )
+        setupPropertyDetailServiceMockExpectations()
+
+        val result = testController.save("1", 2015, Some(EDIT_FROM_SUMMARY)).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get must include("/ated/liability/create/summary/1")
+
+        verifySaveDateOfRevaluation(LocalDate.of(2015, 4, 1))
+        verifySaveBackLinkIsCalled
       }
     }
 

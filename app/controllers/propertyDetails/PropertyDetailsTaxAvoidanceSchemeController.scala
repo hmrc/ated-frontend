@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.*
 import models.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
 import utils.AtedUtils
@@ -35,13 +35,14 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
                                                             authAction: AuthAction,
                                                             propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
                                                             propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                            propertyDetailsSummaryController: PropertyDetailsSummaryController,
                                                             serviceInfoService: ServiceInfoService,
                                                             val propertyDetailsService: PropertyDetailsService,
                                                             val dataCacheService: DataCacheService,
                                                             val backLinkCacheService: BackLinkCacheService,
                                                             template: views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme)
                                                            (using val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper  with ControllerIds{
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
 
@@ -154,12 +155,21 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
                       Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode).url))
                   )
                 case _ =>
-                  propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
+                  if (mode.contains(EDIT_FROM_SUMMARY)) {
+                    propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
+                      redirectWithBackLink(
+                        propertyDetailsSummaryController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode).url))
+                    )
+                  } else {
+                    propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
                       redirectWithBackLink(
                         propertyDetailsSupportingInfoController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id, mode),
                         Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id, mode).url))
-                  )
+                    )
+                  }
               }
             }
           )

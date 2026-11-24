@@ -20,9 +20,6 @@ import config.ApplicationConfig
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms.*
-import controllers.ControllerIds
-
-import javax.inject.Inject
 import models.PropertyDetailsOwnedBefore
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.*
@@ -31,6 +28,7 @@ import utils.AtedConstants.{SelectedPreviousReturn, editFromSummaryControllerId}
 import utils.AtedUtils
 import utils.AtedUtils.EDIT_FROM_SUMMARY
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -45,9 +43,10 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (using val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   given ec: ExecutionContext = mcc.executionContext
+
   val controllerId: String = "PropertyDetailsOwnedBeforeController"
 
 
@@ -141,36 +140,37 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
     }
   }
 
-      def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-        authAction.authorisedAction { implicit authContext =>
-          ensureClientContext {
-            serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-              PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bindFromRequest()).fold(
-                formWithError => {
-                  currentBackLink.map(backLink =>
-                    BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
-                  )
-                },
-                propertyDetails => {
-                  for {
-                    _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
-                    result <-
-                      if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
-                          redirectWithBackLink(
-                            propertyDetailsProfessionallyValuedController.controllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
-                            Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
-                      } else {
-                        redirectWithBackLink(
-                          propertyDetailsNewBuildController.controllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode),
-                          Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
-                      }
-                  } yield result
-                }
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bindFromRequest()).fold(
+            formWithError => {
+              currentBackLink.map(backLink =>
+                BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
+                result <-
+                  if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false)) {
+                    redirectWithBackLink(
+                      propertyDetailsProfessionallyValuedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                  } else {
+                    redirectWithBackLink(
+                      propertyDetailsNewBuildController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id, mode).url))
+                  }
+              } yield result
             }
-          }
+          )
         }
       }
     }
+  }
+
+}

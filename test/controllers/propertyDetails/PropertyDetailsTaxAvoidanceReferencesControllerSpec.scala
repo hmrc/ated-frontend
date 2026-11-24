@@ -20,7 +20,7 @@ import java.util.UUID
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController
+import controllers.propertyDetails.{PropertyDetailsSummaryController, PropertyDetailsTaxAvoidanceReferencesController}
 import models.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -61,6 +61,8 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
+
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
@@ -76,6 +78,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       mockMcc,
       mockAuthAction,
       mockPropertyDetailsSupportingInfoController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,
@@ -91,7 +94,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       test(result)
     }
 
-    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
+    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails, mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -103,7 +106,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
         (using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsTaxAvoidanceController.view(propertyDetails.id, None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsTaxAvoidanceController.view(propertyDetails.id, mode).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -199,6 +202,18 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
               document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
+
+        "preserve edit from summary mode when displaying the view" in new Setup {
+          val propertyDetails = PropertyDetailsBuilder
+            .getPropertyDetails("1").copy(period = None)
+
+          getDataWithAuthorisedUser(propertyDetails, Some(EDIT_FROM_SUMMARY)) { result =>
+            status(result) must be(OK)
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.select("form").attr("action") must include("mode=editFromSummary")
+          }
+        }
       }
     }
 
@@ -260,7 +275,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       }
 
       "Authorised users" must {
-        "for data, return OK" in new Setup {
+        "for valid data, redirect to the supporting info page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(FakeRequest()
@@ -273,8 +288,8 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
                 redirectLocation(result).get must include("/liability/create/supporting-info/view")
           }
         }
-        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the supporting info page" in new Setup {
 
+        "for valid data when editing from summary (Mode = EDIT_FROM_SUMMARY), forward onto the supporting info page" in new Setup {
           when(mockBackLinkCacheService.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any()))
             .thenReturn(Future.successful(None))
           submitWithAuthorisedUser(FakeRequest()
@@ -285,7 +300,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
             Some(EDIT_FROM_SUMMARY)
           ) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/supporting-info/view/1?mode=editFromSummary")
+            redirectLocation(result).get must include("/ated/liability/create/summary/1")
           }
         }
       }

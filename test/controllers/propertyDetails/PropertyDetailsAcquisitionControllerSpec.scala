@@ -60,6 +60,8 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAcquisition]
   val mockHasBeenRevaluedController: PropertyDetailsHasBeenRevaluedController = mock[PropertyDetailsHasBeenRevaluedController]
+  val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
+  
 
   class Setup {
 
@@ -74,6 +76,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
       mockAuthAction,
       mockIsFullTaxPeriodController,
       mockHasBeenRevaluedController,
+      mockPropertyDetailsSummaryController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheService,

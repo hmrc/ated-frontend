@@ -60,6 +60,8 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                 Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
               case mode if AtedUtils.isEditSubmittedMode(mode) =>
                 Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
+              case mode if mode.contains(EDIT_FROM_SUMMARY) =>
+                AtedUtils.getSummaryBackLink(id, Some(EDIT_FROM_SUMMARY))
               case _ =>
                 Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
             }
@@ -88,12 +90,15 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
           backLink <- currentBackLink
         } yield {
           changeLiabilityReturnOpt match {
-            case Some(x) =>
+            case Some(propertyDetails) =>
+
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails).getOrElse(AtedUtils.EDIT_FROM_SUMMARY)
+
               Ok(template(
-                x.id,
-                x.periodKey,
-                x.addressProperty,
-                AtedUtils.getEditSubmittedMode(x, answer),
+                propertyDetails.id,
+                propertyDetails.periodKey,
+                propertyDetails.addressProperty,
+                Some(mode),
                 serviceInfoContent,
                 backLink))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
@@ -102,23 +107,26 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
       }
     }
   }
-  
+
   def submit(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
+      val backToViewLink = Some(routes.ConfirmAddressController.view(id, periodKey, mode).url)
       ensureClientContext {
-
-        val backToViewLink = Some(routes.ConfirmAddressController.view(id, periodKey, mode).url)
-
+        if (mode.contains(EDIT_FROM_SUMMARY)) {
+          redirectWithBackLink(
+            propertyDetailsSummaryControllerId,
+            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+            backToViewLink
+          )
+        } else {
           redirectWithBackLink(
             propertyDetailsTitleId,
             controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id, mode),
             backToViewLink
           )
+        }
       }
     }
   }
 
 }
-
-
-
