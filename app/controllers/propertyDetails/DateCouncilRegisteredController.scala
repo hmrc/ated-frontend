@@ -86,7 +86,10 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            PropertyDetailsForms.validateNewBuildCouncilRegisteredDate(periodKey, dateCouncilRegisteredForm.bindFromRequest(), dateFields).fold(
+            val cleanedData = AtedUtils.trimDateFields(
+              request.body.asFormUrlEncoded.getOrElse(Map.empty)
+            )
+            PropertyDetailsForms.validateNewBuildCouncilRegisteredDate(periodKey, dateCouncilRegisteredForm.bindFromRequest(cleanedData), dateFields).fold(
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>

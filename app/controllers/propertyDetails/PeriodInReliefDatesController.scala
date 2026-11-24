@@ -26,6 +26,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BackLinkCacheService, DataCacheService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -64,7 +65,10 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-              PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest(), lineItems, dateFields).fold(
+              val cleanedData = AtedUtils.trimDateFields(
+                request.body.asFormUrlEncoded.getOrElse(Map.empty)
+              )
+              PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest(cleanedData), lineItems, dateFields).fold(
                 formWithError => {
                   Future.successful(BadRequest(template(id, periodKey,mode, formWithError, serviceInfoContent, getBackLink(id, periodKey, mode))))
                 },

@@ -25,7 +25,14 @@ object AddressLookupForms {
   val addressLookupForm = Form(
     mapping(
       "postcode" -> text
-        .verifying("ated.error.address.postalcode.format",  x => AtedForms.validatePostCodeFormat(Some(x.toUpperCase))),
+        .transform[String](
+          _.replaceAll("\\s+", "").toUpperCase,
+          identity
+        )
+        .verifying(
+          "ated.error.address.postalcode.format",
+          x => AtedForms.validatePostCodeFormat(Some(x))
+        ),
       "houseName" -> optional(text)
     )(AddressLookup.apply)(x => Some(Tuple.fromProductTyped(x)))
   )

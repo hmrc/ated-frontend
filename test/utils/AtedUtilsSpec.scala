@@ -243,4 +243,59 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
       AtedUtils.intToMonth(testIntegerMonth) must be("March")
     }
   }
+
+  "trimDateFields" should {
+
+    "remove all whitespace from day, month and year fields" in {
+      val data = Map(
+        "startDate.day" -> Seq(" 3 "),
+        "startDate.month" -> Seq(" 0 9 "),
+        "startDate.year" -> Seq(" 2 0 2 6 ")
+      )
+
+      AtedUtils.trimDateFields(data) mustBe Map(
+        "startDate.day" -> Seq("3"),
+        "startDate.month" -> Seq("09"),
+        "startDate.year" -> Seq("2026")
+      )
+    }
+
+    "leave non-date fields unchanged" in {
+      val data = Map(
+        "address" -> Seq(" 123 Main Street "),
+        "postcode" -> Seq(" NE1 1AA "),
+        "startDate.day" -> Seq(" 3 ")
+      )
+
+      AtedUtils.trimDateFields(data) mustBe Map(
+        "address" -> Seq(" 123 Main Street "),
+        "postcode" -> Seq(" NE1 1AA "),
+        "startDate.day" -> Seq("3")
+      )
+    }
+
+    "remove whitespace from all values when a field has multiple values" in {
+      val data = Map(
+        "startDate.day" -> Seq(" 0 3 ", " 1 5 ")
+      )
+
+      AtedUtils.trimDateFields(data) mustBe Map(
+        "startDate.day" -> Seq("03", "15")
+      )
+    }
+
+    "return an empty map when input is empty" in {
+      AtedUtils.trimDateFields(Map.empty) mustBe Map.empty
+    }
+
+    "leave date fields without whitespace a" in {
+      val data = Map(
+        "startDate.day" -> Seq("31"),
+        "startDate.month" -> Seq("12"),
+        "startDate.year" -> Seq("2026")
+      )
+
+      AtedUtils.trimDateFields(data) mustBe data
+    }
+  }
 }

@@ -194,4 +194,15 @@ object AtedUtils {
         }
     }
   }
+
+  def trimDateFields(data: Map[String, Seq[String]]): Map[String, Seq[String]] =
+    data.map {
+      case (key, values)
+        if key.endsWith(".day") ||
+          key.endsWith(".month") ||
+          key.endsWith(".year") =>
+        key -> values.map(_.replaceAll("\\s+", ""))
+
+      case entry => entry
+    }
 }
