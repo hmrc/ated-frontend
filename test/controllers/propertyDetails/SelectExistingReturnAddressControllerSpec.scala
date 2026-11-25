@@ -335,7 +335,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-      "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
+      "submitting an valid request should get the form bundle return and save in cache" in new Setup {
         val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-09-08"),
           LocalDate.parse("2015-10-12"), "Relief", Some("Property developers"))
         val formBundleAddress: FormBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")

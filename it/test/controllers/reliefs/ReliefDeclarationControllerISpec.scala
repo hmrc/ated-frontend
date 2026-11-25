@@ -19,15 +19,14 @@ package test.controllers.reliefs
 import play.api.libs.ws.DefaultBodyWritables.writeableOf_String
 import play.api.libs.ws.WSResponse
 import test.helpers.IntegrationBase
-import test.helpers.stubs.{AuthAudit, KeyStore}
+import test.helpers.stubs.AuthAudit
 
-class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
+class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit {
 
   "respond with a status of SEE OTHER (303)" when {
     "submitting a relief" in {
 
       stubAuth()
-      stubKeyStore()
       stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
       val resp: WSResponse = await(client(controllerUrl).withMethod("POST").post(""))

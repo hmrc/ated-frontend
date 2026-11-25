@@ -18,16 +18,15 @@ package test.controllers
 
 import play.api.libs.ws.WSResponse
 import test.helpers.IntegrationBase
-import test.helpers.stubs.{AuthAudit, KeyStore, ServiceInfoPartialConnectorStub}
+import test.helpers.stubs.{AuthAudit, ServiceInfoPartialConnectorStub}
 
-class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
+class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit {
   "respond with a status of 200" when {
     "viewing the period summary of 2019" in {
       val period2019 = 2019
 
       stubAuth()
       ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
-      stubKeyStore()
       stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
         s"""{
           |"allReturns" : [
@@ -59,7 +58,6 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       stubAuth()
       ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
-      stubKeyStore()
       stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
         s"""{
           |"allReturns" : [

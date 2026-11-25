@@ -53,7 +53,7 @@ class DataCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mockit
   "DataCacheService" must {
 
     "saveFormData" must {
-      "save form data in keystore" in new Setup {
+      "save form data in cache" in new Setup {
         when(
           mockSessionCacheRepo
             .putSession[ReturnType](DataKey(any), ReturnType(any()))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -67,7 +67,7 @@ class DataCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mockit
     }
 
     "fetchAndGetFormData" must {
-      "fetch data from Keystore" in new Setup {
+      "fetch data from cache" in new Setup {
         when(
           mockSessionCacheRepo
             .getFromSession[ReturnType](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -78,7 +78,7 @@ class DataCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mockit
     }
 
     "clear the data" must {
-      "clear data from Keystore" in new Setup {
+      "clear data from cache" in new Setup {
         when(
           mockSessionCacheRepo
             .deleteFromSession(using ArgumentMatchers.any()))
@@ -90,7 +90,7 @@ class DataCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mockit
     }
 
     "fetchAtedRefData" must {
-      "fetch data from Keystore" in new Setup {
+      "fetch data from cache" in new Setup {
         when(
           mockSessionCacheRepo
             .getFromSession[String](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
