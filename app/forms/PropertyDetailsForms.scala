@@ -106,7 +106,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint())
+      "revaluedValue" -> valueValidation.verifying(propertyValueConstraint())
     )(PropertyDetailsNewValuation.apply)(x => Some(x.revaluedValue))
   )
 
@@ -123,7 +123,7 @@ object PropertyDetailsForms {
     }
   })
 
-  private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
+  private def propertyValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
     model match {
       case Some(v) => {
         if(v.toDouble > maximumPropertyValue){
@@ -181,7 +181,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewBuildValueForm: Form[PropertyDetailsNewBuildValue] = Form(
     mapping(
-      "newBuildValue" -> valueValidation.verifying("ated.property-details-value-error.newBuildValue.emptyValue", model => model.isDefined)
+      "newBuildValue" -> valueValidation.verifying(propertyValueConstraint())
     )(PropertyDetailsNewBuildValue.apply)(x => Some(x.newBuildValue))
   )
 
