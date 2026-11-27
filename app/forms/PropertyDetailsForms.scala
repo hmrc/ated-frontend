@@ -106,7 +106,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint())
+      "revaluedValue" -> valueValidation.verifying(propertyValueConstraint())
     )(PropertyDetailsNewValuation.apply)(x => Some(x.revaluedValue))
   )
 
@@ -123,10 +123,10 @@ object PropertyDetailsForms {
     }
   })
 
-  private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
+  private def propertyValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
     model match {
       case Some(v) => {
-        if(v.toDouble >= maximumPropertyValue){
+        if(v.toDouble > maximumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-high")
         } else if(v.toDouble < minimumPropertyValue){
           Invalid("ated.property-details-value.revaluedValue.error.too-low")
@@ -181,7 +181,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewBuildValueForm: Form[PropertyDetailsNewBuildValue] = Form(
     mapping(
-      "newBuildValue" -> valueValidation.verifying("ated.property-details-value-error.newBuildValue.emptyValue", model => model.isDefined)
+      "newBuildValue" -> valueValidation.verifying(propertyValueConstraint())
     )(PropertyDetailsNewBuildValue.apply)(x => Some(x.newBuildValue))
   )
 
@@ -256,36 +256,41 @@ object PropertyDetailsForms {
   )
 
   def propertyDetailsValueValidation: Mapping[Option[BigDecimal]] = {
-    import PropertyValueField._
-
     optional(text)
       .verifying("ated.property-details-value.incorrect-format", propertyValue => {
         propertyValue match {
           case Some(x) =>
-            val noDecimals = x.split("\\.").head
-            val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
-            strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", ""))
+            val cleaned =
+              x.trim
+                .replaceAll(" ", "")
+                .replace(",", "")
+                .replace("£", "")
+
+            cleaned.matches("[0-9]+(\\.[0-9]{1,2})?")
           case None => true
         }
       })
       .transform[Option[BigDecimal]](
         {
           case Some(a) =>
-            val noDecimals = a.split("\\.").head
-            val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
-            if (strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", "")))
-              Some(BigDecimal(strippedAndTrimmed.replace("£", "")))
-            else None
+            val cleaned =
+              a.trim
+                .replaceAll(" ", "")
+                .replace(",", "")
+                .replace("£", "")
+
+            if (cleaned.matches("[0-9]+(\\.[0-9]{1,2})?"))
+              Some(BigDecimal(cleaned))
+            else
+              None
+
           case _ => None
-        }, {
+        },
+        {
           case Some(a) => Some(a.toString)
-          case _ => None
+          case _       => None
         }
       )
-  }
-
-  object PropertyValueField {
-    def isValid(value: String): Boolean = Try(value.toLong).isSuccess
   }
 
   def validatePropertyDetailsTaxAvoidanceReference(f: Form[PropertyDetailsTaxAvoidanceReferences]): Form[PropertyDetailsTaxAvoidanceReferences] = {
@@ -477,7 +482,7 @@ object PropertyDetailsForms {
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {
     if (requiresValidation) {
       if (f.data.contains(fieldName) && !f.data.get(fieldName).contains("")) {
-        if (fieldValue.exists(a => a.toDouble >= maximumPropertyValue)) {
+        if (fieldValue.exists(a => a.toDouble > maximumPropertyValue)) {
           Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-high")))
         } else if (fieldValue.exists(a => a.toDouble < minimumPropertyValue)) {
           Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-low")))
